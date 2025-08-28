@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NextMedia - Latest News{% endblock %}</title>
+    <meta name="description" content="{% block description %}Get the latest news from schools and around the world with NextMedia{% endblock %}">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="{% url 'news:manifest' %}">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="{% load static %}{% static 'img/icon-192x192.png' %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% load static %}{% static 'img/favicon.png' %}">
+    
+    <!-- CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <!-- <i class="fas fa-newspaper"></i> -->
+                <span>NEXT MEDIA</span>
+            </div>
+            
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="nav-menu" id="navMenu" style="margin-left: 10%;">
+                <a href="{% url 'news:home' %}" class="nav-link">Home</a>
+                <a href="{% url 'news:school_list' %}" class="nav-link">School News</a>
+                <a href="{% url 'news:category_news' 'global-news' %}" class="nav-link">Global News</a>
+                <a href="{% url 'news:category_news' 'sports' %}" class="nav-link">Entertainment</a>
+                <a href="{% url 'news:past_questions' %}" class="nav-link">Past Questions</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            
+            <div class="nav-search">
+                <form action="{% url 'news:search' %}" method="GET">
+                    <input type="text" name="q" placeholder="Search news..." class="search-input">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Past Questions CTA Section -->
+    {% if not hide_cta %}
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <div class="cta-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="cta-text">
+                    <h3>Download Past Questions</h3>
+                    <p>Access past questions for exam preparation. Download PDFs to study.</p>
+                </div>
+                <a href="{% url 'news:past_questions' %}" class="cta-btn">VIEW PAST QUESTIONS</a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-newspaper"></i>
+                        <span>NEXT MEDIA</span>
+                    </div>
+                    <p>Your trusted source for the latest news from schools and around the world.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="{% url 'news:home' %}">Home</a></li>
+                            <li><a href="{% url 'news:school_list' %}">School News</a></li>
+                            <li><a href="{% url 'news:category_news' 'global-news' %}">Global News</a></li>
+                            <li><a href="{% url 'news:past_questions' %}">Past Questions</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>Categories</h4>
+                        <ul>
+                            <li><a href="{% url 'news:category_news' 'sports' %}">Sports</a></li>
+                            <li><a href="{% url 'news:category_news' 'education' %}">Education</a></li>
+                            <li><a href="{% url 'news:category_news' 'technology' %}">Technology</a></li>
+                            <li><a href="{% url 'news:category_news' 'politics' %}">Politics</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                </div>
+                
+                <a href="#" class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i>
+                    JOIN WHATSAPP Channel
+                </a>
+                
+                <div class="footer-contact" id="contact">
+                    <p>Contact: info@nextmedia18.com</p>
+                </div>
+            </div>
+            
+            <div class="footer-copyright">
+                <p>&copy; 2024 NextMedia. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <!-- PWA Installation -->
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('{% static "js/sw.js" %}')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

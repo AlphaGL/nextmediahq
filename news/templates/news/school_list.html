@@ -1,0 +1,279 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}Schools - NextMedia{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <h1>Choose Your School</h1>
+            <p>Select a school to view the latest news and updates</p>
+        </div>
+    </div>
+</section>
+
+<section class="schools-section">
+    <div class="container">
+        {% if schools %}
+            <div class="schools-grid-page">
+                {% for school in schools %}
+                <a href="{% url 'news:school_news' school.slug %}" class="school-card-page">
+                    <div class="school-logo-large">
+                        {% if school.logo %}
+                            <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
+                        {% else %}
+                            <div class="school-placeholder-large">
+                                <i class="fas fa-university"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="school-info">
+                        <h3>{{ school.name }}</h3>
+                        {% if school.abbreviation %}
+                            <span class="school-abbr-large">{{ school.abbreviation }}</span>
+                        {% endif %}
+                        {% if school.description %}
+                            <p class="school-desc">{{ school.description|truncatewords:20 }}</p>
+                        {% endif %}
+                        <div class="school-meta">
+                            {% if school.established %}
+                                <span class="established">Est. {{ school.established|date:"Y" }}</span>
+                            {% endif %}
+                            <span class="news-count">
+                                <i class="fas fa-newspaper"></i>
+                                {{ school.news_set.count }} News
+                            </span>
+                        </div>
+                    </div>
+                    <div class="school-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-schools">
+                <div class="no-content">
+                    <i class="fas fa-university"></i>
+                    <h3>No Schools Available</h3>
+                    <p>Schools will be added soon. Check back later!</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.page-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 3rem 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 70%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+}
+
+.page-header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.schools-grid-page {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.school-card-page {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    text-decoration: none;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.school-card-page:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.school-card-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.school-card-page:hover::before {
+    left: 100%;
+}
+
+.school-logo-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255, 107, 53, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.school-logo-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.school-placeholder-large {
+    color: #ff6b35;
+    font-size: 2rem;
+}
+
+.school-info {
+    flex: 1;
+}
+
+.school-info h3 {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.school-abbr-large {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.school-desc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0.5rem 0;
+}
+
+.school-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+}
+
+.established,
+.news-count {
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.school-arrow {
+    color: #ff6b35;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.school-card-page:hover .school-arrow {
+    transform: translateX(5px);
+}
+
+.no-schools {
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.no-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.no-content i {
+    font-size: 4rem;
+    color: rgba(255, 107, 53, 0.3);
+    margin-bottom: 1rem;
+}
+
+.no-content h3 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.no-content p {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
+    
+    .schools-grid-page {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .school-card-page {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    .school-logo-large {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .school-arrow {
+        transform: rotate(90deg);
+    }
+    
+    .school-card-page:hover .school-arrow {
+        transform: rotate(90deg) translateX(5px);
+    }
+}
+</style>
+{% endblock %}

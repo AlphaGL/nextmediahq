@@ -1,0 +1,475 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}{{ school.name }} News - NextMedia{% endblock %}
+
+{% block content %}
+<section class="school-header">
+    <div class="container">
+        <div class="school-header-content">
+            <div class="school-info-header">
+                <div class="school-logo-header">
+                    {% if school.logo %}
+                        <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
+                    {% else %}
+                        <div class="school-placeholder-header">
+                            <i class="fas fa-university"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="school-details">
+                    <h1>{{ school.name }}</h1>
+                    {% if school.abbreviation %}
+                        <span class="school-abbr-header">{{ school.abbreviation }}</span>
+                    {% endif %}
+                    {% if school.description %}
+                        <p class="school-description">{{ school.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="school-stats">
+                <div class="stat">
+                    <span class="stat-number">{{ news.paginator.count }}</span>
+                    <span class="stat-label">News Articles</span>
+                </div>
+                {% if school.established %}
+                <div class="stat">
+                    <span class="stat-number">{{ school.established|date:"Y" }}</span>
+                    <span class="stat-label">Established</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="news-content">
+    <div class="container">
+        <div class="content-header">
+            <h2>Latest News from {{ school.name }}</h2>
+            <div class="breadcrumb">
+                <a href="{% url 'news:home' %}">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="{% url 'news:school_list' %}">Schools</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>{{ school.name }}</span>
+            </div>
+        </div>
+
+        {% if news %}
+            <div class="news-grid">
+                {% for article in news %}
+                <article class="news-item">
+                    <div class="news-image">
+                        {% if article.featured_image %}
+                            <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
+                        {% else %}
+                            <div class="placeholder-image">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                        {% endif %}
+                        <div class="news-overlay">
+                            <span class="news-category">{{ article.category.name }}</span>
+                        </div>
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">
+                            <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                        </h3>
+                        <p class="news-excerpt">{{ article.excerpt|truncatewords:25 }}</p>
+                        <div class="news-meta">
+                            <span class="news-date">
+                                <i class="fas fa-clock"></i>
+                                {{ article.published_date|date:"M j, Y" }}
+                            </span>
+                            <a href="{{ article.get_absolute_url }}" class="read-more">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if news.has_other_pages %}
+            <div class="pagination-container">
+                <div class="pagination">
+                    {% if news.has_previous %}
+                        <a href="?page=1" class="page-link">&laquo; First</a>
+                        <a href="?page={{ news.previous_page_number }}" class="page-link">Previous</a>
+                    {% endif %}
+                    
+                    {% for num in news.paginator.page_range %}
+                        {% if news.number == num %}
+                            <span class="page-link current">{{ num }}</span>
+                        {% elif num > news.number|add:'-3' and num < news.number|add:'3' %}
+                            <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if news.has_next %}
+                        <a href="?page={{ news.next_page_number }}" class="page-link">Next</a>
+                        <a href="?page={{ news.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="no-news">
+                <div class="no-content">
+                    <i class="fas fa-newspaper"></i>
+                    <h3>No News Available</h3>
+                    <p>There are currently no news articles for {{ school.name }}. Check back later for updates!</p>
+                    <a href="{% url 'news:school_list' %}" class="back-btn">Browse Other Schools</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.school-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.school-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+}
+
+.school-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.school-info-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.school-logo-header {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255, 107, 53, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.school-logo-header img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.school-placeholder-header {
+    color: #ff6b35;
+    font-size: 2.5rem;
+}
+
+.school-details h1 {
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.school-abbr-header {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.school-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 500px;
+}
+
+.school-stats {
+    display: flex;
+    gap: 2rem;
+}
+
+.stat {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ff6b35;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.news-content {
+    padding: 4rem 0;
+    background: #0f0f23;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.content-header h2 {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    color: #ff6b35;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: #e55a2b;
+}
+
+.breadcrumb i {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7rem;
+}
+
+.breadcrumb span {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.news-item {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.news-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.news-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.news-item:hover .news-image img {
+    transform: scale(1.1);
+}
+
+.news-overlay {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+}
+
+.news-category {
+    background: rgba(255, 107, 53, 0.9);
+    color: #fff;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+.news-content {
+    padding: 1.5rem;
+}
+
+.news-title a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.news-title a:hover {
+    color: #ff6b35;
+}
+
+.news-excerpt {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 1rem 0;
+    line-height: 1.6;
+}
+
+.news-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.news-date {
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.read-more {
+    color: #ff6b35;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.read-more:hover {
+    color: #e55a2b;
+    transform: translateX(5px);
+}
+
+/* Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.page-link {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page-link:hover {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+}
+
+.page-link.current {
+    background: #ff6b35;
+    color: #fff;
+    border-color: #ff6b35;
+}
+
+.no-news {
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.back-btn {
+    background: #ff6b35;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: #e55a2b;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .school-header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .school-info-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .school-details h1 {
+        font-size: 2rem;
+    }
+    
+    .school-stats {
+        justify-content: center;
+    }
+    
+    .content-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .news-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
