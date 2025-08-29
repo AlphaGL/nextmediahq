@@ -1,0 +1,595 @@
+<!-- news_ticker.html -->
+{% load static %}
+
+<section class="news-ticker-section">
+    <div class="ticker-container">
+        
+        <div class="ticker-wrapper">
+            <div class="ticker-content" id="tickerContent">
+                {% if latest_news %}
+                    {% for news in latest_news %}
+                        <div class="ticker-item" data-index="{{ forloop.counter0 }}">
+                            <div class="item-content">
+                                <span class="ticker-category">{{ news.category.name|upper }}</span>
+                                <span class="ticker-separator">•</span>
+                                <a href="{{ news.get_absolute_url }}" class="ticker-title">
+                                    {{ news.title }}
+                                </a>
+                                {% if news.school %}
+                                    <span class="ticker-separator">|</span>
+                                    <span class="ticker-school">{{ news.school.abbreviation|default:news.school.name }}</span>
+                                {% endif %}
+                                <span class="ticker-time">{{ news.published_date|date:"H:i" }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="ticker-item">
+                        <div class="item-content">
+                            <span class="ticker-category">LIVE</span>
+                            <span class="ticker-separator">•</span>
+                            <span class="ticker-title">Welcome to NextMedia - Stay tuned for breaking news updates</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="ticker-controls">
+            <button class="control-btn" id="pauseBtn" title="Pause">
+                <i class="fas fa-pause"></i>
+            </button>
+            <button class="control-btn" id="speedBtn" title="Normal Speed">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<style>
+.news-ticker-section {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+    padding: 16px 0;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    z-index: 10;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.ticker-container {
+    display: flex;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    gap: 20px;
+}
+
+.ticker-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    height: 36px;
+    mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0,0,0,0.1) 5%,
+        rgba(0,0,0,0.8) 10%,
+        black 15%,
+        black 85%,
+        rgba(0,0,0,0.8) 90%,
+        rgba(0,0,0,0.1) 95%,
+        transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0,0,0,0.1) 5%,
+        rgba(0,0,0,0.8) 10%,
+        black 15%,
+        black 85%,
+        rgba(0,0,0,0.8) 90%,
+        rgba(0,0,0,0.1) 95%,
+        transparent 100%
+    );
+}
+
+.ticker-content {
+    display: flex;
+    white-space: nowrap;
+    height: 100%;
+    align-items: center;
+    will-change: transform;
+    animation: seamless-scroll 40s linear infinite;
+    gap: 120px;
+    transform: translateX(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.ticker-item {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: max-content;
+}
+
+.item-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ticker-category {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+}
+
+.ticker-separator {
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.ticker-title {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: color 0.3s ease;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ticker-title:hover {
+    color: #fbbf24;
+}
+
+.ticker-school {
+    background: rgba(251,191,36,0.2);
+    color: #fbbf24;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+}
+
+.ticker-time {
+    background: rgba(0,0,0,0.3);
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 500;
+    backdrop-filter: blur(5px);
+    flex-shrink: 0;
+}
+
+.ticker-controls {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.control-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-size: 12px;
+}
+
+.control-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.05);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+.control-btn.active {
+    background: #ef4444;
+    border-color: #dc2626;
+}
+
+/* Seamless infinite scroll animation */
+@keyframes seamless-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}
+
+/* Speed classes */
+.ticker-content.speed-1x {
+    animation-duration: 40s;
+}
+
+.ticker-content.speed-2x {
+    animation-duration: 25s;
+}
+
+.ticker-content.speed-3x {
+    animation-duration: 15s;
+}
+
+.ticker-content.paused {
+    animation-play-state: paused;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .news-ticker-section {
+        padding: 12px 0;
+    }
+    
+    .ticker-container {
+        padding: 0 15px;
+        gap: 15px;
+    }
+    
+    .ticker-wrapper {
+        mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(0,0,0,0.2) 8%,
+            rgba(0,0,0,0.9) 15%,
+            black 20%,
+            black 80%,
+            rgba(0,0,0,0.9) 85%,
+            rgba(0,0,0,0.2) 92%,
+            transparent 100%
+        );
+        -webkit-mask-image: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(0,0,0,0.2) 8%,
+            rgba(0,0,0,0.9) 15%,
+            black 20%,
+            black 80%,
+            rgba(0,0,0,0.9) 85%,
+            rgba(0,0,0,0.2) 92%,
+            transparent 100%
+        );
+    }
+    
+    .ticker-content {
+        gap: 100px;
+        animation-duration: 35s;
+    }
+    
+    .ticker-content.speed-1x {
+        animation-duration: 35s;
+    }
+    
+    .ticker-content.speed-2x {
+        animation-duration: 22s;
+    }
+    
+    .ticker-content.speed-3x {
+        animation-duration: 14s;
+    }
+    
+    .ticker-title {
+        font-size: 13px;
+        max-width: 280px;
+    }
+    
+    .ticker-category,
+    .ticker-school,
+    .ticker-time {
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+    
+    .control-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+    
+    .item-content {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ticker-container {
+        padding: 0 10px;
+        gap: 10px;
+    }
+    
+    .ticker-content {
+        animation-duration: 30s;
+        gap: 50px;
+    }
+    
+    .ticker-content.speed-1x {
+        animation-duration: 30s;
+    }
+    
+    .ticker-content.speed-2x {
+        animation-duration: 20s;
+    }
+    
+    .ticker-content.speed-3x {
+        animation-duration: 12s;
+    }
+    
+    .ticker-title {
+        font-size: 12px;
+        max-width: 200px;
+    }
+    
+    .ticker-school {
+        display: none;
+    }
+    
+    .item-content .ticker-separator:nth-last-child(2) {
+        display: none;
+    }
+    
+    .control-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 9px;
+    }
+    
+    .item-content {
+        gap: 8px;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .ticker-content {
+        animation-duration: 60s;
+    }
+    
+    .label-icon,
+    .live-indicator {
+        animation: none;
+    }
+}
+
+.ticker-title:focus,
+.control-btn:focus {
+    outline: 2px solid #fbbf24;
+    outline-offset: 2px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tickerContent = document.getElementById('tickerContent');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const speedBtn = document.getElementById('speedBtn');
+    
+    let isPaused = false;
+    let currentSpeed = 1;
+    
+    // Speed configurations for different devices
+    function getSpeedConfig() {
+        if (window.innerWidth <= 480) {
+            return [30, 20, 12];
+        } else if (window.innerWidth <= 768) {
+            return [35, 22, 14];
+        } else {
+            return [40, 25, 15];
+        }
+    }
+    
+    const speedIcons = ['fa-play', 'fa-forward', 'fa-fast-forward'];
+    const speedTitles = ['Normal Speed', 'Fast Speed', 'Ultra Speed'];
+    
+    // Create seamless infinite scroll with larger gaps for smooth fading
+    function setupSeamlessLoop() {
+        if (!tickerContent) return;
+        
+        // Get original content
+        const originalItems = Array.from(tickerContent.children);
+        
+        if (originalItems.length === 0) {
+            tickerContent.innerHTML = `
+                <div class="ticker-item">
+                    <div class="item-content">
+                        <span class="ticker-category">LIVE</span>
+                        <span class="ticker-separator">•</span>
+                        <span class="ticker-title">Welcome to NextMedia - Stay tuned for breaking news updates</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Store original HTML and add spacer for smoother transition
+        const originalHTML = tickerContent.innerHTML;
+        const spacerHTML = '<div class="ticker-spacer" style="width: 150px; flex-shrink: 0;"></div>';
+        
+        // Create seamless loop: original + spacer + duplicate
+        tickerContent.innerHTML = originalHTML + spacerHTML + originalHTML;
+        
+        console.log('Seamless loop with fade transition created');
+    }
+    
+    // Initialize ticker
+    function initTicker() {
+        setupSeamlessLoop();
+        
+        if (tickerContent) {
+            const speeds = getSpeedConfig();
+            const duration = speeds[currentSpeed - 1];
+            
+            // Apply animation
+            tickerContent.style.animation = `seamless-scroll ${duration}s linear infinite`;
+            
+            console.log(`Ticker initialized with ${duration}s duration`);
+        }
+    }
+    
+    // Initialize
+    initTicker();
+    
+    // Pause/Play functionality
+    if (pauseBtn && tickerContent) {
+        pauseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                tickerContent.style.animationPlayState = 'paused';
+                this.innerHTML = '<i class="fas fa-play"></i>';
+                this.classList.add('active');
+                this.title = 'Play';
+            } else {
+                tickerContent.style.animationPlayState = 'running';
+                this.innerHTML = '<i class="fas fa-pause"></i>';
+                this.classList.remove('active');
+                this.title = 'Pause';
+            }
+        });
+    }
+    
+    // Speed control functionality
+    if (speedBtn && tickerContent) {
+        speedBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            currentSpeed = currentSpeed >= 3 ? 1 : currentSpeed + 1;
+            const speeds = getSpeedConfig();
+            
+            const duration = speeds[currentSpeed - 1];
+            const icon = speedIcons[currentSpeed - 1];
+            const title = speedTitles[currentSpeed - 1];
+            
+            // Update animation duration while maintaining seamless loop
+            tickerContent.style.animationDuration = `${duration}s`;
+            
+            this.innerHTML = `<i class="fas ${icon}"></i>`;
+            this.title = title;
+            
+            // Visual feedback
+            this.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+            
+            console.log(`Speed changed to ${duration}s`);
+        });
+    }
+    
+    // Performance optimization with Intersection Observer
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (tickerContent && !isPaused) {
+                    if (entry.isIntersecting) {
+                        tickerContent.style.animationPlayState = 'running';
+                    } else {
+                        tickerContent.style.animationPlayState = 'paused';
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        const tickerSection = document.querySelector('.news-ticker-section');
+        if (tickerSection) {
+            observer.observe(tickerSection);
+        }
+    }
+    
+    // Handle page visibility
+    document.addEventListener('visibilitychange', function() {
+        if (tickerContent && !isPaused) {
+            if (document.hidden) {
+                tickerContent.style.animationPlayState = 'paused';
+            } else {
+                tickerContent.style.animationPlayState = 'running';
+            }
+        }
+    });
+    
+    // Handle resize
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            // Reinitialize for new screen size
+            const currentPlayState = tickerContent.style.animationPlayState;
+            initTicker();
+            if (isPaused) {
+                tickerContent.style.animationPlayState = 'paused';
+            }
+        }, 300);
+    });
+    
+    // Ensure animation continues seamlessly on mobile
+    function ensureSeamlessAnimation() {
+        if (!tickerContent) return;
+        
+        // Listen for animation iteration to ensure it's working
+        tickerContent.addEventListener('animationiteration', function() {
+            console.log('Animation completed one cycle - continuing seamlessly');
+        });
+        
+        // Backup check - if animation stops, restart it
+        setInterval(function() {
+            if (!isPaused && !document.hidden) {
+                const computedStyle = window.getComputedStyle(tickerContent);
+                if (computedStyle.animationPlayState === 'paused' && !isPaused) {
+                    console.log('Animation was paused unexpectedly, restarting...');
+                    tickerContent.style.animationPlayState = 'running';
+                }
+            }
+        }, 5000);
+    }
+    
+    // Initialize seamless animation monitoring
+    setTimeout(ensureSeamlessAnimation, 1000);
+});
+</script>

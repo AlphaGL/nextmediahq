@@ -1,0 +1,904 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if query %}Search Results for "{{ query }}" - NextMedia{% else %}Search - NextMedia{% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if query %}Search results for "{{ query }}" on NextMedia - Latest news from schools and around the world{% else %}Search the latest news from schools and around the world on NextMedia{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Search Header Section -->
+<section class="search-header">
+    <div class="container">
+        <div class="search-hero">
+            <h1>
+                {% if query %}
+                    Search Results
+                {% else %}
+                    Search News
+                {% endif %}
+            </h1>
+            {% if query %}
+                <p>Found {{ results.count }} result{{ results.count|pluralize }} for "<span class="search-term">{{ query }}</span>"</p>
+            {% else %}
+                <p>Search through our latest news from schools and around the world</p>
+            {% endif %}
+        </div>
+        
+        <!-- Enhanced Search Form -->
+        <div class="search-form-container">
+            <form action="{% url 'news:search' %}" method="GET" class="enhanced-search-form">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search news, schools, categories..." 
+                        class="enhanced-search-input"
+                        value="{{ query|default:'' }}"
+                        autocomplete="off"
+                    >
+                    {% if query %}
+                        <button type="button" class="clear-search" onclick="clearSearch()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    {% endif %}
+                </div>
+                <button type="submit" class="enhanced-search-btn">
+                    <span>Search</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Search Filters -->
+{% if query %}
+<section class="search-filters">
+    <div class="container">
+        <div class="filters-wrapper">
+            <div class="filter-info">
+                <span class="results-count">{{ results.count }} result{{ results.count|pluralize }}</span>
+            </div>
+            <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="school-news">School News</button>
+                <button class="filter-btn" data-filter="global-news">Global News</button>
+                <button class="filter-btn" data-filter="sports">Sports</button>
+                <button class="filter-btn" data-filter="entertainment">Entertainment</button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Search Results -->
+{% if query %}
+    {% if results %}
+        <section class="search-results">
+            <div class="container">
+                <div class="results-grid">
+                    {% for article in results %}
+                        <article class="result-card" data-category="{{ article.category.slug }}">
+                            <div class="result-image">
+                                {% if article.featured_image %}
+                                    <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
+                                {% else %}
+                                    <div class="placeholder-image">
+                                        <i class="fas fa-newspaper"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="result-overlay">
+                                    <span class="result-category">{{ article.category.name }}</span>
+                                    {% if article.school %}
+                                        <span class="result-school">{{ article.school.abbreviation|default:article.school.name }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="result-content">
+                                <h3 class="result-title">
+                                    <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                                </h3>
+                                
+                                <p class="result-excerpt">{{ article.excerpt|truncatewords:20 }}</p>
+                                
+                                <div class="result-meta">
+                                    <div class="meta-info">
+                                        {% if article.school %}
+                                            <span class="meta-school">
+                                                <i class="fas fa-university"></i>
+                                                {{ article.school.name }}
+                                            </span>
+                                        {% endif %}
+                                        <span class="meta-date">
+                                            <i class="far fa-calendar-alt"></i>
+                                            {{ article.published_date|date:"M d, Y" }}
+                                        </span>
+                                    </div>
+                                    
+                                    <a href="{{ article.get_absolute_url }}" class="read-more-btn">
+                                        Read More
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% else %}
+        <section class="no-results">
+            <div class="container">
+                <div class="no-results-content">
+                    <div class="no-results-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h2>No Results Found</h2>
+                    <p>We couldn't find any news articles matching "<span class="search-term">{{ query }}</span>"</p>
+                    
+                    <div class="search-suggestions">
+                        <h3>Try searching for:</h3>
+                        <div class="suggestion-tags">
+                            <a href="{% url 'news:search' %}?q=education" class="suggestion-tag">Education</a>
+                            <a href="{% url 'news:search' %}?q=sports" class="suggestion-tag">Sports</a>
+                            <a href="{% url 'news:search' %}?q=technology" class="suggestion-tag">Technology</a>
+                            <a href="{% url 'news:search' %}?q=university" class="suggestion-tag">University</a>
+                        </div>
+                    </div>
+                    
+                    <div class="search-tips">
+                        <h4>Search Tips:</h4>
+                        <ul>
+                            <li>Check your spelling</li>
+                            <li>Try different keywords</li>
+                            <li>Use more general terms</li>
+                            <li>Browse by category instead</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% else %}
+    <!-- Search Landing Page -->
+    <section class="search-landing">
+        <div class="container">
+            <div class="search-categories">
+                <h2>Browse by Category</h2>
+                <div class="category-grid">
+                    <a href="{% url 'news:category_news' 'school-news' %}" class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <h3>School News</h3>
+                        <p>Latest updates from universities and educational institutions</p>
+                    </a>
+                    
+                    <a href="{% url 'news:category_news' 'global-news' %}" class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>Global News</h3>
+                        <p>World news and international developments</p>
+                    </a>
+                    
+                    <a href="{% url 'news:category_news' 'sports' %}" class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-football-ball"></i>
+                        </div>
+                        <h3>Sports</h3>
+                        <p>Sports news and athletic achievements</p>
+                    </a>
+                    
+                    <a href="{% url 'news:category_news' 'entertainment' %}" class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <h3>Entertainment</h3>
+                        <p>Entertainment news and celebrity updates</p>
+                    </a>
+                    
+                    <a href="{% url 'news:category_news' 'technology' %}" class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <h3>Technology</h3>
+                        <p>Tech news and innovation updates</p>
+                    </a>
+                    
+                    <a href="{% url 'news:category_news' 'politics' %}" class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <h3>Politics</h3>
+                        <p>Political news and government updates</p>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="popular-searches">
+                <h3>Popular Searches</h3>
+                <div class="popular-tags">
+                    <a href="{% url 'news:search' %}?q=UNIPORT" class="popular-tag">UNIPORT</a>
+                    <a href="{% url 'news:search' %}?q=FUTO" class="popular-tag">FUTO</a>
+                    <a href="{% url 'news:search' %}?q=UNIBEN" class="popular-tag">UNIBEN</a>
+                    <a href="{% url 'news:search' %}?q=scholarship" class="popular-tag">Scholarship</a>
+                    <a href="{% url 'news:search' %}?q=admission" class="popular-tag">Admission</a>
+                    <a href="{% url 'news:search' %}?q=graduation" class="popular-tag">Graduation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endif %}
+
+<style>
+/* Search Page Styles */
+.search-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.search-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 70%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+}
+
+.search-hero {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.search-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #ff6b35 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.search-hero p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+}
+
+.search-term {
+    color: #ff6b35;
+    font-weight: 600;
+}
+
+.search-form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.enhanced-search-form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.6);
+    z-index: 2;
+}
+
+.enhanced-search-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    padding: 1rem 1rem 1rem 3rem;
+    color: #fff;
+    font-size: 1rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.enhanced-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.enhanced-search-input:focus {
+    outline: none;
+    border-color: #ff6b35;
+    box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+}
+
+.clear-search {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.clear-search:hover {
+    color: #ff6b35;
+    background: rgba(255, 107, 53, 0.1);
+}
+
+.enhanced-search-btn {
+    background: #ff6b35;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.enhanced-search-btn:hover {
+    background: #e55a2b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+}
+
+.search-filters {
+    background: rgba(26, 26, 46, 0.8);
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.filters-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.results-count {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.filter-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: #ff6b35;
+    color: #fff;
+    border-color: #ff6b35;
+}
+
+.search-results {
+    padding: 3rem 0;
+    background: #0f0f23;
+    min-height: 50vh;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.result-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    opacity: 1;
+    transform: scale(1);
+}
+
+.result-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.result-card.hidden {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+}
+
+.result-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.result-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.result-card:hover .result-image img {
+    transform: scale(1.1);
+}
+
+.result-overlay {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.result-category,
+.result-school {
+    background: rgba(255, 107, 53, 0.9);
+    color: #fff;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+.result-school {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1a1a2e;
+}
+
+.result-content {
+    padding: 1.5rem;
+}
+
+.result-title a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.result-title a:hover {
+    color: #ff6b35;
+}
+
+.result-excerpt {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.meta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.meta-school,
+.meta-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.meta-school i,
+.meta-date i {
+    width: 12px;
+}
+
+.read-more-btn {
+    color: #ff6b35;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.read-more-btn:hover {
+    color: #e55a2b;
+    transform: translateX(5px);
+}
+
+.no-results {
+    padding: 4rem 0;
+    background: #0f0f23;
+    text-align: center;
+}
+
+.no-results-content {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.no-results-icon {
+    background: rgba(255, 107, 53, 0.1);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 2.5rem;
+    color: rgba(255, 107, 53, 0.6);
+}
+
+.no-results h2 {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.no-results p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.search-suggestions {
+    margin: 2rem 0;
+}
+
+.search-suggestions h3 {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.suggestion-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.suggestion-tag {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.suggestion-tag:hover {
+    background: #ff6b35;
+    color: #fff;
+}
+
+.search-tips {
+    text-align: left;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 3px solid #ff6b35;
+}
+
+.search-tips h4 {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.search-tips ul {
+    color: rgba(255, 255, 255, 0.7);
+    padding-left: 1.5rem;
+}
+
+.search-tips li {
+    margin-bottom: 0.5rem;
+}
+
+.search-landing {
+    padding: 3rem 0;
+    background: #0f0f23;
+}
+
+.search-categories h2 {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.search-categories h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);
+    border-radius: 2px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.category-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.category-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.category-icon {
+    background: rgba(255, 107, 53, 0.2);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+    color: #ff6b35;
+    transition: all 0.3s ease;
+}
+
+.category-card:hover .category-icon {
+    background: #ff6b35;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.category-card h3 {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.category-card p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.popular-searches {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.popular-searches h3 {
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.popular-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.popular-tag {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.popular-tag:hover {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    border-color: #ff6b35;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .enhanced-search-form {
+        flex-direction: column;
+    }
+    
+    .search-input-wrapper {
+        min-width: auto;
+    }
+    
+    .filters-wrapper {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .result-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-header {
+        padding: 2rem 0;
+    }
+    
+    .search-hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .enhanced-search-input {
+        padding: 0.8rem 0.8rem 0.8rem 2.5rem;
+    }
+    
+    .search-icon {
+        left: 0.8rem;
+    }
+    
+    .enhanced-search-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .category-card {
+        padding: 1.5rem;
+    }
+    
+    .category-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .filter-options {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+// Clear search functionality
+function clearSearch() {
+    const searchInput = document.querySelector('.enhanced-search-input');
+    searchInput.value = '';
+    searchInput.focus();
+    
+    // Optionally redirect to search page without query
+    window.location.href = "{% url 'news:search' %}";
+}
+
+// Filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const resultCards = document.querySelectorAll('.result-card');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter results
+            resultCards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                
+                if (filter === 'all' || cardCategory === filter) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+            
+            // Update results count
+            setTimeout(() => {
+                const visibleCards = document.querySelectorAll('.result-card:not(.hidden)');
+                const countElement = document.querySelector('.results-count');
+                if (countElement) {
+                    countElement.textContent = `${visibleCards.length} result${visibleCards.length !== 1 ? 's' : ''}`;
+                }
+            }, 300);
+        });
+    });
+    
+    // Auto-focus search input
+    const searchInput = document.querySelector('.enhanced-search-input');
+    if (searchInput && !searchInput.value) {
+        setTimeout(() => {
+            searchInput.focus();
+        }, 500);
+    }
+});
+</script>
+{% endblock %}

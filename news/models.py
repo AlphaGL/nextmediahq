@@ -80,9 +80,8 @@ class PastQuestion(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     subject = models.CharField(max_length=100)
     year = models.IntegerField()
-    file = models.FileField(upload_to='past_questions/')
+    file = models.URLField()
     description = models.TextField(blank=True)
-    download_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

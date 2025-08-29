@@ -24,7 +24,7 @@ TEMPLATES = os.path.join(BASE_DIR, 'news/templates')
 SECRET_KEY = 'django-insecure-f&at%3l0)huwa-xy)*x!q5@c!azw1y8e+4vh_irv3zbn*89t=p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -74,6 +74,8 @@ WSGI_APPLICATION = 'nextmedia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+#### email: nextmediahqnet@gmail.com
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

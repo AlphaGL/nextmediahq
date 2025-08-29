@@ -57,12 +57,9 @@ class NewsAdmin(admin.ModelAdmin):
 
 @admin.register(PastQuestion)
 class PastQuestionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'school', 'subject', 'year', 'download_count']
+    list_display = ['title', 'school', 'subject', 'year']
     list_filter = ['school', 'year', 'subject']
     search_fields = ['title', 'subject', 'school__name']
-    readonly_fields = ['download_count']
     
     def get_readonly_fields(self, request, obj=None):
-        if obj:
-            return self.readonly_fields + ['download_count']
         return self.readonly_fields
