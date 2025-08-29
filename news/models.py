@@ -2,13 +2,14 @@
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
+from cloudinary.models import CloudinaryField
 from django.utils.text import slugify
 
 class School(models.Model):
     name = models.CharField(max_length=200)
     abbreviation = models.CharField(max_length=10, blank=True)
     description = models.TextField(blank=True)
-    logo = models.ImageField(upload_to='schools/', blank=True, null=True)
+    logo = CloudinaryField('schools/', blank=True, null=True)
     established = models.DateField(blank=True, null=True)
     website = models.URLField(blank=True)
     slug = models.SlugField(unique=True, blank=True)
@@ -49,7 +50,7 @@ class News(models.Model):
     slug = models.SlugField(unique=True, blank=True)
     content = models.TextField()
     excerpt = models.TextField(max_length=500, blank=True)
-    featured_image = models.ImageField(upload_to='news/', blank=True, null=True)
+    featured_image = CloudinaryField('news/', blank=True, null=True)
     school = models.ForeignKey(School, on_delete=models.CASCADE, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_featured = models.BooleanField(default=False)
