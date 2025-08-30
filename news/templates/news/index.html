@@ -6,19 +6,53 @@
 {% block content %}
     <!-- Include the animated news ticker -->
     {% include 'news/news_ticker.html' %}
-    <!-- ========== HERO SECTION ========== -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Stay Informed with NextMedia</h1>
-                <p>Get the latest news from schools, universities, and global events all in one place</p>
-                <a href="#" class="whatsapp-btn">
-                    <i class="fab fa-whatsapp"></i>
-                    JOIN WHATSAPP Channel
-                </a>
-            </div>
+<!-- ========== HERO SECTION ========== -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1>NextMedia – Your Gateway to Smarter News</h1>
+            <p>Stay ahead with the latest updates from schools, universities, and global events — all in one trusted platform.</p>
+            <br><br>
+            <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="whatsapp-btn" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+                Join Our WhatsApp Channel
+            </a>
         </div>
-    </section>
+    </div>
+</section>
+
+<style>
+    .whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #25D366; /* WhatsApp green */
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin: 20px auto 0;
+}
+
+.whatsapp-btn i {
+    font-size: 18px;
+}
+
+.whatsapp-btn:hover {
+    background-color: #1ebe5d;
+    transform: translateY(-2px);
+}
+
+.hero-content {
+    text-align: center; /* ensures everything stays centered */
+}
+
+</style>
+
 
     <!-- ========== FEATURED NEWS SECTION ========== -->
     {% if featured_news %}

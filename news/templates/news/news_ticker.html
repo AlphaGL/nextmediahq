@@ -39,9 +39,6 @@
             <button class="control-btn" id="pauseBtn" title="Pause">
                 <i class="fas fa-pause"></i>
             </button>
-            <button class="control-btn" id="speedBtn" title="Normal Speed">
-                <i class="fas fa-play"></i>
-            </button>
         </div>
     </div>
 </section>
@@ -427,36 +424,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const speedIcons = ['fa-play', 'fa-forward', 'fa-fast-forward'];
     const speedTitles = ['Normal Speed', 'Fast Speed', 'Ultra Speed'];
     
-    // Create seamless infinite scroll with larger gaps for smooth fading
-    function setupSeamlessLoop() {
-        if (!tickerContent) return;
-        
-        // Get original content
-        const originalItems = Array.from(tickerContent.children);
-        
-        if (originalItems.length === 0) {
-            tickerContent.innerHTML = `
-                <div class="ticker-item">
+        // Create seamless infinite scroll with dynamic animation
+        function setupSeamlessLoop() {
+            if (!tickerContent) return;
+
+            // Avoid duplicating multiple times
+            if (tickerContent.dataset.loopInitialized === "true") return;
+
+            // Get original content
+            const originalItems = Array.from(tickerContent.children);
+            if (originalItems.length === 0) {
+                tickerContent.innerHTML = `<div class="ticker-item">
                     <div class="item-content">
                         <span class="ticker-category">LIVE</span>
                         <span class="ticker-separator">•</span>
                         <span class="ticker-title">Welcome to NextMedia - Stay tuned for breaking news updates</span>
                     </div>
-                </div>
-            `;
+                </div>`;
+            }
+
+            // Store original HTML and create spacer
+            const originalHTML = tickerContent.innerHTML.trim();
+            const spacerHTML = '<div class="ticker-spacer" style="width: 150px; flex-shrink: 0;"></div>';
+
+            // Create seamless loop: original + spacer + duplicate
+            tickerContent.innerHTML = originalHTML + spacerHTML + originalHTML;
+
+            // Mark as initialized to prevent multiple duplications
+            tickerContent.dataset.loopInitialized = "true";
+
+            console.log('Seamless loop with dynamic animation created');
         }
-        
-        // Store original HTML and add spacer for smoother transition
-        const originalHTML = tickerContent.innerHTML;
-        const spacerHTML = '<div class="ticker-spacer" style="width: 150px; flex-shrink: 0;"></div>';
-        
-        // Create seamless loop: original + spacer + duplicate
-        tickerContent.innerHTML = originalHTML + spacerHTML + originalHTML;
-        
-        console.log('Seamless loop with fade transition created');
-    }
-    
-    // Initialize ticker
+    // Initialize ticker with dynamic animation
     function initTicker() {
         setupSeamlessLoop();
         
@@ -464,10 +463,43 @@ document.addEventListener('DOMContentLoaded', function() {
             const speeds = getSpeedConfig();
             const duration = speeds[currentSpeed - 1];
             
-            // Apply animation
-            tickerContent.style.animation = `seamless-scroll ${duration}s linear infinite`;
+            // Remove any existing animation
+            tickerContent.style.animation = "none";
             
-            console.log(`Ticker initialized with ${duration}s duration`);
+            // Force reflow to get accurate measurements
+            void tickerContent.offsetWidth;
+            
+            // Get the actual scroll width after duplication
+            const totalWidth = tickerContent.scrollWidth;
+            const containerWidth = tickerContent.parentElement.offsetWidth;
+            
+            // Calculate the exact distance to scroll (half of total width for seamless loop)
+            const scrollDistance = totalWidth / 2;
+            
+            // Create dynamic keyframes
+            const animationName = "scrollDynamic";
+            
+            // Remove any existing dynamic keyframes
+            const existingStyleElement = document.getElementById('dynamic-ticker-styles');
+            if (existingStyleElement) {
+                existingStyleElement.remove();
+            }
+            
+            // Create new style element with dynamic keyframes
+            const styleElement = document.createElement('style');
+            styleElement.id = 'dynamic-ticker-styles';
+            styleElement.textContent = `
+                @keyframes ${animationName} {
+                    0% { transform: translateX(0px); }
+                    100% { transform: translateX(-${scrollDistance}px); }
+                }
+            `;
+            document.head.appendChild(styleElement);
+            
+            // Apply the dynamic animation
+            tickerContent.style.animation = `${animationName} ${duration}s linear infinite`;
+            
+            console.log(`Ticker initialized with ${duration}s duration, scrolling ${scrollDistance}px of ${totalWidth}px total width`);
         }
     }
     
@@ -500,15 +532,17 @@ document.addEventListener('DOMContentLoaded', function() {
         speedBtn.addEventListener('click', function(e) {
             e.preventDefault();
             
-            currentSpeed = currentSpeed >= 3 ? 1 : currentSpeed + 1;
+            // Update animation duration with dynamic keyframes
             const speeds = getSpeedConfig();
-            
             const duration = speeds[currentSpeed - 1];
             const icon = speedIcons[currentSpeed - 1];
             const title = speedTitles[currentSpeed - 1];
             
-            // Update animation duration while maintaining seamless loop
-            tickerContent.style.animationDuration = `${duration}s`;
+            // Update the existing dynamic animation duration
+            const existingStyleElement = document.getElementById('dynamic-ticker-styles');
+            if (existingStyleElement && tickerContent) {
+                tickerContent.style.animationDuration = `${duration}s`;
+            }
             
             this.innerHTML = `<i class="fas ${icon}"></i>`;
             this.title = title;
