@@ -17,8 +17,9 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'news/templates')
 SECRET_KEY = 'django-insecure-f&at%3l0)huwa-xy)*x!q5@c!azw1y8e+4vh_irv3zbn*89t=p'
 
 # FORCE DEVELOPMENT MODE
-DEBUG = True
-DEVELOPMENT_MODE = True
+DEBUG = False
+DEVELOPMENT_MODE = False
+
 
 # Allow all hosts in development
 ALLOWED_HOSTS = ["*"]
