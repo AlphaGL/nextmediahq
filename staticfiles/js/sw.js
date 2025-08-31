@@ -1,90 +1,179 @@
 // static/js/sw.js
 
-const CACHE_NAME = 'nextmedia-v1.0.0';
-const urlsToCache = [
+const CACHE_NAME = 'nextmedia-v1.0.1';  // Updated version
+const STATIC_CACHE = 'nextmedia-static-v1.0.1';
+const DYNAMIC_CACHE = 'nextmedia-dynamic-v1.0.1';
+
+const STATIC_ASSETS = [
     '/',
     '/static/css/style.css',
     '/static/js/main.js',
     '/static/img/icon-192x192.png',
     '/static/img/icon-512x512.png',
-    '/static/img/favicon.png',
+    '/static/img/logo.jpg',
+    '/manifest.json',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
 ];
 
 // Install Service Worker
 self.addEventListener('install', function(event) {
+    console.log('Service Worker installing...');
+    
     event.waitUntil(
-        caches.open(CACHE_NAME)
+        caches.open(STATIC_CACHE)
             .then(function(cache) {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
+                console.log('Caching static assets...');
+                return cache.addAll(STATIC_ASSETS.map(url => new Request(url, {
+                    credentials: 'same-origin'
+                })));
+            })
+            .then(function() {
+                console.log('Static assets cached successfully');
+                return self.skipWaiting(); // Force activation
             })
             .catch(function(error) {
-                console.log('Cache installation failed:', error);
-            })
-    );
-});
-
-// Fetch event - serve from cache, fallback to network
-self.addEventListener('fetch', function(event) {
-    event.respondWith(
-        caches.match(event.request)
-            .then(function(response) {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                }
-
-                // Clone the request
-                const fetchRequest = event.request.clone();
-
-                return fetch(fetchRequest).then(function(response) {
-                    // Check if we received a valid response
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                        return response;
-                    }
-
-                    // Clone the response
-                    const responseToCache = response.clone();
-
-                    caches.open(CACHE_NAME)
-                        .then(function(cache) {
-                            // Only cache GET requests
-                            if (event.request.method === 'GET') {
-                                cache.put(event.request, responseToCache);
-                            }
-                        });
-
-                    return response;
-                }).catch(function(error) {
-                    // Network failed, try to serve offline page for navigation requests
-                    if (event.request.mode === 'navigate') {
-                        return caches.match('/') || createOfflinePage();
-                    }
-                    throw error;
-                });
+                console.error('Cache installation failed:', error);
             })
     );
 });
 
 // Activate Service Worker
 self.addEventListener('activate', function(event) {
-    const cacheWhitelist = [CACHE_NAME];
-
+    console.log('Service Worker activating...');
+    
     event.waitUntil(
-        caches.keys().then(function(cacheNames) {
-            return Promise.all(
-                cacheNames.map(function(cacheName) {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
+        caches.keys()
+            .then(function(cacheNames) {
+                return Promise.all(
+                    cacheNames.map(function(cacheName) {
+                        // Delete old caches
+                        if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+                            console.log('Deleting old cache:', cacheName);
+                            return caches.delete(cacheName);
+                        }
+                    })
+                );
+            })
+            .then(function() {
+                console.log('Service Worker activated');
+                return self.clients.claim(); // Take control immediately
+            })
     );
 });
+
+// Enhanced fetch handler with different strategies
+self.addEventListener('fetch', function(event) {
+    const requestUrl = new URL(event.request.url);
+    
+    // Handle different types of requests
+    if (isStaticAsset(event.request)) {
+        event.respondWith(cacheFirst(event.request));
+    } else if (isAPIRequest(event.request)) {
+        event.respondWith(networkFirst(event.request));
+    } else if (isHTMLRequest(event.request)) {
+        event.respondWith(staleWhileRevalidate(event.request));
+    } else {
+        event.respondWith(fetch(event.request));
+    }
+});
+
+// Check if request is for static assets
+function isStaticAsset(request) {
+    return request.url.includes('/static/') || 
+           request.url.includes('cdnjs.cloudflare.com') ||
+           request.url.includes('fonts.googleapis.com') ||
+           request.url.includes('.css') ||
+           request.url.includes('.js') ||
+           request.url.includes('.png') ||
+           request.url.includes('.jpg') ||
+           request.url.includes('.jpeg') ||
+           request.url.includes('.svg');
+}
+
+// Check if request is for API endpoints
+function isAPIRequest(request) {
+    return request.url.includes('/api/') || 
+           request.url.includes('/admin/') ||
+           request.url.includes('/download/');
+}
+
+// Check if request is for HTML pages
+function isHTMLRequest(request) {
+    return request.headers.get('Accept') && 
+           request.headers.get('Accept').includes('text/html');
+}
+
+// Cache first strategy (for static assets)
+async function cacheFirst(request) {
+    try {
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        
+        const networkResponse = await fetch(request);
+        if (networkResponse.ok) {
+            const cache = await caches.open(STATIC_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        return networkResponse;
+    } catch (error) {
+        console.error('Cache first strategy failed:', error);
+        // Return cached version if available
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        throw error;
+    }
+}
+
+// Network first strategy (for API requests)
+async function networkFirst(request) {
+    try {
+        const networkResponse = await fetch(request);
+        if (networkResponse.ok && request.method === 'GET') {
+            const cache = await caches.open(DYNAMIC_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        return networkResponse;
+    } catch (error) {
+        console.log('Network failed, trying cache...');
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        
+        // Return offline page for navigation requests
+        if (request.mode === 'navigate') {
+            return createOfflinePage();
+        }
+        throw error;
+    }
+}
+
+// Stale while revalidate strategy (for HTML pages)
+async function staleWhileRevalidate(request) {
+    const cachedResponse = await caches.match(request);
+    
+    // Start network request in background
+    const networkResponsePromise = fetch(request)
+        .then(response => {
+            if (response.ok) {
+                const cache = caches.open(DYNAMIC_CACHE);
+                cache.then(c => c.put(request, response.clone()));
+            }
+            return response;
+        })
+        .catch(error => {
+            console.log('Network request failed:', error);
+            return null;
+        });
+
+    // Return cached response immediately, or wait for network
+    return cachedResponse || networkResponsePromise || createOfflinePage();
+}
 
 // Background sync for offline actions
 self.addEventListener('sync', function(event) {
@@ -95,31 +184,47 @@ self.addEventListener('sync', function(event) {
 
 // Push notification handler
 self.addEventListener('push', function(event) {
-    const options = {
-        body: event.data ? event.data.text() : 'New news available!',
+    let notificationData = {
+        title: 'NextMedia',
+        body: 'New news available!',
         icon: '/static/img/icon-192x192.png',
         badge: '/static/img/icon-192x192.png',
+        data: { url: '/' }
+    };
+
+    // Parse push data if available
+    if (event.data) {
+        try {
+            const pushData = event.data.json();
+            notificationData = { ...notificationData, ...pushData };
+        } catch (e) {
+            notificationData.body = event.data.text();
+        }
+    }
+
+    const options = {
+        body: notificationData.body,
+        icon: notificationData.icon,
+        badge: notificationData.badge,
         vibrate: [200, 100, 200],
-        data: {
-            dateOfArrival: Date.now(),
-            primaryKey: '1'
-        },
+        data: notificationData.data,
         actions: [
             {
-                action: 'explore',
+                action: 'open',
                 title: 'Read Now',
                 icon: '/static/img/icon-192x192.png'
             },
             {
                 action: 'close',
-                title: 'Close',
-                icon: '/static/img/icon-192x192.png'
+                title: 'Close'
             }
-        ]
+        ],
+        requireInteraction: false,
+        silent: false
     };
 
     event.waitUntil(
-        self.registration.showNotification('NextMedia', options)
+        self.registration.showNotification(notificationData.title, options)
     );
 });
 
@@ -127,14 +232,30 @@ self.addEventListener('push', function(event) {
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
 
-    if (event.action === 'explore') {
+    if (event.action === 'open' || !event.action) {
+        const urlToOpen = event.notification.data?.url || '/';
+        
         event.waitUntil(
-            clients.openWindow('/')
+            clients.matchAll({ type: 'window', includeUncontrolled: true })
+                .then(function(clientList) {
+                    // Check if NextMedia is already open
+                    for (let client of clientList) {
+                        if (client.url.includes(self.location.origin) && 'focus' in client) {
+                            client.navigate(urlToOpen);
+                            return client.focus();
+                        }
+                    }
+                    
+                    // Open new window if not already open
+                    if (clients.openWindow) {
+                        return clients.openWindow(urlToOpen);
+                    }
+                })
         );
     }
 });
 
-// Create offline page
+// Create enhanced offline page
 function createOfflinePage() {
     const offlineHTML = `
         <!DOCTYPE html>
@@ -143,39 +264,71 @@ function createOfflinePage() {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Offline - NextMedia</title>
+            <meta name="theme-color" content="#1a1a2e">
             <style>
-                body {
-                    font-family: 'Inter', sans-serif;
-                    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                    color: white;
+                * {
                     margin: 0;
                     padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                    color: white;
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     min-height: 100vh;
                     text-align: center;
+                    padding: 20px;
                 }
+                
                 .offline-container {
                     max-width: 500px;
                     padding: 2rem;
+                    animation: fadeIn 0.6s ease-out;
                 }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
                 .offline-icon {
                     font-size: 4rem;
                     color: #ff6b35;
-                    margin-bottom: 1rem;
+                    margin-bottom: 1.5rem;
+                    animation: pulse 2s infinite;
                 }
+                
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.7; }
+                }
+                
                 h1 {
-                    font-size: 2rem;
+                    font-size: 2.2rem;
                     margin-bottom: 1rem;
                     color: #fff;
+                    font-weight: 600;
                 }
+                
                 p {
                     font-size: 1.1rem;
                     margin-bottom: 2rem;
                     opacity: 0.8;
+                    line-height: 1.6;
                 }
-                .retry-btn {
+                
+                .button-group {
+                    display: flex;
+                    gap: 1rem;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                }
+                
+                .retry-btn, .home-btn {
                     background: #ff6b35;
                     color: white;
                     border: none;
@@ -185,10 +338,35 @@ function createOfflinePage() {
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.3s ease;
+                    text-decoration: none;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
                 }
-                .retry-btn:hover {
-                    background: #e55a2b;
+                
+                .home-btn {
+                    background: transparent;
+                    border: 2px solid #ff6b35;
+                }
+                
+                .retry-btn:hover, .home-btn:hover {
                     transform: translateY(-2px);
+                    box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+                }
+                
+                .home-btn:hover {
+                    background: #ff6b35;
+                }
+                
+                .brand {
+                    margin-top: 2rem;
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    opacity: 0.6;
+                }
+                
+                .brand span {
+                    color: #ff6b35;
                 }
             </style>
         </head>
@@ -196,129 +374,120 @@ function createOfflinePage() {
             <div class="offline-container">
                 <div class="offline-icon">📡</div>
                 <h1>You're Offline</h1>
-                <p>Check your internet connection and try again.</p>
-                <button class="retry-btn" onclick="window.location.reload()">Try Again</button>
+                <p>It looks like you're not connected to the internet. Check your connection and try again, or browse cached content.</p>
+                
+                <div class="button-group">
+                    <button class="retry-btn" onclick="window.location.reload()">
+                        🔄 Try Again
+                    </button>
+                    <a href="/" class="home-btn">
+                        🏠 Go Home
+                    </a>
+                </div>
+                
+                <div class="brand">
+                    Next<span>Media</span>
+                </div>
             </div>
+            
+            <script>
+                // Auto-retry when online
+                window.addEventListener('online', function() {
+                    window.location.reload();
+                });
+                
+                // Show connection status
+                if (!navigator.onLine) {
+                    console.log('Currently offline');
+                }
+            </script>
         </body>
         </html>
     `;
 
     return new Response(offlineHTML, {
-        headers: { 'Content-Type': 'text/html' }
+        headers: { 
+            'Content-Type': 'text/html',
+            'Cache-Control': 'no-cache'
+        }
     });
 }
 
 // Background sync function
-function doBackgroundSync() {
-    // Handle background sync operations
-    return Promise.resolve();
-}
-
-// Cache strategies
-const CACHE_STRATEGIES = {
-    CACHE_FIRST: 'cache-first',
-    NETWORK_FIRST: 'network-first',
-    STALE_WHILE_REVALIDATE: 'stale-while-revalidate'
-};
-
-// Route-based caching strategy
-function getCacheStrategy(url) {
-    if (url.includes('/static/')) {
-        return CACHE_STRATEGIES.CACHE_FIRST;
-    } else if (url.includes('/api/') || url.includes('/news/')) {
-        return CACHE_STRATEGIES.NETWORK_FIRST;
-    } else {
-        return CACHE_STRATEGIES.STALE_WHILE_REVALIDATE;
+async function doBackgroundSync() {
+    try {
+        // Sync any pending data when back online
+        console.log('Performing background sync...');
+        
+        // You can add specific sync logic here
+        // For example, syncing offline form submissions
+        
+        return Promise.resolve();
+    } catch (error) {
+        console.error('Background sync failed:', error);
+        throw error;
     }
 }
 
-// Enhanced fetch with different caching strategies
-self.addEventListener('fetch', function(event) {
-    const url = event.request.url;
-    const strategy = getCacheStrategy(url);
-
-    switch (strategy) {
-        case CACHE_STRATEGIES.CACHE_FIRST:
-            event.respondWith(cacheFirst(event.request));
-            break;
-        case CACHE_STRATEGIES.NETWORK_FIRST:
-            event.respondWith(networkFirst(event.request));
-            break;
-        case CACHE_STRATEGIES.STALE_WHILE_REVALIDATE:
-            event.respondWith(staleWhileRevalidate(event.request));
-            break;
-        default:
-            event.respondWith(fetch(event.request));
+// Message handler for cache management
+self.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+    
+    if (event.data && event.data.type === 'CLEANUP_CACHES') {
+        event.waitUntil(cleanupOldCaches());
+    }
+    
+    if (event.data && event.data.type === 'GET_VERSION') {
+        event.ports[0].postMessage({ version: CACHE_NAME });
     }
 });
 
-// Cache first strategy
-async function cacheFirst(request) {
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-        return cachedResponse;
-    }
-    
-    try {
-        const networkResponse = await fetch(request);
-        if (networkResponse.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            cache.put(request, networkResponse.clone());
-        }
-        return networkResponse;
-    } catch (error) {
-        throw error;
-    }
-}
-
-// Network first strategy
-async function networkFirst(request) {
-    try {
-        const networkResponse = await fetch(request);
-        if (networkResponse.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            cache.put(request, networkResponse.clone());
-        }
-        return networkResponse;
-    } catch (error) {
-        const cachedResponse = await caches.match(request);
-        if (cachedResponse) {
-            return cachedResponse;
-        }
-        throw error;
-    }
-}
-
-// Stale while revalidate strategy
-async function staleWhileRevalidate(request) {
-    const cachedResponse = await caches.match(request);
-    
-    const networkResponsePromise = fetch(request).then(response => {
-        if (response.ok) {
-            const cache = caches.open(CACHE_NAME);
-            cache.then(c => c.put(request, response.clone()));
-        }
-        return response;
-    }).catch(() => {
-        // Network failed, ignore
-    });
-
-    return cachedResponse || networkResponsePromise;
-}
-
 // Cleanup old caches
-async function cleanupCaches() {
+async function cleanupOldCaches() {
     const cacheNames = await caches.keys();
-    const oldCaches = cacheNames.filter(name => name !== CACHE_NAME);
+    const currentCaches = [STATIC_CACHE, DYNAMIC_CACHE];
     
     return Promise.all(
-        oldCaches.map(name => caches.delete(name))
+        cacheNames
+            .filter(name => !currentCaches.includes(name))
+            .map(name => {
+                console.log('Cleaning up old cache:', name);
+                return caches.delete(name);
+            })
     );
 }
 
-// Periodic cleanup
-self.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'CLEANUP_CACHES') {
-        event.waitUntil(cleanupCaches());
-    }
+// Error handling for fetch events
+self.addEventListener('error', function(event) {
+    console.error('Service Worker error:', event.error);
 });
+
+self.addEventListener('unhandledrejection', function(event) {
+    console.error('Service Worker unhandled rejection:', event.reason);
+});
+
+// Periodic cache cleanup (called when SW receives cleanup message)
+async function performCacheCleanup() {
+    try {
+        const cache = await caches.open(DYNAMIC_CACHE);
+        const requests = await cache.keys();
+        
+        // Remove old cached responses (older than 7 days)
+        const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        
+        const deletePromises = requests
+            .filter(request => {
+                // Simple heuristic: if it's been cached for a while, remove it
+                return request.url.includes('timestamp') || 
+                       request.url.includes('cache_bust');
+            })
+            .map(request => cache.delete(request));
+            
+        await Promise.all(deletePromises);
+        console.log('Cache cleanup completed');
+    } catch (error) {
+        console.error('Cache cleanup failed:', error);
+    }
+}

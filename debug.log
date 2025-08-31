@@ -1,0 +1,18 @@
+INFO 2025-08-31 13:01:00,215 autoreload 9384 21096 Watching for file changes with StatReloader
+INFO 2025-08-31 13:01:07,088 basehttp 9384 15548 code 400, message Bad request version ('è')
+ERROR 2025-08-31 13:01:07,091 basehttp 9384 15548 You're accessing the development server over HTTPS, but it only supports HTTP.
+INFO 2025-08-31 13:01:07,099 basehttp 9384 15808 code 400, message Bad request syntax ('\x16\x03\x01\x07\x00\x01\x00\x06ü\x03\x03Ö\x87ÿÞÏøó\x8f')
+ERROR 2025-08-31 13:01:07,104 basehttp 9384 15808 You're accessing the development server over HTTPS, but it only supports HTTP.
+INFO 2025-08-31 13:01:12,234 basehttp 9384 4928 code 400, message Bad request version ('k\x10\x90J%Â§Âû\x9eCÐP\x93»')
+ERROR 2025-08-31 13:01:12,235 basehttp 9384 4928 You're accessing the development server over HTTPS, but it only supports HTTP.
+INFO 2025-08-31 13:01:12,235 basehttp 9384 1120 code 400, message Bad request version ('ºº\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06s')
+ERROR 2025-08-31 13:01:12,236 basehttp 9384 1120 You're accessing the development server over HTTPS, but it only supports HTTP.
+INFO 2025-08-31 13:01:12,248 basehttp 9384 20708 code 400, message Bad request version ('Ùür\x9d\x03}\x1aØ|æaÏ')
+ERROR 2025-08-31 13:01:12,253 basehttp 9384 20708 You're accessing the development server over HTTPS, but it only supports HTTP.
+INFO 2025-08-31 13:01:12,331 basehttp 9384 3576 code 400, message Bad request version ('\x00\x12\x00\x10\x04\x03\x08\x04\x04\x01\x05\x03\x08\x05\x05\x01\x08\x06\x06\x01\x00')
+ERROR 2025-08-31 13:01:12,361 basehttp 9384 3576 You're accessing the development server over HTTPS, but it only supports HTTP.
+INFO 2025-08-31 13:01:18,140 basehttp 9384 19624 code 400, message Bad request version ('½¡\x15\x1b\x15z\x8d¯»}\x14B\x1aÒ90\x10\x93êÜfÕ¸\xad4')
+ERROR 2025-08-31 13:01:18,142 basehttp 9384 19624 You're accessing the development server over HTTPS, but it only supports HTTP.
+INFO 2025-08-31 13:01:18,147 basehttp 9384 19100 code 400, message Bad request version ('ÁÌç\x9e~ã\x10A5\x8f!É8°¢tU¥RÚ\x9a\x96#¤\x82\x01è¿=ä\x14Íá\x06ZP^óI²µ%³U«ÍÜ$OÑ')
+ERROR 2025-08-31 13:01:18,188 basehttp 9384 19100 You're accessing the development server over HTTPS, but it only supports HTTP.
+INFO 2025-08-31 13:04:56,022 autoreload 9384 21096 C:\Users\Ibeawuchi\Desktop\nextmedia\nextmedia\settings.py changed, reloading.

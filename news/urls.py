@@ -14,4 +14,5 @@ urlpatterns = [
     path('download/<int:pk>/', views.download_question, name='download_question'),
     path('search/', views.search, name='search'),
     path('manifest.json', views.manifest, name='manifest'),
+    path('sw.js', views.service_worker, name='service_worker'),  # Add service worker route
 ]

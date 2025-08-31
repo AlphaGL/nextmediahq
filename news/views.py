@@ -5,6 +5,8 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
+from django.views.decorators.cache import cache_control
+from django.views.decorators.http import require_GET
 from .models import News, School, Category, PastQuestion
 
 def custom_404_view(request, exception=None):
@@ -46,11 +48,22 @@ def custom_400_view(request, exception=None):
     }
     return render(request, 'news/400.html', context, status=400)
 
-
-
 def ping_view(request):
     return JsonResponse({"status": "OK"})
 
+@require_GET
+@cache_control(max_age=86400)  # Cache for 24 hours
+def service_worker(request):
+    """Serve the service worker with proper content type and headers"""
+    try:
+        with open(settings.BASE_DIR / 'static/js/sw.js', 'r') as f:
+            content = f.read()
+        
+        response = HttpResponse(content, content_type='application/javascript')
+        response['Service-Worker-Allowed'] = '/'  # Allow service worker to control entire site
+        return response
+    except FileNotFoundError:
+        return HttpResponse('console.log("Service worker not found");', content_type='application/javascript')
 
 def home(request):
     # Get the 6 most recently uploaded news (for ticker animation)
@@ -250,9 +263,11 @@ def search(request):
     }
     return render(request, 'news/search.html', context)
 
+@cache_control(max_age=86400)  # Cache for 24 hours
 def manifest(request):
+    """Serve PWA manifest with proper headers"""
     manifest_data = {
-        "name": "NextMedia",
+        "name": "NextMedia - Latest News",
         "short_name": "NextMedia",
         "description": "Latest news from schools and around the world",
         "start_url": "/",
@@ -260,17 +275,87 @@ def manifest(request):
         "background_color": "#1a1a2e",
         "theme_color": "#ff6b35",
         "orientation": "portrait-primary",
+        "scope": "/",
         "icons": [
+            {
+                "src": "/static/img/icon-72x72.png",
+                "sizes": "72x72",
+                "type": "image/png",
+                "purpose": "maskable any"
+            },
+            {
+                "src": "/static/img/icon-96x96.png",
+                "sizes": "96x96",
+                "type": "image/png",
+                "purpose": "maskable any"
+            },
+            {
+                "src": "/static/img/icon-128x128.png",
+                "sizes": "128x128",
+                "type": "image/png",
+                "purpose": "maskable any"
+            },
+            {
+                "src": "/static/img/icon-144x144.png",
+                "sizes": "144x144",
+                "type": "image/png",
+                "purpose": "maskable any"
+            },
+            {
+                "src": "/static/img/icon-152x152.png",
+                "sizes": "152x152",
+                "type": "image/png",
+                "purpose": "maskable any"
+            },
             {
                 "src": "/static/img/icon-192x192.png",
                 "sizes": "192x192",
-                "type": "image/png"
+                "type": "image/png",
+                "purpose": "maskable any"
+            },
+            {
+                "src": "/static/img/icon-384x384.png",
+                "sizes": "384x384",
+                "type": "image/png",
+                "purpose": "maskable any"
             },
             {
                 "src": "/static/img/icon-512x512.png",
                 "sizes": "512x512",
-                "type": "image/png"
+                "type": "image/png",
+                "purpose": "maskable any"
+            }
+        ],
+        "categories": ["news", "education", "information"],
+        "lang": "en-US",
+        "shortcuts": [
+            {
+                "name": "School News",
+                "short_name": "Schools",
+                "description": "Browse news from schools",
+                "url": "/schools/",
+                "icons": [
+                    {
+                        "src": "/static/img/icon-192x192.png",
+                        "sizes": "192x192"
+                    }
+                ]
+            },
+            {
+                "name": "Global News",
+                "short_name": "Global",
+                "description": "Read global news",
+                "url": "/category/global-news/",
+                "icons": [
+                    {
+                        "src": "/static/img/icon-192x192.png",
+                        "sizes": "192x192"
+                    }
+                ]
             }
         ]
     }
-    return JsonResponse(manifest_data)
+    
+    response = JsonResponse(manifest_data)
+    response['Content-Type'] = 'application/manifest+json'
+    return response

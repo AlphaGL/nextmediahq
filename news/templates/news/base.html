@@ -7,18 +7,23 @@
     <title>{% block title %}NextMedia - Latest News{% endblock %}</title>
     <meta name="description" content="{% block description %}Get the latest news from schools and around the world with NextMedia{% endblock %}">
     
-    <!-- PWA Meta Tags -->
+    <!-- Basic PWA Meta Tags (no HTTPS enforcement) -->
     <link rel="manifest" href="{% url 'news:manifest' %}">
     <meta name="theme-color" content="#1a1a2e">
+    
+    <!-- Development: Skip apple-mobile-web-app-capable to avoid HTTPS issues -->
+    {% if not debug %}
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="apple-touch-icon" href="{% load static %}{% static 'img/icon-192x192.png' %}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NextMedia">
+    {% endif %}
+    
+    <link rel="apple-touch-icon" href="{% static 'img/icon-192x192.png' %}">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'img/logo.jpg' %}">
     
     <!-- CSS -->
-    {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     <!-- Font Awesome -->
@@ -32,7 +37,6 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <!-- <i class="fas fa-newspaper"></i> -->
                 <span>Next<span style="color: blue;">Media</span></span>
             </div>
             
@@ -42,7 +46,6 @@
                 <span></span>
             </button>
             
-            <!-- <div class="nav-menu" id="navMenu" style="margin-left: 10%;"> -->
             <div class="nav-menu" id="navMenu">
                 <a href="{% url 'news:home' %}" class="nav-link">Home</a>
                 <a href="{% url 'news:school_list' %}" class="nav-link">School News</a>
@@ -137,7 +140,6 @@
                 </a>
                 
                 <div class="footer-contact" id="contact">
-                    
                     <p>Contact: <a href="mailto:info@nextmediahq.net" style="color: #fff; text-decoration: none;">info@nextmediahq.net</a></p>
                 </div>
             </div>
@@ -152,19 +154,100 @@
     <script src="{% static 'js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
     
-    <!-- PWA Installation -->
+    <!-- Development-safe PWA Installation -->
     <script>
-        // Service Worker Registration
+        // Development mode detection
+        const isDevelopment = location.hostname === 'localhost' || 
+                             location.hostname === '127.0.0.1' || 
+                             location.hostname.startsWith('192.168.') ||
+                             location.hostname.startsWith('10.') ||
+                             location.port === '8000';
+        
+        const isHTTP = location.protocol === 'http:';
+        const isHTTPS = location.protocol === 'https:';
+        
+        console.log('Development mode:', isDevelopment);
+        console.log('Protocol:', location.protocol);
+        
+        // Only register service worker if conditions are met
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('{% static "js/sw.js" %}')
-                    .then(function(registration) {
-                        console.log('SW registered: ', registration);
+            // In development, only register if we're on HTTP
+            // In production, only register if we're on HTTPS
+            const shouldRegister = isDevelopment ? isHTTP : isHTTPS;
+            
+            if (shouldRegister) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('{% url "news:service_worker" %}', {
+                        scope: '/'
                     })
-                    .catch(function(registrationError) {
-                        console.log('SW registration failed: ', registrationError);
+                    .then(function(registration) {
+                        console.log('Service Worker registered:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
                     });
+                });
+            } else {
+                console.log('Service Worker not registered:', 
+                    isDevelopment ? 'Development requires HTTP' : 'Production requires HTTPS');
+            }
+        }
+
+        // PWA Install prompt (only for HTTPS or localhost HTTP)
+        let deferredPrompt;
+        
+        // Only show install prompt in appropriate contexts
+        if ((isDevelopment && isHTTP) || (!isDevelopment && isHTTPS)) {
+            window.addEventListener('beforeinstallprompt', function(e) {
+                console.log('beforeinstallprompt fired');
+                e.preventDefault();
+                deferredPrompt = e;
+                showInstallButton();
             });
+        }
+
+        function showInstallButton() {
+            const installButton = document.createElement('button');
+            installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
+            installButton.className = 'install-btn';
+            installButton.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #ff6b35;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-weight: 600;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                animation: fadeInUp 0.5s ease;
+                font-family: 'Inter', sans-serif;
+            `;
+            
+            installButton.addEventListener('click', function() {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(function(choiceResult) {
+                        deferredPrompt = null;
+                        installButton.remove();
+                    });
+                }
+            });
+            
+            document.body.appendChild(installButton);
+        }
+
+        // Development debug info
+        if (isDevelopment) {
+            console.log('NextMedia Development Mode');
+            console.log('Access via: http://127.0.0.1:8000');
+            console.log('PWA features limited in HTTP development mode');
         }
     </script>
 </body>
