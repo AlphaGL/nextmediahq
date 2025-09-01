@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}NextMedia - Latest News{% endblock %}</title>
-    <meta name="description" content="{% block description %}Get the latest news from schools and around the world with NextMedia{% endblock %}">
+    <title>{% block title %}NextMedia - Latest News and Entertainment{% endblock %}
+    </title>
+    <meta name="description" content="{% block description %}Get the latest news and Entertainment
+    from schools and around the world with NextMedia{% endblock %}">
     
     <!-- Basic PWA Meta Tags (no HTTPS enforcement) -->
     <link rel="manifest" href="{% url 'news:manifest' %}">
@@ -37,6 +39,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
+                <img src="{% static 'img/logo.jpg' %}" alt="NextMedia" style="border-radius:25%; height: 45px; width: 50px; margin-right:6px;">
                 <span>Next<span style="color: blue;">Media</span></span>
             </div>
             
@@ -55,7 +58,7 @@
                 <a href="#contact" class="nav-link">Contact</a>
             </div>
             
-            <div class="nav-search">
+            <div class="nav-search" style="margin-top:5px;">
                 <form action="{% url 'news:search' %}" method="GET">
                     <input type="text" name="q" placeholder="Search news..." class="search-input">
                     <button type="submit" class="search-btn">
@@ -96,8 +99,8 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <div class="footer-logo">
-                        <i class="fas fa-newspaper"></i>
-                        <span>NEXT MEDIA</span>
+                        <img src="{% static 'img/logo.jpg' %}" alt="NextMedia" style="border-radius:25%; height: 45px; width: 50px; margin-right:6px;">
+                        <span>Next<span style="color: blue;">Media</span></span>
                     </div>
                     <p>Your trusted source for the latest news from schools and around the world.</p>
                 </div>
@@ -140,12 +143,13 @@
                 </a>
                 
                 <div class="footer-contact" id="contact">
-                    <p>Contact: <a href="mailto:info@nextmediahq.net" style="color: #fff; text-decoration: none;">info@nextmediahq.net</a></p>
+                    <p>Contact: <a href="mailto:info@nextmediahq.net" style="color: #fff; text-decoration: none;">Next Media Team
+                    </a></p>
                 </div>
             </div>
             
             <div class="footer-copyright">
-                <p>&copy; 2024 NextMedia. All rights reserved.</p>
+                <p>&copy; 2025 NextMedia. All rights reserved.</p>
             </div>
         </div>
     </footer>
