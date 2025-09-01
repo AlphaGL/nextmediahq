@@ -73,12 +73,21 @@ WSGI_APPLICATION = 'nextmedia.wsgi.application'
 #         'postgresql://postgres.urxgqbibkkwrxqcmazme:nextmediahq_db2@aws-1-eu-north-1.pooler.supabase.com:6543/postgres'
 #     ),
 # }
-DATABASES = {
 
+DATABASES = {
     'default': dj_database_url.parse(
-        'postgresql://neondb_owner:npg_4URebJYjxfZ8@ep-quiet-darkness-ad2zoan8-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+        'postgresql://postgres.urxgqbibkkwrxqcmazme:nextmediahq_db2@aws-1-eu-north-1.pooler.supabase.com:6543/postgres',
+        conn_max_age=600,
+        ssl_require=True   # 👈 this is the key for Supabase
     ),
 }
+
+# DATABASES = {
+
+#     'default': dj_database_url.parse(
+#         'postgresql://neondb_owner:npg_4URebJYjxfZ8@ep-quiet-darkness-ad2zoan8-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+#     ),
+# }
 
 # Cloudinary configuration
 CLOUDINARY_STORAGE = {
