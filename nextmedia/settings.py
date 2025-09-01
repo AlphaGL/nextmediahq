@@ -67,10 +67,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
+# DATABASES = {
+
+#     'default': dj_database_url.parse(
+#         'postgresql://postgres.urxgqbibkkwrxqcmazme:nextmediahq_db2@aws-1-eu-north-1.pooler.supabase.com:6543/postgres'
+#     ),
+# }
 DATABASES = {
 
     'default': dj_database_url.parse(
-        'postgresql://postgres.urxgqbibkkwrxqcmazme:nextmediahq_db2@aws-1-eu-north-1.pooler.supabase.com:6543/postgres'
+        'postgresql://neondb_owner:npg_4URebJYjxfZ8@ep-quiet-darkness-ad2zoan8-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
     ),
 }
 
