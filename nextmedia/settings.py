@@ -70,7 +70,7 @@ WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
 DATABASES = {
     "default": dj_database_url.parse(
-        "postgresql://postgres:[YOUR_PASSWORD]@db.urxgqbibkkwrxqcmazme.supabase.co:5432/postgres?sslmode=require"
+        "postgresql://postgres:nextmediahq_db2@db.urxgqbibkkwrxqcmazme.supabase.co:5432/postgres?sslmode=require"
     )
 }
 
