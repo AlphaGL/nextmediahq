@@ -67,12 +67,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
-DATABASES = {
 
-    'default': dj_database_url.parse(
-        'postgresql://postgres.urxgqbibkkwrxqcmazme:nextmediahq_db2@aws-1-eu-north-1.pooler.supabase.com:6543/postgres'
-    ),
+DATABASES = {
+    "default": dj_database_url.parse(
+        "postgresql://postgres:[YOUR_PASSWORD]@db.urxgqbibkkwrxqcmazme.supabase.co:5432/postgres?sslmode=require"
+    )
 }
+
 
 # Cloudinary configuration
 CLOUDINARY_STORAGE = {
