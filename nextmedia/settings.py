@@ -67,10 +67,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
-# Database
 DATABASES = {
     'default': dj_database_url.parse(
-        'postgresql://postgres.odmxtwlflqnooksoahgg:nextmediahq_db@aws-1-eu-north-1.pooler.supabase.com:6543/postgres'
+        'postgresql://postgres.odmxtwlflqnooksoahgg:nextmediahq_db@aws-1-eu-north-1.pooler.supabase.com:5432/postgres'
     ),
 }
 
