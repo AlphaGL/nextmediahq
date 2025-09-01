@@ -67,6 +67,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
+import socket
+orig_getaddrinfo = socket.getaddrinfo
+def getaddrinfo_ipv4(*args, **kwargs):
+    return [ai for ai in orig_getaddrinfo(*args, **kwargs) if ai[0] == socket.AF_INET]
+socket.getaddrinfo = getaddrinfo_ipv4
+
 
 DATABASES = {
     "default": dj_database_url.parse(
