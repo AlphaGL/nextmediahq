@@ -68,11 +68,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
 DATABASES = {
-    'default': dj_database_url.parse(
-        'postgresql://postgres.odmxtwlflqnooksoahgg:nextmediahq_db@aws-1-eu-north-1.pooler.supabase.com:5432/postgres'
-    ),
+    'default': {
+        **dj_database_url.parse(
+            config('DATABASE_URL', default='postgresql://postgres.odmxtwlflqnooksoahgg:nextmediahq_db@aws-1-eu-north-1.pooler.supabase.com:6543/postgres')
+        ),
+        'OPTIONS': {
+            'connect_timeout': 20,
+            'options': '-c statement_timeout=30000'
+        },
+        'CONN_MAX_AGE': 0,
+    }
 }
-
 # Cloudinary configuration
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
