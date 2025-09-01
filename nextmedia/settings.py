@@ -67,23 +67,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
-# Force psycopg2 / Django to always use IPv4
-import socket
-_orig_getaddrinfo = socket.getaddrinfo
-
-def _getaddrinfo_ipv4(host, port, family=0, type=0, proto=0, flags=0):
-    return _orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
-
-socket.getaddrinfo = _getaddrinfo_ipv4
-
-
-
 DATABASES = {
-    "default": dj_database_url.parse(
-        "postgresql://postgres:nextmediahq_db2@db.urxgqbibkkwrxqcmazme.supabase.co:5432/postgres?sslmode=require"
-    )
-}
 
+    'default': dj_database_url.parse(
+        'postgresql://postgres.urxgqbibkkwrxqcmazme:nextmediahq_db2@aws-1-eu-north-1.pooler.supabase.com:6543/postgres'
+    ),
+}
 
 # Cloudinary configuration
 CLOUDINARY_STORAGE = {
