@@ -67,10 +67,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
+# Database
 DATABASES = {
-    'default': dj_database_url.parse(
-        config("DATABASE_URL")
-    )
+    'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }
 
 # Cloudinary configuration
