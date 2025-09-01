@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.parse(
-        'postgresql://postgres.urxgqbibkkwrxqcmazme:nextmediahq_db2@aws-1-eu-north-1.pooler.supabase.com:6543/postgres',
+        'postgresql://postgres.urxgqbibkkwrxqcmazme:nextmediahq_db2@aws-1-eu-north-1.pooler.supabase.com:5432/postgres',
         conn_max_age=600,
         ssl_require=True   # 👈 this is the key for Supabase
     ),
