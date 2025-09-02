@@ -1,7 +1,7 @@
 {
-    "name": "NextMedia - Latest News",
+    "name": "NextMedia - Your Trusted Source For Fast and Credible Information",
     "short_name": "NextMedia",
-    "description": "Latest news from schools and around the world",
+    "description": "Get Fast and Credible Information",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#1a1a2e",
