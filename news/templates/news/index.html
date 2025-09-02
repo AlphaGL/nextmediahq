@@ -10,7 +10,7 @@
 <section class="hero-section">
     <div class="container">
         <div class="hero-content">
-            <h1>NEXT MEDIA - YOUR TRUSTED SOURCE FOR FAST AND CREDIBLE NEWS</h1>
+            <h1>NEXT MEDIA - YOUR TRUSTED SOURCE FOR FAST AND CREDIBLE INFORMATION</h1>
             <p>Stay ahead with the latest updates on schools, entertainment, sports and global news - all in one trusted platform</p>
             <br><br>
             <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="whatsapp-btn" target="_blank">
@@ -452,4 +452,76 @@
             </div>
         </div>
     </section>
+    
+    <!-- Past Questions CTA Section -->
+    {% if not hide_cta %}
+    <section style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); 
+                    padding: 2rem 1rem; 
+                    display: flex; 
+                    justify-content: center; 
+                    align-items: center; 
+                    min-height: 120px;">
+        <div style="max-width: 400px; 
+                    width: 100%; 
+                    background: rgba(255, 255, 255, 0.95); 
+                    border-radius: 16px; 
+                    padding: 1.5rem; 
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
+                    text-align: center; 
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.1);">
+            
+            <div style="font-size: 2.5rem; 
+                        color: #ff5722; 
+                        margin-bottom: 1rem;
+                        filter: drop-shadow(0 2px 4px rgba(255, 87, 34, 0.3));">
+                <i class="fas fa-download"></i>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="margin: 0 0 0.75rem 0; 
+                        font-size: 1.375rem; 
+                        font-weight: 700; 
+                        color: #2c3e50; 
+                        line-height: 1.2;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">
+                    Download Past Questions
+                </h3>
+                <p style="margin: 0; 
+                        font-size: 0.9rem; 
+                        color: #5a6c7d; 
+                        line-height: 1.6;
+                        font-weight: 500;">
+                    Access past questions for exam preparation. Download PDFs to study offline and boost your performance.
+                </p>
+            </div>
+            
+            <a href="{% url 'news:past_questions' %}" 
+            style="display: inline-block; 
+                    background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%); 
+                    color: #ffffff; 
+                    padding: 0.875rem 2rem; 
+                    border-radius: 25px; 
+                    text-decoration: none; 
+                    font-size: 0.875rem; 
+                    font-weight: 700; 
+                    text-transform: uppercase; 
+                    letter-spacing: 1px; 
+                    transition: all 0.3s ease; 
+                    box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4);
+                    border: none;
+                    position: relative;
+                    overflow: hidden;"
+            onmouseover="this.style.background='linear-gradient(135deg, #e64a19 0%, #d84315 100%)'; 
+                            this.style.transform='translateY(-2px) scale(1.02)'; 
+                            this.style.boxShadow='0 8px 25px rgba(255, 87, 34, 0.5)';"
+            onmouseout="this.style.background='linear-gradient(135deg, #ff5722 0%, #e64a19 100%)'; 
+                        this.style.transform='translateY(0) scale(1)'; 
+                        this.style.boxShadow='0 4px 15px rgba(255, 87, 34, 0.4)';">
+            View Past Questions
+            </a>
+        </div>
+    </section>
+    {% endif %}
+
 {% endblock %}

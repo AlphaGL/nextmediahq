@@ -74,24 +74,6 @@
         {% endblock %}
     </main>
 
-    <!-- Past Questions CTA Section -->
-    {% if not hide_cta %}
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-content">
-                <div class="cta-icon">
-                    <i class="fas fa-download"></i>
-                </div>
-                <div class="cta-text">
-                    <h3>Download Past Questions</h3>
-                    <p>Access past questions for exam preparation. Download PDFs to study.</p>
-                </div>
-                <a href="{% url 'news:past_questions' %}" class="cta-btn">VIEW PAST QUESTIONS</a>
-            </div>
-        </div>
-    </section>
-    {% endif %}
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -148,7 +130,7 @@
             </div>
             
             <div class="footer-copyright">
-                <p>&copy; 2025 NextMedia. All rights reserved.</p>
+                <p>&copy; NextMedia. All rights reserved.</p>
             </div>
         </div>
     </footer>
