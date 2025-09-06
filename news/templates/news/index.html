@@ -63,83 +63,75 @@
                     {% for news in featured_news %}
                         <article class="featured-card {% if forloop.first %}featured-main{% endif %}">
                             <!-- Featured Card Image -->
-                            <div class="card-image">
+                            <div class="card-image" style="
+                                position: relative;
+                                width: 100%;
+                                min-height: 250px;
+                                overflow: hidden;
+                                border-radius: 8px 8px 0 0;
+                            ">
                                 {% if news.featured_image %}
                                     <img src="{{ news.featured_image.url }}" 
-                                         alt="{{ news.title }}" 
-                                         loading="lazy">
+                                        alt="{{ news.title }}" 
+                                        loading="lazy"
+                                        style="
+                                            width: 100%;
+                                            height: 100%;
+                                            object-fit: cover;
+                                            object-position: center top;
+                                            display: block;
+                                        ">
                                 {% else %}
-                                    <div class="placeholder-image">
-                                        <i class="fas fa-newspaper"></i>
+                                    <div class="placeholder-image" style="
+                                        width: 100%;
+                                        height: 100%;
+                                        background: #f0f0f0;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        color: #666;
+                                    ">
+                                        <i class="fas fa-newspaper" style="font-size: 3rem;"></i>
                                     </div>
                                 {% endif %}
                                 
                                 <!-- Card Overlay with Category and School -->
-                            <div class="card-overlay" style="
-                            display: flex;
-                            flex-wrap: wrap;
-                            gap: 8px;
-                            padding: 12px;
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
-                            z-index: 2;
-                            ">
-                            <span class="card-category" style="
-                                background: rgba(255,255,255,0.9);
-                                color: #333;
-                                padding: 4px 8px;
-                                border-radius: 12px;
-                                font-size: 12px;
-                                font-weight: 600;
-                                white-space: nowrap;
-                                flex-shrink: 0;
-                            ">{{ news.category.name }}</span>
-                            
-                            {% if news.school %}
-                            <span class="card-school" style="
-                                background: rgba(0,123,255,0.9);
-                                color: white;
-                                padding: 4px 8px;
-                                border-radius: 12px;
-                                font-size: 12px;
-                                font-weight: 500;
-                                white-space: nowrap;
-                                flex-shrink: 0;
-                            ">{{ news.school.name }}</span>
-                            {% endif %}
-                            </div>
-
-                            <!-- Mobile responsive styles (for screens smaller than 768px) -->
-                            <style>
-                            @media (max-width: 767px) {
-                            .card-overlay {
-                                padding: 8px !important;
-                                gap: 6px !important;
-                            }
-                            
-                            .card-category,
-                            .card-school {
-                                font-size: 10px !important;
-                                padding: 3px 6px !important;
-                            }
-                            }
-
-                            @media (max-width: 480px) {
-                            .card-overlay {
-                                padding: 6px !important;
-                                gap: 4px !important;
-                            }
-                            
-                            .card-category,
-                            .card-school {
-                                font-size: 9px !important;
-                                padding: 2px 5px !important;
-                            }
-                            }
-                            </style>
+                                <div class="card-overlay" style="
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    gap: 8px;
+                                    padding: 12px;
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    right: 0;
+                                    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+                                    z-index: 2;
+                                ">
+                                    <span class="card-category" style="
+                                        background: rgba(255,255,255,0.9);
+                                        color: #333;
+                                        padding: 4px 8px;
+                                        border-radius: 12px;
+                                        font-size: 12px;
+                                        font-weight: 600;
+                                        white-space: nowrap;
+                                        flex-shrink: 0;
+                                    ">{{ news.category.name }}</span>
+                                    
+                                    {% if news.school %}
+                                    <span class="card-school" style="
+                                        background: rgba(0,123,255,0.9);
+                                        color: white;
+                                        padding: 4px 8px;
+                                        border-radius: 12px;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                        white-space: nowrap;
+                                        flex-shrink: 0;
+                                    ">{{ news.school.name }}</span>
+                                    {% endif %}
+                                </div>
                             </div>
                             
                             <!-- Featured Card Content -->
@@ -154,6 +146,50 @@
                 </div>
             </div>
         </section>
+
+        <!-- Enhanced Mobile Responsive Styles -->
+        <style>
+            /* Main featured card (first item) specific styles */
+            .featured-main .card-image {
+                min-height: 250px !important;
+            }
+            
+            /* Ensure proper image display - full image visible */
+            .featured-card img {
+                transition: transform 0.3s ease;
+            }
+            
+            .featured-card:hover img {
+                transform: scale(1.02);
+            }
+            
+            /* Mobile responsive adjustments */
+            @media (max-width: 767px) {
+                .card-overlay {
+                    padding: 8px !important;
+                    gap: 6px !important;
+                }
+                
+                .card-category,
+                .card-school {
+                    font-size: 10px !important;
+                    padding: 3px 6px !important;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .card-overlay {
+                    padding: 6px !important;
+                    gap: 4px !important;
+                }
+                
+                .card-category,
+                .card-school {
+                    font-size: 9px !important;
+                    padding: 2px 5px !important;
+                }
+            }
+        </style>
     {% endif %}
 
     <!-- ========== NEWS CATEGORIES GRID ========== -->
@@ -161,274 +197,296 @@
         <div class="container">
             <div class="news-grid">
                 
-                <!-- ===== SCHOOL NEWS SECTION ===== -->
-                <div class="news-category">
-                    <div class="category-header">
-                        <h2>SCHOOL NEWS</h2>
-                        <a href="{% url 'news:school_list' %}" class="view-all">View All</a>
-                    </div>
-                    
-                    {% if school_news %}
-                        <!-- Main School News Article -->
-                        <div class="main-news">
-                            {% with school_news.0 as main_news %}
-                                <article class="news-card main">
-                                    <!-- Main News Image -->
-                                    <div class="news-image">
-                                        {% if main_news.featured_image %}
-                                            <img src="{{ main_news.featured_image.url }}" 
-                                                 alt="{{ main_news.title }}" 
-                                                 loading="lazy">
-                                        {% else %}
-                                            <div class="placeholder-image">
-                                                <i class="fas fa-graduation-cap"></i>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <!-- Main News Content -->
-                                    <div class="news-content">
-                                        <h3>
-                                            <a href="{{ main_news.get_absolute_url }}">
-                                                {{ main_news.title }}
-                                            </a>
-                                        </h3>
-                                        <p>{{ main_news.excerpt|truncatewords:15 }}</p>
+                <!-- ===== DYNAMIC CATEGORIES SECTIONS ===== -->
+                {% for category_data in categories_with_news %}
+                    <div class="news-category">
+                        <div class="category-header">
+                            <h2>{{ category_data.category.name|upper }}</h2>
+                            <a href="{% url 'news:category_news' category_data.category.slug %}" class="view-all">View All</a>
+                        </div>
+                        
+                        {% if category_data.news %}
+                            <!-- Main Category News Article -->
+                            <div class="main-news">
+                                {% with category_data.news.0 as main_news %}
+                                    <article class="news-card main">
+                                        <!-- Main News Image -->
+                                        <div class="news-image" style="
+                                            position: relative;
+                                            width: 100%;
+                                            height: auto;
+                                            border-radius: 8px 8px 0 0;
+                                            background: #f8f9fa;
+                                        ">
+                                            {% if main_news.featured_image %}
+                                                <img src="{{ main_news.featured_image.url }}" 
+                                                    alt="{{ main_news.title }}" 
+                                                    loading="lazy"
+                                                    style="
+                                                        width: 100%;
+                                                        height: auto;
+                                                        display: block;
+                                                        border-radius: 8px 8px 0 0;
+                                                    ">
+                                            {% else %}
+                                                <div class="placeholder-image" style="
+                                                    width: 100%;
+                                                    height: 200px;
+                                                    background: #f0f0f0;
+                                                    display: flex;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    color: #666;
+                                                    border-radius: 8px 8px 0 0;
+                                                ">
+                                                    <!-- Dynamic icon based on category -->
+                                                    {% if 'school' in category_data.category.slug %}
+                                                        <i class="fas fa-graduation-cap" style="font-size: 3rem;"></i>
+                                                    {% elif 'global' in category_data.category.slug %}
+                                                        <i class="fas fa-globe" style="font-size: 3rem;"></i>
+                                                    {% elif 'sport' in category_data.category.slug %}
+                                                        <i class="fas fa-football-ball" style="font-size: 3rem;"></i>
+                                                    {% elif 'entertain' in category_data.category.slug %}
+                                                        <i class="fas fa-film" style="font-size: 3rem;"></i>
+                                                    {% elif 'tech' in category_data.category.slug %}
+                                                        <i class="fas fa-laptop" style="font-size: 3rem;"></i>
+                                                    {% elif 'health' in category_data.category.slug %}
+                                                        <i class="fas fa-heart" style="font-size: 3rem;"></i>
+                                                    {% elif 'politic' in category_data.category.slug %}
+                                                        <i class="fas fa-vote-yea" style="font-size: 3rem;"></i>
+                                                    {% elif 'business' in category_data.category.slug %}
+                                                        <i class="fas fa-briefcase" style="font-size: 3rem;"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-newspaper" style="font-size: 3rem;"></i>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
                                         
-                                        <!-- Main News Meta Information -->
+                                        <!-- Main News Content -->
+                                        <div class="news-content">
+                                            <h3>
+                                                <a href="{{ main_news.get_absolute_url }}">
+                                                    {{ main_news.title }}
+                                                </a>
+                                            </h3>
+                                            <p>{{ main_news.excerpt|truncatewords:15 }}</p>
+                                            
+                                            <!-- Main News Meta Information -->
+                                            <div class="news-meta">
+                                                {% if main_news.school %}
+                                                    <span class="school-badge">
+                                                        {{ main_news.school.abbreviation|default:main_news.school.name }}
+                                                    </span>
+                                                {% endif %}
+                                                <span class="news-date">
+                                                    {{ main_news.published_date|date:"M j" }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </article>
+                                {% endwith %}
+                            </div>
+                            
+                            <!-- Sub Category News Articles -->
+                            <div class="sub-news">
+                                {% for news in category_data.news|slice:"1:4" %}
+                                    <article class="news-card sub">
+                                        <h4>
+                                            <a href="{{ news.get_absolute_url }}">
+                                                {{ news.title|truncatewords:8 }}
+                                            </a>
+                                        </h4>
+                                        
                                         <div class="news-meta">
-                                            {% if main_news.school %}
+                                            {% if news.school %}
                                                 <span class="school-badge">
-                                                    {{ main_news.school.abbreviation|default:main_news.school.name }}
+                                                    {{ news.school.abbreviation|default:news.school.name }}
                                                 </span>
                                             {% endif %}
                                             <span class="news-date">
-                                                {{ main_news.published_date|date:"M j" }}
+                                                {{ news.published_date|date:"M j" }}
                                             </span>
                                         </div>
-                                    </div>
-                                </article>
-                            {% endwith %}
-                        </div>
-                        
-                        <!-- Sub School News Articles -->
-                        <div class="sub-news">
-                            {% for news in school_news|slice:"1:4" %}
-                                <article class="news-card sub">
-                                    <h4>
-                                        <a href="{{ news.get_absolute_url }}">
-                                            {{ news.title|truncatewords:8 }}
-                                        </a>
-                                    </h4>
-                                    
-                                    <div class="news-meta">
-                                        {% if news.school %}
-                                            <span class="school-badge">
-                                                {{ news.school.abbreviation|default:news.school.name }}
-                                            </span>
-                                        {% endif %}
-                                        <span class="news-date">
-                                            {{ news.published_date|date:"M j" }}
-                                        </span>
-                                    </div>
-                                </article>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <!-- No School News Available -->
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <!-- No News Available for this Category -->
+                            <div class="no-news">
+                                {% if 'school' in category_data.category.slug %}
+                                    <i class="fas fa-graduation-cap"></i>
+                                {% elif 'global' in category_data.category.slug %}
+                                    <i class="fas fa-globe"></i>
+                                {% elif 'sport' in category_data.category.slug %}
+                                    <i class="fas fa-football-ball"></i>
+                                {% elif 'entertain' in category_data.category.slug %}
+                                    <i class="fas fa-film"></i>
+                                {% elif 'tech' in category_data.category.slug %}
+                                    <i class="fas fa-laptop"></i>
+                                {% elif 'health' in category_data.category.slug %}
+                                    <i class="fas fa-heart"></i>
+                                {% elif 'politic' in category_data.category.slug %}
+                                    <i class="fas fa-vote-yea"></i>
+                                {% elif 'business' in category_data.category.slug %}
+                                    <i class="fas fa-briefcase"></i>
+                                {% else %}
+                                    <i class="fas fa-newspaper"></i>
+                                {% endif %}
+                                <p>No {{ category_data.category.name|lower }} available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <!-- No Categories Available -->
+                    <div class="news-category">
                         <div class="no-news">
                             <i class="fas fa-newspaper"></i>
-                            <p>No school news available</p>
+                            <p>No news categories available</p>
                         </div>
-                    {% endif %}
-                </div>
-
-                <!-- ===== GLOBAL NEWS SECTION ===== -->
-                <div class="news-category">
-                    <div class="category-header">
-                        <h2>GLOBAL NEWS</h2>
-                        <a href="{% url 'news:category_news' 'global-news' %}" class="view-all">View All</a>
                     </div>
-                    
-                    {% if global_news %}
-                        <!-- Main Global News Article -->
-                        <div class="main-news">
-                            {% with global_news.0 as main_news %}
-                                <article class="news-card main">
-                                    <!-- Main Global News Image -->
-                                    <div class="news-image">
-                                        {% if main_news.featured_image %}
-                                            <img src="{{ main_news.featured_image.url }}" 
-                                                 alt="{{ main_news.title }}" 
-                                                 loading="lazy">
-                                        {% else %}
-                                            <div class="placeholder-image">
-                                                <i class="fas fa-globe"></i>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <!-- Main Global News Content -->
-                                    <div class="news-content">
-                                        <h3>
-                                            <a href="{{ main_news.get_absolute_url }}">
-                                                {{ main_news.title }}
-                                            </a>
-                                        </h3>
-                                        <p>{{ main_news.excerpt|truncatewords:15 }}</p>
-                                        
-                                        <div class="news-meta">
-                                            <span class="news-date">
-                                                {{ main_news.published_date|date:"M j" }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </article>
-                            {% endwith %}
-                        </div>
-                        
-                        <!-- Sub Global News Articles -->
-                        <div class="sub-news">
-                            {% for news in global_news|slice:"1:4" %}
-                                <article class="news-card sub">
-                                    <h4>
-                                        <a href="{{ news.get_absolute_url }}">
-                                            {{ news.title|truncatewords:8 }}
-                                        </a>
-                                    </h4>
-                                    
-                                    <div class="news-meta">
-                                        <span class="news-date">
-                                            {{ news.published_date|date:"M j" }}
-                                        </span>
-                                    </div>
-                                </article>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <!-- No Global News Available -->
-                        <div class="no-news">
-                            <i class="fas fa-globe"></i>
-                            <p>No global news available</p>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- ===== SPORTS NEWS SECTION ===== -->
-                <div class="news-category">
-                    <div class="category-header">
-                        <h2>SPORTS</h2>
-                        <a href="{% url 'news:category_news' 'sports' %}" class="view-all">View All</a>
-                    </div>
-                    
-                    {% if sports_news %}
-                        <!-- Main Sports News Article -->
-                        <div class="main-news">
-                            {% with sports_news.0 as main_news %}
-                                <article class="news-card main">
-                                    <!-- Main Sports News Image -->
-                                    <div class="news-image">
-                                        {% if main_news.featured_image %}
-                                            <img src="{{ main_news.featured_image.url }}" 
-                                                 alt="{{ main_news.title }}" 
-                                                 loading="lazy">
-                                        {% else %}
-                                            <div class="placeholder-image">
-                                                <i class="fas fa-football-ball"></i>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <!-- Main Sports News Content -->
-                                    <div class="news-content">
-                                        <h3>
-                                            <a href="{{ main_news.get_absolute_url }}">
-                                                {{ main_news.title }}
-                                            </a>
-                                        </h3>
-                                        <p>{{ main_news.excerpt|truncatewords:15 }}</p>
-                                        
-                                        <div class="news-meta">
-                                            <span class="news-date">
-                                                {{ main_news.published_date|date:"M j" }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </article>
-                            {% endwith %}
-                        </div>
-                        
-                        <!-- Sub Sports News Articles -->
-                        <div class="sub-news">
-                            {% for news in sports_news|slice:"1:4" %}
-                                <article class="news-card sub">
-                                    <h4>
-                                        <a href="{{ news.get_absolute_url }}">
-                                            {{ news.title|truncatewords:8 }}
-                                        </a>
-                                    </h4>
-                                    
-                                    <div class="news-meta">
-                                        <span class="news-date">
-                                            {{ news.published_date|date:"M j" }}
-                                        </span>
-                                    </div>
-                                </article>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <!-- No Sports News Available -->
-                        <div class="no-news">
-                            <i class="fas fa-football-ball"></i>
-                            <p>No sports news available</p>
-                        </div>
-                    {% endif %}
-                </div>
+                {% endfor %}
 
                 <!-- ===== FEATURED SCHOOLS SECTION ===== -->
-                <div class="news-category schools-section">
-                    <div class="category-header">
-                        <h2>FEATURED SCHOOLS</h2>
-                        <a href="{% url 'news:school_list' %}" class="view-all">View All</a>
-                    </div>
-                    
-                    {% if schools %}
+                {% if schools %}
+                    <div class="news-category schools-section">
+                        <div class="category-header">
+                            <h2>FEATURED SCHOOLS</h2>
+                            <a href="{% url 'news:school_list' %}" class="view-all">View All</a>
+                        </div>
+                        
                         <div class="schools-grid">
                             {% for school in schools %}
                                 <a href="{% url 'news:school_news' school.slug %}" class="school-card">
                                     <!-- School Logo -->
-                                    <div class="school-logo">
+                                    <div class="school-logo" style="
+                                        position: relative;
+                                        width: 100%;
+                                        height: auto;
+                                        border-radius: 8px;
+                                        background: #f8f9fa;
+                                    ">
                                         {% if school.logo %}
                                             <img src="{{ school.logo.url }}" 
-                                                 alt="{{ school.name }}" 
-                                                 loading="lazy">
+                                                alt="{{ school.name }}" 
+                                                loading="lazy"
+                                                style="
+                                                    width: 100%;
+                                                    height: auto;
+                                                    display: block;
+                                                    border-radius: 8px;
+                                                ">
                                         {% else %}
-                                            <div class="school-placeholder">
-                                                <i class="fas fa-university"></i>
+                                            <div class="school-placeholder" style="
+                                                width: 100%;
+                                                height: 80px;
+                                                background: #f0f0f0;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                color: #666;
+                                                border-radius: 8px;
+                                            ">
+                                                <i class="fas fa-university" style="font-size: 2rem;"></i>
                                             </div>
                                         {% endif %}
                                     </div>
                                     
                                     <!-- School Information -->
-                                    <!-- <h4>{{ school.name }}</h4> -->
                                     {% if school.abbreviation %}
                                         <span class="school-abbr">{{ school.abbreviation }}</span>
                                     {% endif %}
                                 </a>
                             {% endfor %}
                         </div>
-                    {% else %}
-                        <!-- No Schools Available -->
-                        <div class="no-news">
-                            <i class="fas fa-university"></i>
-                            <p>No schools available</p>
-                        </div>
-                    {% endif %}
-                </div>
+                    </div>
+                {% endif %}
                 
             </div>
         </div>
     </section>
+
+    <!-- Enhanced styles for full image display -->
+    <style>
+        /* Ensure images display at their natural size */
+        .categories-section .news-image {
+            overflow: visible !important;
+        }
+        
+        .categories-section .news-image img,
+        .categories-section .school-logo img {
+            transition: transform 0.3s ease;
+            max-width: 100%;
+            height: auto !important;
+        }
+        
+        .categories-section .news-card:hover .news-image img,
+        .categories-section .school-card:hover .school-logo img {
+            transform: scale(1.02);
+        }
+        
+        /* Mobile responsive adjustments */
+        @media (max-width: 767px) {
+            .placeholder-image {
+                height: 150px !important;
+            }
+            
+            .school-placeholder {
+                height: 60px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .placeholder-image {
+                height: 120px !important;
+            }
+            
+            .school-placeholder {
+                height: 50px !important;
+            }
+        }
+    </style>
+
+    <!-- Enhanced styles for full image display -->
+    <style>
+        /* Ensure images display at their natural size */
+        .categories-section .news-image {
+            overflow: visible !important;
+        }
+        
+        .categories-section .news-image img,
+        .categories-section .school-logo img {
+            transition: transform 0.3s ease;
+            max-width: 100%;
+            height: auto !important;
+        }
+        
+        .categories-section .news-card:hover .news-image img,
+        .categories-section .school-card:hover .school-logo img {
+            transform: scale(1.02);
+        }
+        
+        /* Mobile responsive adjustments */
+        @media (max-width: 767px) {
+            .placeholder-image {
+                height: 150px !important;
+            }
+            
+            .school-placeholder {
+                height: 60px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .placeholder-image {
+                height: 120px !important;
+            }
+            
+            .school-placeholder {
+                height: 50px !important;
+            }
+        }
+    </style>
 
     <!-- ========== NEWSLETTER SUBSCRIPTION SECTION ========== -->
     <section class="newsletter-section">

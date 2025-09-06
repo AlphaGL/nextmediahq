@@ -59,10 +59,19 @@
         <div class="questions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
             {% for question in questions %}
             <div class="question-card" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; position: relative; overflow: hidden;">
+                <!-- Cover Image (if available) -->
+                {% if question.cover_image %}
+                <div class="question-image" style="width: 100%; height: 120px; border-radius: 10px; overflow: hidden; margin-bottom: 1rem;">
+                    <img src="{{ question.cover_image.url }}" alt="{{ question.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                {% endif %}
+                
                 <div class="question-header" style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem; gap: 1rem;">
+                    {% if not question.cover_image %}
                     <div class="question-icon" style="background: rgba(255, 107, 53, 0.2); width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ff6b35; font-size: 1.2rem; flex-shrink: 0;">
                         <i class="fas fa-file-pdf"></i>
                     </div>
+                    {% endif %}
                     
                     <div class="question-info" style="flex: 1;">
                         <h3 style="color: #fff; font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.5rem;">
@@ -75,14 +84,18 @@
                                 {{ question.school.name }}
                             </span>
                             
-                            <div style="display: flex; gap: 1rem; font-size: 0.8rem;">
+                            <div style="display: flex; gap: 1rem; font-size: 0.8rem; flex-wrap: wrap;">
                                 <span style="color: rgba(255, 255, 255, 0.7);">
                                     <i class="fas fa-book" style="margin-right: 0.3rem;"></i>
                                     {{ question.subject }}
                                 </span>
                                 <span style="color: rgba(255, 255, 255, 0.7);">
                                     <i class="fas fa-calendar" style="margin-right: 0.3rem;"></i>
-                                    {{ question.year }}
+                                    {% if question.start_year == question.end_year %}
+                                        {{ question.start_year }}
+                                    {% else %}
+                                        {{ question.start_year }} - {{ question.end_year }}
+                                    {% endif %}
                                 </span>
                             </div>
                         </div>
@@ -96,13 +109,19 @@
                 {% endif %}
                 
                 <div class="question-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-                    <a href="{{ question.file }}" 
+                    <a href="{{ question.link }}" target="_blank" rel="noopener noreferrer"
                     style="background: #ff6b35; color: #fff; text-decoration: none; padding: 0.7rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-download"></i>
+                        <i class="fas fa-external-link-alt"></i>
                         Get Access
                     </a>
+                    
+                    <div class="question-stats" style="display: flex; align-items: center; gap: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 0.8rem;">
+                        <span>
+                            <i class="fas fa-clock" style="margin-right: 0.3rem;"></i>
+                            {{ question.created_at|date:"M d, Y" }}
+                        </span>
+                    </div>
                 </div>
-
             </div>
             {% endfor %}
         </div>
@@ -180,10 +199,18 @@
     left: 100%;
 }
 
-.question-card button:hover {
+.question-card a:hover {
     background: #e55a2b;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+}
+
+.question-image img {
+    transition: transform 0.3s ease;
+}
+
+.question-card:hover .question-image img {
+    transform: scale(1.05);
 }
 
 .page-link:hover {
@@ -228,9 +255,17 @@
         gap: 1rem !important;
     }
     
+    .question-stats {
+        justify-content: center !important;
+    }
+    
     .pagination {
         flex-wrap: wrap;
         gap: 0.3rem !important;
+    }
+    
+    .question-image {
+        height: 100px !important;
     }
 }
 </style>
@@ -262,12 +297,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Track downloads
-    document.querySelectorAll('form[action*="download"]').forEach(form => {
-        form.addEventListener('submit', function() {
-            const questionTitle = this.closest('.question-card').querySelector('h3').textContent;
-            trackEvent('Download', 'Past Question', questionTitle);
-        });
+    // Track external link clicks
+    document.querySelectorAll('a[href*="http"]').forEach(link => {
+        if (!link.href.includes(window.location.hostname)) {
+            link.addEventListener('click', function() {
+                const questionTitle = this.closest('.question-card').querySelector('h3').textContent;
+                if (typeof trackEvent === 'function') {
+                    trackEvent('External Link', 'Past Question', questionTitle);
+                }
+            });
+        }
     });
 });
 </script>

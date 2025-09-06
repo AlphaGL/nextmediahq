@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.urls import reverse
 from cloudinary.models import CloudinaryField
 from django.utils.text import slugify
+from django.contrib.auth.models import User
 
 class School(models.Model):
     name = models.CharField(max_length=200)
@@ -29,7 +30,7 @@ class School(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
+    # description = models.TextField(blank=True)
     slug = models.SlugField(unique=True, blank=True)
     is_active = models.BooleanField(default=True)
 
@@ -55,6 +56,8 @@ class News(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_featured = models.BooleanField(default=False)
     is_published = models.BooleanField(default=True)
+    author = models.CharField(blank=True)
+    published_by = models.ForeignKey(User, on_delete=models.CASCADE )
     published_date = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -76,12 +79,15 @@ class News(models.Model):
         ordering = ['-published_date']
         verbose_name_plural = "News"
 
+
 class PastQuestion(models.Model):
     title = models.CharField(max_length=200)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     subject = models.CharField(max_length=100)
-    year = models.IntegerField()
-    file = models.URLField()
+    cover_image = CloudinaryField('cover_image/', blank=True, null=True)
+    start_year = models.IntegerField()
+    end_year = models.IntegerField()
+    link = models.URLField()
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -89,4 +95,4 @@ class PastQuestion(models.Model):
         return f"{self.school.name} - {self.subject} ({self.year})"
 
     class Meta:
-        ordering = ['-year', 'subject']
+        ordering = ['-start_year', '-end_year', 'subject']

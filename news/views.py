@@ -66,34 +66,36 @@ def service_worker(request):
         return HttpResponse('console.log("Service worker not found");', content_type='application/javascript')
 
 def home(request):
+    from django.db.models import Prefetch
+    
     # Get the 6 most recently uploaded news (for ticker animation)
     latest_news = News.objects.filter(is_published=True).select_related('school', 'category').order_by('-created_at')[:3]
     
     # Get featured news
     featured_news = News.objects.filter(is_published=True, is_featured=True).select_related('school', 'category')[:12]
     
-    # Get latest news by category
-    school_news = News.objects.filter(
-        is_published=True, 
-        category__slug='school-news'
-    ).select_related('school', 'category')[:6]
+    # Get all active categories and their news dynamically
+    categories_with_news = []
+    categories = Category.objects.filter(is_active=True).order_by('name')
     
-    global_news = News.objects.filter(
-        is_published=True, 
-        category__slug='global-news'
-    ).select_related('school', 'category')[:6]
-    
-    sports_news = News.objects.filter(
-        is_published=True, 
-        category__slug='sports'
-    ).select_related('school', 'category')[:6]
+    for category in categories:
+        # Get latest news for this category
+        category_news = News.objects.filter(
+            is_published=True,
+            category=category
+        ).select_related('school', 'category').order_by('-created_at')[:6]
+        
+        # Only include categories that have news
+        if category_news.exists():
+            categories_with_news.append({
+                'category': category,
+                'news': list(category_news)
+            })
     
     context = {
-        'latest_news': latest_news,  # New context for the ticker
+        'latest_news': latest_news,
         'featured_news': featured_news,
-        'school_news': school_news,
-        'global_news': global_news,
-        'sports_news': sports_news,
+        'categories_with_news': categories_with_news,
         'schools': School.objects.filter(is_active=True)[:6],
     }
     return render(request, 'news/index.html', context)
