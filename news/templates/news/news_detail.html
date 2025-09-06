@@ -53,9 +53,9 @@
             <!-- Social Share -->
             <div class="social-share">
                 <span>Share:</span>
-                <a href="https://twitter.com/intent/tweet?text={{ news.title|urlencode }}&url={{ request.build_absolute_uri }}" 
-                   target="_blank" class="share-btn twitter" aria-label="Share on Twitter">
-                    <i class="fab fa-twitter"></i>
+                <a href="https://x.com/intent/tweet?text={{ news.title|urlencode }}&url={{ request.build_absolute_uri }}" 
+                   target="_blank" class="share-btn x" aria-label="Share on x">
+                    <i class="fab fa-x"></i>
                 </a>
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
                    target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
@@ -281,7 +281,7 @@
     color: #fff;
 }
 
-.share-btn.twitter { background: #1da1f2; }
+.share-btn.x { background: #052130; }
 .share-btn.facebook { background: #4267b2; }
 .share-btn.whatsapp { background: #25d366; }
 .share-btn.copy { background: rgba(255, 255, 255, 0.1); }
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const shareButtons = document.querySelectorAll('.share-btn');
     shareButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const platform = this.classList.contains('twitter') ? 'Twitter' :
+            const platform = this.classList.contains('x') ? 'x' :
                             this.classList.contains('facebook') ? 'Facebook' :
                             this.classList.contains('whatsapp') ? 'WhatsApp' :
                             'Copy Link';
@@ -751,20 +751,20 @@ function showNotification(message, type = 'info') {
 {% endif %}
 <meta property="article:tag" content="{{ news.category.name }}">
 
-<!-- Enhanced Twitter Card Meta Tags -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ news.title }}">
-<meta name="twitter:description" content="{{ news.excerpt }}">
-<meta name="twitter:site" content="@NextMedia">
+<!-- Enhanced x Card Meta Tags -->
+<meta name="x:card" content="summary_large_image">
+<meta name="x:title" content="{{ news.title }}">
+<meta name="x:description" content="{{ news.excerpt }}">
+<meta name="x:site" content="@NextMedia">
 
 {% if news.featured_image %}
-<!-- Use featured image for Twitter preview -->
-<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
-<meta name="twitter:image:alt" content="{{ news.title }}">
+<!-- Use featured image for x preview -->
+<meta name="x:image" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
+<meta name="x:image:alt" content="{{ news.title }}">
 {% else %}
 <!-- Fallback to site logo if no featured image -->
-<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/icon-512x512.png' %}">
-<meta name="twitter:image:alt" content="NextMedia">
+<meta name="x:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/icon-512x512.png' %}">
+<meta name="x:image:alt" content="NextMedia">
 {% endif %}
 
 <!-- Additional meta tags for better SEO -->
