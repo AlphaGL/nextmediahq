@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-f&at%3l0)huwa-xy)*x!q5@c!azw1y8e+4vh_irv3zbn*89t=p
 
 # FORCE DEVELOPMENT MODE
 DEBUG = False
-DEVELOPMENT_MODE = True
+DEVELOPMENT_MODE = False
 
 
 # Allow all hosts in development
