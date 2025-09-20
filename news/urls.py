@@ -5,6 +5,7 @@ from . import views
 app_name = 'news'
 
 urlpatterns = [
+    path('ping/', views.ping_view, name='ping'),
     path('', views.home, name='home'),
     path('schools/', views.school_list, name='school_list'),
     path('school/<slug:slug>/', views.school_news, name='school_news'),

@@ -9,6 +9,11 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
 from .models import News, School, Category, PastQuestion
 
+
+def ping_view(request):
+    return JsonResponse({"status": "OK"})
+
+    
 def custom_404_view(request, exception=None):
     """Custom 404 error page with recent news"""
     try:
