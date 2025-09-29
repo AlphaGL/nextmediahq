@@ -121,7 +121,7 @@
     font-size: 0.9rem;
 }
 
-.share-btn.twitter { background: #1DA1F2; }
+.share-btn.x { background: #1DA1F2; }
 .share-btn.facebook { background: #4267B2; }
 .share-btn.whatsapp { background: #25D366; }
 .share-btn.copy { background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--border); }
@@ -408,9 +408,9 @@
             
             <div class="social-share">
                 <span>Share:</span>
-                <a href="https://twitter.com/intent/tweet?text={{ news.title|urlencode }}&url={{ request.build_absolute_uri }}" 
-                   target="_blank" class="share-btn twitter" aria-label="Share on Twitter">
-                    <i class="fab fa-twitter"></i>
+                <a style="background-color: rgb(32, 31, 31);" href="https://x.com/intent/tweet?text={{ news.title|urlencode }}&url={{ request.build_absolute_uri }}" 
+                   target="_blank" class="share-btn x" aria-label="Share on x">
+                    <i class="fab fa-x"></i>
                 </a>
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
                    target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
