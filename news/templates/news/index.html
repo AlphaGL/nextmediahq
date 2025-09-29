@@ -1,585 +1,947 @@
 {% extends 'news/base.html' %}
 {% load static %}
 
-{% block title %}NextMedia - your trusted source for fast and credible news{% endblock %}
+{% block title %}NextMedia - Your Trusted Source For Fast and Credible News{% endblock %}
 
 {% block content %}
-    <!-- Include the animated news ticker -->
-    {% include 'news/news_ticker.html' %}
-<!-- ========== HERO SECTION ========== -->
+<style>
+    /* News Ticker */
+    .news-ticker-wrapper {
+        background: var(--secondary-bg);
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 0;
+        overflow: hidden;
+    }
+
+    .news-ticker {
+        display: flex;
+        animation: scroll 30s linear infinite;
+    }
+
+    .news-ticker-item {
+        padding: 0 2rem;
+        white-space: nowrap;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+        padding: 3rem 1rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 50%, rgba(100, 255, 218, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+        background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-content p {
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-cta {
+        background: #25D366;
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
+    }
+
+    .hero-cta:hover {
+        background: #1ebe5d;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    }
+
+    /* Section Container */
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .section-title {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: var(--text-primary);
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+
+    /* Featured Section */
+    .featured-section {
+        padding: 3rem 0;
+    }
+
+    .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .featured-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+    }
+
+    .featured-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+        animation: fadeInUp 0.6s ease;
+    }
+
+    .featured-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px var(--shadow);
+    }
+
+    .featured-main {
+        grid-column: span 2;
+    }
+
+    @media (min-width: 768px) {
+        .featured-main {
+            grid-column: span 2;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .featured-main {
+            grid-column: span 2;
+        }
+    }
+
+    .card-image {
+        position: relative;
+        width: 100%;
+        height: 180px;
+        overflow: hidden;
+    }
+
+    .featured-main .card-image {
+        height: 250px;
+    }
+
+    @media (min-width: 768px) {
+        .card-image {
+            height: 250px;
+        }
+
+        .featured-main .card-image {
+            height: 350px;
+        }
+    }
+
+    .card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .featured-card:hover .card-image img {
+        transform: scale(1.1);
+    }
+
+    .card-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-category, .card-school {
+        padding: 0.35rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .card-category {
+        background: var(--accent);
+        color: var(--primary-bg);
+    }
+
+    [data-theme="light"] .card-category {
+        background: var(--accent);
+        color: white;
+    }
+
+    .card-school {
+        background: var(--accent-secondary);
+        color: white;
+    }
+
+    .card-content {
+        padding: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        .card-content {
+            padding: 1.25rem;
+        }
+    }
+
+    .card-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+
+    @media (min-width: 768px) {
+        .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+    }
+
+    .card-title a {
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .card-title a:hover {
+        color: var(--accent);
+    }
+
+    .read-more {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .read-more::after {
+        content: '→';
+        transition: transform 0.3s ease;
+    }
+
+    .read-more:hover::after {
+        transform: translateX(5px);
+    }
+
+    /* Categories Section */
+    .categories-section {
+        padding: 2rem 0 3rem;
+    }
+
+    .news-grid {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .news-category {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+        animation: fadeInUp 0.6s ease;
+    }
+
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .category-header h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: 0.5px;
+    }
+
+    .view-all {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .view-all:hover {
+        transform: translateX(5px);
+    }
+
+    .main-news {
+        margin-bottom: 1.5rem;
+    }
+
+    .news-card {
+        background: var(--secondary-bg);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+    }
+
+    .news-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    .news-image {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        background: var(--primary-bg);
+    }
+
+    .news-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .news-card:hover .news-image img {
+        transform: scale(1.05);
+    }
+
+    .placeholder-image {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        background: var(--primary-bg);
+    }
+
+    .news-content {
+        padding: 1.25rem;
+    }
+
+    .news-content h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+
+    .news-content h3 a {
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .news-content h3 a:hover {
+        color: var(--accent);
+    }
+
+    .news-content p {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        line-height: 1.6;
+        margin-bottom: 0.75rem;
+    }
+
+    .news-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .school-badge {
+        background: var(--accent);
+        color: var(--primary-bg);
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .news-date {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .sub-news {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    @media (min-width: 768px) {
+        .sub-news {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+
+    .news-card.sub {
+        padding: 0.875rem;
+        background: var(--primary-bg);
+    }
+
+    @media (min-width: 768px) {
+        .news-card.sub {
+            padding: 1rem;
+        }
+    }
+
+    .news-card.sub h4 {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+
+    @media (min-width: 768px) {
+        .news-card.sub h4 {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+    }
+
+    .news-card.sub h4 a {
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .news-card.sub h4 a:hover {
+        color: var(--accent);
+    }
+
+    .no-news {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-secondary);
+    }
+
+    .no-news i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* Schools Section */
+    .schools-section {
+        margin-top: 2rem;
+    }
+
+    .schools-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+
+    @media (min-width: 480px) {
+        .schools-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .schools-grid {
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+    }
+
+    .school-card {
+        background: var(--secondary-bg);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+        text-decoration: none;
+    }
+
+    .school-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    .school-logo {
+        margin-bottom: 0.75rem;
+    }
+
+    .school-logo img {
+        width: 100%;
+        max-width: 80px;
+        height: auto;
+        border-radius: 8px;
+        margin: 0 auto;
+        display: block;
+    }
+
+    .school-abbr {
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: block;
+    }
+
+    /* Newsletter Section */
+    .newsletter-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 1rem;
+        margin: 3rem 0;
+    }
+
+    .newsletter-content {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .newsletter-text h3 {
+        color: white;
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .newsletter-text p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: 0.75rem;
+        max-width: 500px;
+        margin: 0 auto;
+        flex-wrap: wrap;
+    }
+
+    .newsletter-form input {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.875rem 1.25rem;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        background: white;
+        color: #333;
+    }
+
+    .newsletter-form input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+
+    .newsletter-form button {
+        padding: 0.875rem 2rem;
+        background: #ff6b35;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .newsletter-form button:hover {
+        background: #e64a19;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+    }
+
+    /* Past Questions CTA */
+    .cta-section {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        padding: 2rem 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .cta-card {
+        max-width: 450px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .cta-icon {
+        font-size: 2.5rem;
+        color: #ff5722;
+        margin-bottom: 1rem;
+    }
+
+    .cta-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.75rem;
+    }
+
+    .cta-card p {
+        font-size: 0.95rem;
+        color: #5a6c7d;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .cta-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(255, 87, 34, 0.4);
+    }
+
+    .cta-btn:hover {
+        background: linear-gradient(135deg, #e64a19 0%, #d84315 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 87, 34, 0.5);
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 1rem 1.5rem;
+        }
+
+        .featured-section, .categories-section {
+            padding: 2rem 0;
+        }
+
+        .newsletter-form {
+            flex-direction: column;
+        }
+
+        .newsletter-form input,
+        .newsletter-form button {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .card-badges {
+            gap: 0.35rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-category, .card-school {
+            font-size: 0.65rem;
+            padding: 0.25rem 0.6rem;
+        }
+
+        .cta-card {
+            padding: 1.5rem;
+        }
+
+        .cta-card h3 {
+            font-size: 1.25rem;
+        }
+
+        .news-category {
+            padding: 1.25rem;
+        }
+
+        .category-header h2 {
+            font-size: 1rem;
+        }
+
+        .school-card {
+            padding: 0.75rem;
+        }
+
+        .school-logo img {
+            max-width: 60px;
+        }
+
+        .school-abbr {
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Extra responsive adjustments */
+    @media (max-width: 360px) {
+        .featured-grid,
+        .sub-news {
+            gap: 0.5rem;
+        }
+
+        .schools-grid {
+            gap: 0.5rem;
+        }
+
+        .card-content {
+            padding: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+        }
+
+        .news-card.sub h4 {
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<!-- News Ticker -->
+{% include 'news/news_ticker.html' %}
+
+<!-- Hero Section -->
 <section class="hero-section">
+    <div class="hero-content">
+        <h1>NEXT MEDIA - YOUR TRUSTED SOURCE FOR FAST AND CREDIBLE INFORMATION</h1>
+        <p>Stay ahead with the latest updates on schools, entertainment, sports and global news - all in one trusted platform</p>
+        <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="hero-cta" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+            Join Our WhatsApp Channel
+        </a>
+    </div>
+</section>
+
+<!-- Featured News Section -->
+{% if featured_news %}
+<section class="featured-section">
     <div class="container">
-        <div class="hero-content">
-            <h1>NEXT MEDIA - YOUR TRUSTED SOURCE FOR FAST AND CREDIBLE INFORMATION</h1>
-            <p>Stay ahead with the latest updates on schools, entertainment, sports and global news - all in one trusted platform</p>
-            <br><br>
-            <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="whatsapp-btn" target="_blank">
-                <i class="fab fa-whatsapp"></i>
-                Join Our WhatsApp Channel
-            </a>
+        <h2 class="section-title">Featured Stories</h2>
+        <div class="featured-grid">
+            {% for news in featured_news %}
+            <article class="featured-card {% if forloop.first %}featured-main{% endif %}">
+                <div class="card-image">
+                    {% if news.featured_image %}
+                    <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
+                    {% else %}
+                    <div class="placeholder-image">
+                        <i class="fas fa-newspaper" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-content">
+                    <div class="card-badges">
+                        <span class="card-category">{{ news.category.name }}</span>
+                        {% if news.school %}
+                        <span class="card-school">{{ news.school.name }}</span>
+                        {% endif %}
+                    </div>
+                    <h3 class="card-title">
+                        <a href="{{ news.get_absolute_url }}">{{ news.title }}</a>
+                    </h3>
+                    <a href="{{ news.get_absolute_url }}" class="read-more">Read More</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- News Categories Grid -->
+<section class="categories-section">
+    <div class="container">
+        <div class="news-grid">
+            {% for category_data in categories_with_news %}
+            <div class="news-category">
+                <div class="category-header">
+                    <h2>{{ category_data.category.name|upper }}</h2>
+                    <a href="{% url 'news:category_news' category_data.category.slug %}" class="view-all">View All</a>
+                </div>
+                
+                {% if category_data.news %}
+                <div class="main-news">
+                    {% with category_data.news.0 as main_news %}
+                    <article class="news-card main">
+                        <div class="news-image">
+                            {% if main_news.featured_image %}
+                            <img src="{{ main_news.featured_image.url }}" alt="{{ main_news.title }}" loading="lazy">
+                            {% else %}
+                            <div class="placeholder-image">
+                                <i class="fas fa-newspaper" style="font-size: 2.5rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="news-content">
+                            <h3><a href="{{ main_news.get_absolute_url }}">{{ main_news.title }}</a></h3>
+                            <p>{{ main_news.excerpt|truncatewords:15 }}</p>
+                            <div class="news-meta">
+                                {% if main_news.school %}
+                                <span class="school-badge">{{ main_news.school.abbreviation|default:main_news.school.name }}</span>
+                                {% endif %}
+                                <span class="news-date">{{ main_news.published_date|date:"M j" }}</span>
+                            </div>
+                        </div>
+                    </article>
+                    {% endwith %}
+                </div>
+                
+                <div class="sub-news">
+                    {% for news in category_data.news|slice:"1:4" %}
+                    <article class="news-card sub">
+                        <h4><a href="{{ news.get_absolute_url }}">{{ news.title|truncatewords:8 }}</a></h4>
+                        <div class="news-meta">
+                            {% if news.school %}
+                            <span class="school-badge">{{ news.school.abbreviation|default:news.school.name }}</span>
+                            {% endif %}
+                            <span class="news-date">{{ news.published_date|date:"M j" }}</span>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="no-news">
+                    <i class="fas fa-newspaper"></i>
+                    <p>No {{ category_data.category.name|lower }} available</p>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="news-category">
+                <div class="no-news">
+                    <i class="fas fa-newspaper"></i>
+                    <p>No news categories available</p>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Featured Schools Section -->
+            {% if schools %}
+            <div class="news-category schools-section">
+                <div class="category-header">
+                    <h2>FEATURED SCHOOLS</h2>
+                    <a href="{% url 'news:school_list' %}" class="view-all">View All</a>
+                </div>
+                
+                <div class="schools-grid">
+                    {% for school in schools %}
+                    <a href="{% url 'news:school_news' school.slug %}" class="school-card">
+                        <div class="school-logo">
+                            {% if school.logo %}
+                            <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
+                            {% else %}
+                            <div class="placeholder-image" style="height: 80px;">
+                                <i class="fas fa-university" style="font-size: 2rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if school.abbreviation %}
+                        <span class="school-abbr">{{ school.abbreviation }}</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
 
-<style>
-    .whatsapp-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    background-color: #25D366; /* WhatsApp green */
-    border-radius: 50px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    margin: 20px auto 0;
-}
-
-.whatsapp-btn i {
-    font-size: 18px;
-}
-
-.whatsapp-btn:hover {
-    background-color: #1ebe5d;
-    transform: translateY(-2px);
-}
-
-.hero-content {
-    text-align: center; /* ensures everything stays centered */
-}
-
-</style>
-
-
-    <!-- ========== FEATURED NEWS SECTION ========== -->
-    {% if featured_news %}
-        <section class="featured-section">
-            <div class="container">
-                <h2 class="section-title">Featured Stories</h2>
-                <div class="featured-grid">
-                    {% for news in featured_news %}
-                        <article class="featured-card {% if forloop.first %}featured-main{% endif %}">
-                            <!-- Featured Card Image -->
-                            <div class="card-image" style="
-                                position: relative;
-                                width: 100%;
-                                min-height: 250px;
-                                overflow: hidden;
-                                border-radius: 8px 8px 0 0;
-                            ">
-                                {% if news.featured_image %}
-                                    <img src="{{ news.featured_image.url }}" 
-                                        alt="{{ news.title }}" 
-                                        loading="lazy"
-                                        style="
-                                            width: 100%;
-                                            height: 100%;
-                                            object-fit: cover;
-                                            object-position: center top;
-                                            display: block;
-                                        ">
-                                {% else %}
-                                    <div class="placeholder-image" style="
-                                        width: 100%;
-                                        height: 100%;
-                                        background: #f0f0f0;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        color: #666;
-                                    ">
-                                        <i class="fas fa-newspaper" style="font-size: 3rem;"></i>
-                                    </div>
-                                {% endif %}
-                                
-                                <!-- Card Overlay with Category and School -->
-                                <div class="card-overlay" style="
-                                    display: flex;
-                                    flex-wrap: wrap;
-                                    gap: 8px;
-                                    padding: 12px;
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    right: 0;
-                                    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
-                                    z-index: 2;
-                                ">
-                                    <span class="card-category" style="
-                                        background: rgba(255,255,255,0.9);
-                                        color: #333;
-                                        padding: 4px 8px;
-                                        border-radius: 12px;
-                                        font-size: 12px;
-                                        font-weight: 600;
-                                        white-space: nowrap;
-                                        flex-shrink: 0;
-                                    ">{{ news.category.name }}</span>
-                                    
-                                    {% if news.school %}
-                                    <span class="card-school" style="
-                                        background: rgba(0,123,255,0.9);
-                                        color: white;
-                                        padding: 4px 8px;
-                                        border-radius: 12px;
-                                        font-size: 12px;
-                                        font-weight: 500;
-                                        white-space: nowrap;
-                                        flex-shrink: 0;
-                                    ">{{ news.school.name }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                            <!-- Featured Card Content -->
-                            <div class="card-content">
-                                <h3 class="card-title">
-                                    <a href="{{ news.get_absolute_url }}">{{ news.title }}</a>
-                                </h3>
-                                <a href="{{ news.get_absolute_url }}" class="read-more">Read More</a>
-                            </div>
-                        </article>
-                    {% endfor %}
-                </div>
-            </div>
-        </section>
-
-        <!-- Enhanced Mobile Responsive Styles -->
-        <style>
-            /* Main featured card (first item) specific styles */
-            .featured-main .card-image {
-                min-height: 250px !important;
-            }
-            
-            /* Ensure proper image display - full image visible */
-            .featured-card img {
-                transition: transform 0.3s ease;
-            }
-            
-            .featured-card:hover img {
-                transform: scale(1.02);
-            }
-            
-            /* Mobile responsive adjustments */
-            @media (max-width: 767px) {
-                .card-overlay {
-                    padding: 8px !important;
-                    gap: 6px !important;
-                }
-                
-                .card-category,
-                .card-school {
-                    font-size: 10px !important;
-                    padding: 3px 6px !important;
-                }
-            }
-
-            @media (max-width: 480px) {
-                .card-overlay {
-                    padding: 6px !important;
-                    gap: 4px !important;
-                }
-                
-                .card-category,
-                .card-school {
-                    font-size: 9px !important;
-                    padding: 2px 5px !important;
-                }
-            }
-        </style>
-    {% endif %}
-
-    <!-- ========== NEWS CATEGORIES GRID ========== -->
-    <section class="categories-section">
-        <div class="container">
-            <div class="news-grid">
-                
-                <!-- ===== DYNAMIC CATEGORIES SECTIONS ===== -->
-                {% for category_data in categories_with_news %}
-                    <div class="news-category">
-                        <div class="category-header">
-                            <h2>{{ category_data.category.name|upper }}</h2>
-                            <a href="{% url 'news:category_news' category_data.category.slug %}" class="view-all">View All</a>
-                        </div>
-                        
-                        {% if category_data.news %}
-                            <!-- Main Category News Article -->
-                            <div class="main-news">
-                                {% with category_data.news.0 as main_news %}
-                                    <article class="news-card main">
-                                        <!-- Main News Image -->
-                                        <div class="news-image" style="
-                                            position: relative;
-                                            width: 100%;
-                                            height: auto;
-                                            border-radius: 8px 8px 0 0;
-                                            background: #f8f9fa;
-                                        ">
-                                            {% if main_news.featured_image %}
-                                                <img src="{{ main_news.featured_image.url }}" 
-                                                    alt="{{ main_news.title }}" 
-                                                    loading="lazy"
-                                                    style="
-                                                        width: 100%;
-                                                        height: auto;
-                                                        display: block;
-                                                        border-radius: 8px 8px 0 0;
-                                                    ">
-                                            {% else %}
-                                                <div class="placeholder-image" style="
-                                                    width: 100%;
-                                                    height: 200px;
-                                                    background: #f0f0f0;
-                                                    display: flex;
-                                                    align-items: center;
-                                                    justify-content: center;
-                                                    color: #666;
-                                                    border-radius: 8px 8px 0 0;
-                                                ">
-                                                    <!-- Dynamic icon based on category -->
-                                                    {% if 'school' in category_data.category.slug %}
-                                                        <i class="fas fa-graduation-cap" style="font-size: 3rem;"></i>
-                                                    {% elif 'global' in category_data.category.slug %}
-                                                        <i class="fas fa-globe" style="font-size: 3rem;"></i>
-                                                    {% elif 'sport' in category_data.category.slug %}
-                                                        <i class="fas fa-football-ball" style="font-size: 3rem;"></i>
-                                                    {% elif 'entertain' in category_data.category.slug %}
-                                                        <i class="fas fa-film" style="font-size: 3rem;"></i>
-                                                    {% elif 'tech' in category_data.category.slug %}
-                                                        <i class="fas fa-laptop" style="font-size: 3rem;"></i>
-                                                    {% elif 'health' in category_data.category.slug %}
-                                                        <i class="fas fa-heart" style="font-size: 3rem;"></i>
-                                                    {% elif 'politic' in category_data.category.slug %}
-                                                        <i class="fas fa-vote-yea" style="font-size: 3rem;"></i>
-                                                    {% elif 'business' in category_data.category.slug %}
-                                                        <i class="fas fa-briefcase" style="font-size: 3rem;"></i>
-                                                    {% else %}
-                                                        <i class="fas fa-newspaper" style="font-size: 3rem;"></i>
-                                                    {% endif %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                        
-                                        <!-- Main News Content -->
-                                        <div class="news-content">
-                                            <h3>
-                                                <a href="{{ main_news.get_absolute_url }}">
-                                                    {{ main_news.title }}
-                                                </a>
-                                            </h3>
-                                            <p>{{ main_news.excerpt|truncatewords:15 }}</p>
-                                            
-                                            <!-- Main News Meta Information -->
-                                            <div class="news-meta">
-                                                {% if main_news.school %}
-                                                    <span class="school-badge">
-                                                        {{ main_news.school.abbreviation|default:main_news.school.name }}
-                                                    </span>
-                                                {% endif %}
-                                                <span class="news-date">
-                                                    {{ main_news.published_date|date:"M j" }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </article>
-                                {% endwith %}
-                            </div>
-                            
-                            <!-- Sub Category News Articles -->
-                            <div class="sub-news">
-                                {% for news in category_data.news|slice:"1:4" %}
-                                    <article class="news-card sub">
-                                        <h4>
-                                            <a href="{{ news.get_absolute_url }}">
-                                                {{ news.title|truncatewords:8 }}
-                                            </a>
-                                        </h4>
-                                        
-                                        <div class="news-meta">
-                                            {% if news.school %}
-                                                <span class="school-badge">
-                                                    {{ news.school.abbreviation|default:news.school.name }}
-                                                </span>
-                                            {% endif %}
-                                            <span class="news-date">
-                                                {{ news.published_date|date:"M j" }}
-                                            </span>
-                                        </div>
-                                    </article>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <!-- No News Available for this Category -->
-                            <div class="no-news">
-                                {% if 'school' in category_data.category.slug %}
-                                    <i class="fas fa-graduation-cap"></i>
-                                {% elif 'global' in category_data.category.slug %}
-                                    <i class="fas fa-globe"></i>
-                                {% elif 'sport' in category_data.category.slug %}
-                                    <i class="fas fa-football-ball"></i>
-                                {% elif 'entertain' in category_data.category.slug %}
-                                    <i class="fas fa-film"></i>
-                                {% elif 'tech' in category_data.category.slug %}
-                                    <i class="fas fa-laptop"></i>
-                                {% elif 'health' in category_data.category.slug %}
-                                    <i class="fas fa-heart"></i>
-                                {% elif 'politic' in category_data.category.slug %}
-                                    <i class="fas fa-vote-yea"></i>
-                                {% elif 'business' in category_data.category.slug %}
-                                    <i class="fas fa-briefcase"></i>
-                                {% else %}
-                                    <i class="fas fa-newspaper"></i>
-                                {% endif %}
-                                <p>No {{ category_data.category.name|lower }} available</p>
-                            </div>
-                        {% endif %}
-                    </div>
-                {% empty %}
-                    <!-- No Categories Available -->
-                    <div class="news-category">
-                        <div class="no-news">
-                            <i class="fas fa-newspaper"></i>
-                            <p>No news categories available</p>
-                        </div>
-                    </div>
-                {% endfor %}
-
-                <!-- ===== FEATURED SCHOOLS SECTION ===== -->
-                {% if schools %}
-                    <div class="news-category schools-section">
-                        <div class="category-header">
-                            <h2>FEATURED SCHOOLS</h2>
-                            <a href="{% url 'news:school_list' %}" class="view-all">View All</a>
-                        </div>
-                        
-                        <div class="schools-grid">
-                            {% for school in schools %}
-                                <a href="{% url 'news:school_news' school.slug %}" class="school-card">
-                                    <!-- School Logo -->
-                                    <div class="school-logo" style="
-                                        position: relative;
-                                        width: 100%;
-                                        height: auto;
-                                        border-radius: 8px;
-                                        background: #f8f9fa;
-                                    ">
-                                        {% if school.logo %}
-                                            <img src="{{ school.logo.url }}" 
-                                                alt="{{ school.name }}" 
-                                                loading="lazy"
-                                                style="
-                                                    width: 100%;
-                                                    height: auto;
-                                                    display: block;
-                                                    border-radius: 8px;
-                                                ">
-                                        {% else %}
-                                            <div class="school-placeholder" style="
-                                                width: 100%;
-                                                height: 80px;
-                                                background: #f0f0f0;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                color: #666;
-                                                border-radius: 8px;
-                                            ">
-                                                <i class="fas fa-university" style="font-size: 2rem;"></i>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <!-- School Information -->
-                                    {% if school.abbreviation %}
-                                        <span class="school-abbr">{{ school.abbreviation }}</span>
-                                    {% endif %}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-                
-            </div>
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+    <div class="newsletter-content">
+        <div class="newsletter-text">
+            <h3>Stay Updated</h3>
+            <p>Get the latest news delivered to your inbox</p>
         </div>
-    </section>
+        <form class="newsletter-form" action="#" method="POST">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </div>
+</section>
 
-    <!-- Enhanced styles for full image display -->
-    <style>
-        /* Ensure images display at their natural size */
-        .categories-section .news-image {
-            overflow: visible !important;
-        }
-        
-        .categories-section .news-image img,
-        .categories-section .school-logo img {
-            transition: transform 0.3s ease;
-            max-width: 100%;
-            height: auto !important;
-        }
-        
-        .categories-section .news-card:hover .news-image img,
-        .categories-section .school-card:hover .school-logo img {
-            transform: scale(1.02);
-        }
-        
-        /* Mobile responsive adjustments */
-        @media (max-width: 767px) {
-            .placeholder-image {
-                height: 150px !important;
-            }
-            
-            .school-placeholder {
-                height: 60px !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .placeholder-image {
-                height: 120px !important;
-            }
-            
-            .school-placeholder {
-                height: 50px !important;
-            }
-        }
-    </style>
-
-    <!-- Enhanced styles for full image display -->
-    <style>
-        /* Ensure images display at their natural size */
-        .categories-section .news-image {
-            overflow: visible !important;
-        }
-        
-        .categories-section .news-image img,
-        .categories-section .school-logo img {
-            transition: transform 0.3s ease;
-            max-width: 100%;
-            height: auto !important;
-        }
-        
-        .categories-section .news-card:hover .news-image img,
-        .categories-section .school-card:hover .school-logo img {
-            transform: scale(1.02);
-        }
-        
-        /* Mobile responsive adjustments */
-        @media (max-width: 767px) {
-            .placeholder-image {
-                height: 150px !important;
-            }
-            
-            .school-placeholder {
-                height: 60px !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .placeholder-image {
-                height: 120px !important;
-            }
-            
-            .school-placeholder {
-                height: 50px !important;
-            }
-        }
-    </style>
-
-    <!-- ========== NEWSLETTER SUBSCRIPTION SECTION ========== -->
-    <section class="newsletter-section">
-        <div class="container">
-            <div class="newsletter-content">
-                <!-- Newsletter Text Content -->
-                <div class="newsletter-text">
-                    <h3>Stay Updated</h3>
-                    <p>Get the latest news delivered to your inbox</p>
-                </div>
-                
-                <!-- Newsletter Subscription Form -->
-                <form class="newsletter-form" action="#" method="POST">
-                    {% csrf_token %}
-                    <input type="email" 
-                           name="email" 
-                           placeholder="Enter your email" 
-                           required>
-                    <button type="submit">Subscribe</button>
-                </form>
-            </div>
+<!-- Past Questions CTA -->
+{% if not hide_cta %}
+<section class="cta-section">
+    <div class="cta-card">
+        <div class="cta-icon">
+            <i class="fas fa-download"></i>
         </div>
-    </section>
-    
-    <!-- Past Questions CTA Section -->
-    {% if not hide_cta %}
-    <section style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); 
-                    padding: 2rem 1rem; 
-                    display: flex; 
-                    justify-content: center; 
-                    align-items: center; 
-                    min-height: 120px;">
-        <div style="max-width: 400px; 
-                    width: 100%; 
-                    background: rgba(255, 255, 255, 0.95); 
-                    border-radius: 16px; 
-                    padding: 1.5rem; 
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); 
-                    text-align: center; 
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.1);">
-            
-            <div style="font-size: 2.5rem; 
-                        color: #ff5722; 
-                        margin-bottom: 1rem;
-                        filter: drop-shadow(0 2px 4px rgba(255, 87, 34, 0.3));">
-                <i class="fas fa-download"></i>
-            </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <h3 style="margin: 0 0 0.75rem 0; 
-                        font-size: 1.375rem; 
-                        font-weight: 700; 
-                        color: #2c3e50; 
-                        line-height: 1.2;
-                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">
-                    Download Past Questions
-                </h3>
-                <p style="margin: 0; 
-                        font-size: 0.9rem; 
-                        color: #5a6c7d; 
-                        line-height: 1.6;
-                        font-weight: 500;">
-                    Access past questions for exam preparation. Download PDFs to study offline and boost your performance.
-                </p>
-            </div>
-            
-            <a href="{% url 'news:past_questions' %}" 
-            style="display: inline-block; 
-                    background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%); 
-                    color: #ffffff; 
-                    padding: 0.875rem 2rem; 
-                    border-radius: 25px; 
-                    text-decoration: none; 
-                    font-size: 0.875rem; 
-                    font-weight: 700; 
-                    text-transform: uppercase; 
-                    letter-spacing: 1px; 
-                    transition: all 0.3s ease; 
-                    box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4);
-                    border: none;
-                    position: relative;
-                    overflow: hidden;"
-            onmouseover="this.style.background='linear-gradient(135deg, #e64a19 0%, #d84315 100%)'; 
-                            this.style.transform='translateY(-2px) scale(1.02)'; 
-                            this.style.boxShadow='0 8px 25px rgba(255, 87, 34, 0.5)';"
-            onmouseout="this.style.background='linear-gradient(135deg, #ff5722 0%, #e64a19 100%)'; 
-                        this.style.transform='translateY(0) scale(1)'; 
-                        this.style.boxShadow='0 4px 15px rgba(255, 87, 34, 0.4)';">
-            View Past Questions
-            </a>
-        </div>
-    </section>
-    {% endif %}
+        <h3>Download Past Questions</h3>
+        <p>Access past questions for exam preparation. Download PDFs to study offline and boost your performance.</p>
+        <a href="{% url 'news:past_questions' %}" class="cta-btn">View Past Questions</a>
+    </div>
+</section>
+{% endif %}
 
 {% endblock %}

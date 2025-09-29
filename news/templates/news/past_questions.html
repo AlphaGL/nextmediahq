@@ -4,310 +4,555 @@
 {% block title %}Past Questions - NextMedia{% endblock %}
 
 {% block content %}
-<section class="hero-section">
-    <div class="container">
-        <div class="hero-content">
-            <h1>Past Questions</h1>
-            <p>Download past examination questions from various schools to help with your studies</p>
-        </div>
-    </div>
-</section>
-
-<section class="past-questions-section" style="padding: 4rem 0; background: #0f0f23;">
-    <div class="container">
-        <!-- Filters -->
-        <div class="filters-container" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; border: 1px solid rgba(255, 255, 255, 0.1);">
-            <form method="GET" class="filters-form" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
-                <div class="filter-group" style="flex: 1; min-width: 200px;">
-                    <label for="school" style="display: block; color: #fff; margin-bottom: 0.5rem; font-weight: 600;">Filter by School:</label>
-                    <select name="school" id="school" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: #fff; backdrop-filter: blur(10px);">
-                        <option value="">All Schools</option>
-                        {% for school in schools %}
-                            <option value="{{ school.slug }}" {% if request.GET.school == school.slug %}selected{% endif %}>
-                                {{ school.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="filter-group" style="flex: 1; min-width: 200px;">
-                    <label for="subject" style="display: block; color: #fff; margin-bottom: 0.5rem; font-weight: 600;">Filter by Subject:</label>
-                    <input type="text" name="subject" id="subject" value="{{ request.GET.subject }}" placeholder="Enter subject name..." style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.1); color: #fff; backdrop-filter: blur(10px);">
-                </div>
-                
-                <button type="submit" style="background: #ff6b35; color: #fff; border: none; padding: 0.8rem 2rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-                    <i class="fas fa-filter" style="margin-right: 0.5rem;"></i>Filter
-                </button>
-            </form>
-        </div>
-
-        <!-- Results Count -->
-        {% if questions %}
-        <div class="results-info" style="color: rgba(255, 255, 255, 0.7); margin-bottom: 2rem; font-size: 0.9rem;">
-            <p>
-                <i class="fas fa-file-alt" style="margin-right: 0.5rem; color: #ff6b35;"></i>
-                Showing {{ questions|length }} of {{ questions.paginator.count }} past questions
-                {% if request.GET.school or request.GET.subject %}
-                    (filtered)
-                {% endif %}
-            </p>
-        </div>
-        {% endif %}
-
-        <!-- Past Questions Grid -->
-        {% if questions %}
-        <div class="questions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
-            {% for question in questions %}
-            <div class="question-card" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; position: relative; overflow: hidden;">
-                <!-- Cover Image (if available) -->
-                {% if question.cover_image %}
-                <div class="question-image" style="width: 100%; height: 120px; border-radius: 10px; overflow: hidden; margin-bottom: 1rem;">
-                    <img src="{{ question.cover_image.url }}" alt="{{ question.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                {% endif %}
-                
-                <div class="question-header" style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem; gap: 1rem;">
-                    {% if not question.cover_image %}
-                    <div class="question-icon" style="background: rgba(255, 107, 53, 0.2); width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ff6b35; font-size: 1.2rem; flex-shrink: 0;">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="question-info" style="flex: 1;">
-                        <h3 style="color: #fff; font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.5rem;">
-                            {{ question.title }}
-                        </h3>
-                        
-                        <div class="question-meta" style="display: flex; flex-direction: column; gap: 0.3rem;">
-                            <span class="school-name" style="color: #ff6b35; font-weight: 600; font-size: 0.9rem;">
-                                <i class="fas fa-university" style="margin-right: 0.3rem;"></i>
-                                {{ question.school.name }}
-                            </span>
-                            
-                            <div style="display: flex; gap: 1rem; font-size: 0.8rem; flex-wrap: wrap;">
-                                <span style="color: rgba(255, 255, 255, 0.7);">
-                                    <i class="fas fa-book" style="margin-right: 0.3rem;"></i>
-                                    {{ question.subject }}
-                                </span>
-                                <span style="color: rgba(255, 255, 255, 0.7);">
-                                    <i class="fas fa-calendar" style="margin-right: 0.3rem;"></i>
-                                    {% if question.start_year == question.end_year %}
-                                        {{ question.start_year }}
-                                    {% else %}
-                                        {{ question.start_year }} - {{ question.end_year }}
-                                    {% endif %}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                {% if question.description %}
-                <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.5;">
-                    {{ question.description|truncatewords:20 }}
-                </p>
-                {% endif %}
-                
-                <div class="question-footer" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-                    <a href="{{ question.link }}" target="_blank" rel="noopener noreferrer"
-                    style="background: #ff6b35; color: #fff; text-decoration: none; padding: 0.7rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-external-link-alt"></i>
-                        Get Access
-                    </a>
-                    
-                    <div class="question-stats" style="display: flex; align-items: center; gap: 1rem; color: rgba(255, 255, 255, 0.5); font-size: 0.8rem;">
-                        <span>
-                            <i class="fas fa-clock" style="margin-right: 0.3rem;"></i>
-                            {{ question.created_at|date:"M d, Y" }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <!-- Pagination -->
-        {% if questions.has_other_pages %}
-        <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 3rem;">
-            {% if questions.has_previous %}
-                <a href="?page=1{% if request.GET.school %}&school={{ request.GET.school }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}" class="page-link" style="padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none; border-radius: 8px; transition: all 0.3s ease;">
-                    <i class="fas fa-angle-double-left"></i>
-                </a>
-                <a href="?page={{ questions.previous_page_number }}{% if request.GET.school %}&school={{ request.GET.school }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}" class="page-link" style="padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none; border-radius: 8px; transition: all 0.3s ease;">
-                    <i class="fas fa-angle-left"></i>
-                </a>
-            {% endif %}
-            
-            <span class="current-page" style="padding: 0.5rem 1rem; background: #ff6b35; color: #fff; border-radius: 8px; font-weight: 600;">
-                Page {{ questions.number }} of {{ questions.paginator.num_pages }}
-            </span>
-            
-            {% if questions.has_next %}
-                <a href="?page={{ questions.next_page_number }}{% if request.GET.school %}&school={{ request.GET.school }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}" class="page-link" style="padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none; border-radius: 8px; transition: all 0.3s ease;">
-                    <i class="fas fa-angle-right"></i>
-                </a>
-                <a href="?page={{ questions.paginator.num_pages }}{% if request.GET.school %}&school={{ request.GET.school }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}" class="page-link" style="padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.1); color: #fff; text-decoration: none; border-radius: 8px; transition: all 0.3s ease;">
-                    <i class="fas fa-angle-double-right"></i>
-                </a>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        {% else %}
-        <!-- No Questions Found -->
-        <div class="no-questions" style="text-align: center; padding: 4rem 2rem; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
-            <div style="font-size: 4rem; color: rgba(255, 107, 53, 0.3); margin-bottom: 1rem;">
-                <i class="fas fa-search"></i>
-            </div>
-            <h3 style="color: #fff; font-size: 1.5rem; margin-bottom: 1rem;">No Past Questions Found</h3>
-            <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 2rem;">
-                {% if request.GET.school or request.GET.subject %}
-                    No questions match your current filters. Try adjusting your search criteria.
-                {% else %}
-                    No past questions have been uploaded yet. Check back soon!
-                {% endif %}
-            </p>
-            {% if request.GET.school or request.GET.subject %}
-            <a href="{% url 'news:past_questions' %}" style="background: #ff6b35; color: #fff; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                <i class="fas fa-refresh" style="margin-right: 0.5rem;"></i>
-                Clear Filters
-            </a>
-            {% endif %}
-        </div>
-        {% endif %}
-    </div>
-</section>
-
 <style>
-.question-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+.page-hero {
+    background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+    padding: 3rem 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.question-card::before {
+.page-hero::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 70%, rgba(100, 255, 218, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.page-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-hero h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-hero p {
+    color: var(--text-secondary);
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    line-height: 1.6;
+}
+
+.filters-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    margin-top: -2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.filters-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow);
+}
+
+.filters-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    align-items: end;
+}
+
+.filter-group label {
+    display: block;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.filter-group select,
+.filter-group input {
     width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
-    transition: left 0.5s;
+    padding: 0.875rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--secondary-bg);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
 }
 
-.question-card:hover::before {
-    left: 100%;
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
 }
 
-.question-card a:hover {
-    background: #e55a2b;
+.filter-btn {
+    background: var(--accent);
+    color: var(--primary-bg);
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.filter-btn:hover {
+    background: var(--accent-secondary);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+}
+
+.content-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+}
+
+.results-info {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.results-info i {
+    color: var(--accent);
+}
+
+.questions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.question-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease;
+}
+
+.question-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px var(--shadow);
+    border-color: var(--accent);
+}
+
+.question-image {
+    width: 100%;
+    height: 160px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
 }
 
 .question-image img {
-    transition: transform 0.3s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
 .question-card:hover .question-image img {
-    transform: scale(1.05);
+    transform: scale(1.1);
+}
+
+.question-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.question-icon {
+    background: linear-gradient(135deg, rgba(100, 255, 218, 0.2) 0%, rgba(0, 168, 255, 0.2) 100%);
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.question-info h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+}
+
+.question-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.school-name {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.question-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+}
+
+.question-details span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.question-description {
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.question-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.access-btn {
+    background: var(--accent);
+    color: var(--primary-bg);
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.access-btn:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+}
+
+.question-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+}
+
+.page-link,
+.current-page {
+    min-width: 45px;
+    padding: 0.75rem 1rem;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .page-link:hover {
-    background: rgba(255, 107, 53, 0.2);
+    background: var(--accent);
+    color: var(--primary-bg);
+    border-color: var(--accent);
     transform: translateY(-2px);
 }
 
-.filters-form select:focus,
-.filters-form input:focus {
-    outline: none;
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+.current-page {
+    background: var(--accent);
+    color: var(--primary-bg);
+    border-color: var(--accent);
 }
 
-.filters-form button:hover {
-    background: #e55a2b;
+.no-questions {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.no-questions i {
+    font-size: 4rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    opacity: 0.3;
+}
+
+.no-questions h3 {
+    color: var(--text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.no-questions p {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.clear-filters-btn {
+    background: var(--accent);
+    color: var(--primary-bg);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.clear-filters-btn:hover {
+    background: var(--accent-secondary);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
 }
 
 @media (max-width: 768px) {
     .filters-form {
-        flex-direction: column;
-    }
-    
-    .filter-group {
-        min-width: auto !important;
+        grid-template-columns: 1fr;
     }
     
     .questions-grid {
-        grid-template-columns: 1fr !important;
-    }
-    
-    .question-header {
-        flex-direction: column;
-        gap: 1rem !important;
+        grid-template-columns: 1fr;
     }
     
     .question-footer {
         flex-direction: column;
-        align-items: stretch !important;
-        gap: 1rem !important;
+        align-items: stretch;
     }
     
-    .question-stats {
-        justify-content: center !important;
+    .access-btn {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-hero {
+        padding: 2rem 1rem;
     }
     
-    .pagination {
-        flex-wrap: wrap;
-        gap: 0.3rem !important;
+    .filters-card {
+        padding: 1.5rem;
     }
     
-    .question-image {
-        height: 100px !important;
+    .question-card {
+        padding: 1.25rem;
+    }
+    
+    .question-header {
+        flex-direction: column;
     }
 }
 </style>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Auto-submit form when filters change
-    const schoolSelect = document.getElementById('school');
-    const subjectInput = document.getElementById('subject');
-    
-    if (schoolSelect) {
-        schoolSelect.addEventListener('change', function() {
-            this.form.submit();
-        });
-    }
-    
-    // Debounce subject input
-    if (subjectInput) {
-        let timeout;
-        subjectInput.addEventListener('input', function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                if (this.value.length >= 3 || this.value.length === 0) {
-                    this.form.submit();
-                }
-            }, 500);
-        });
-    }
-    
-    // Track external link clicks
-    document.querySelectorAll('a[href*="http"]').forEach(link => {
-        if (!link.href.includes(window.location.hostname)) {
-            link.addEventListener('click', function() {
-                const questionTitle = this.closest('.question-card').querySelector('h3').textContent;
-                if (typeof trackEvent === 'function') {
-                    trackEvent('External Link', 'Past Question', questionTitle);
-                }
-            });
-        }
-    });
-});
-</script>
+<section class="page-hero">
+    <div class="page-hero-content">
+        <h1>Past Questions</h1>
+        <p>Download past examination questions from various schools to help with your studies</p>
+    </div>
+</section>
+
+<div class="filters-container">
+    <div class="filters-card">
+        <form method="GET" class="filters-form">
+            <div class="filter-group">
+                <label for="school">Filter by School:</label>
+                <select name="school" id="school">
+                    <option value="">All Schools</option>
+                    {% for school in schools %}
+                    <option value="{{ school.slug }}" {% if request.GET.school == school.slug %}selected{% endif %}>
+                        {{ school.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="subject">Filter by Subject:</label>
+                <input type="text" name="subject" id="subject" value="{{ request.GET.subject }}" placeholder="Enter subject name...">
+            </div>
+            
+            <button type="submit" class="filter-btn">
+                <i class="fas fa-filter"></i>
+                <span>Apply Filters</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<section class="content-section">
+    {% if questions %}
+    <div class="results-info">
+        <i class="fas fa-file-alt"></i>
+        <span>Showing {{ questions|length }} of {{ questions.paginator.count }} past questions
+        {% if request.GET.school or request.GET.subject %}(filtered){% endif %}</span>
+    </div>
+
+    <div class="questions-grid">
+        {% for question in questions %}
+        <div class="question-card">
+            {% if question.cover_image %}
+            <div class="question-image">
+                <img src="{{ question.cover_image.url }}" alt="{{ question.title }}" loading="lazy">
+            </div>
+            {% endif %}
+            
+            <div class="question-header">
+                {% if not question.cover_image %}
+                <div class="question-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                {% endif %}
+                
+                <div class="question-info">
+                    <h3>{{ question.title }}</h3>
+                    
+                    <div class="question-meta">
+                        <span class="school-name">
+                            <i class="fas fa-university"></i>
+                            {{ question.school.name }}
+                        </span>
+                        
+                        <div class="question-details">
+                            <span>
+                                <i class="fas fa-book"></i>
+                                {{ question.subject }}
+                            </span>
+                            <span>
+                                <i class="fas fa-calendar"></i>
+                                {% if question.start_year == question.end_year %}
+                                    {{ question.start_year }}
+                                {% else %}
+                                    {{ question.start_year }} - {{ question.end_year }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if question.description %}
+            <p class="question-description">{{ question.description|truncatewords:20 }}</p>
+            {% endif %}
+            
+            <div class="question-footer">
+                <a href="{{ question.link }}" target="_blank" rel="noopener noreferrer" class="access-btn">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>Get Access</span>
+                </a>
+                
+                <div class="question-stats">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ question.created_at|date:"M d, Y" }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if questions.has_other_pages %}
+    <div class="pagination">
+        {% if questions.has_previous %}
+        <a href="?page=1{% if request.GET.school %}&school={{ request.GET.school }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}" class="page-link">
+            <i class="fas fa-angle-double-left"></i>
+        </a>
+        <a href="?page={{ questions.previous_page_number }}{% if request.GET.school %}&school={{ request.GET.school }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}" class="page-link">
+            <i class="fas fa-angle-left"></i>
+        </a>
+        {% endif %}
+        
+        <span class="current-page">
+            Page {{ questions.number }} of {{ questions.paginator.num_pages }}
+        </span>
+        
+        {% if questions.has_next %}
+        <a href="?page={{ questions.next_page_number }}{% if request.GET.school %}&school={{ request.GET.school }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}" class="page-link">
+            <i class="fas fa-angle-right"></i>
+        </a>
+        <a href="?page={{ questions.paginator.num_pages }}{% if request.GET.school %}&school={{ request.GET.school }}{% endif %}{% if request.GET.subject %}&subject={{ request.GET.subject }}{% endif %}" class="page-link">
+            <i class="fas fa-angle-double-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="no-questions">
+        <i class="fas fa-search"></i>
+        <h3>No Past Questions Found</h3>
+        <p>
+            {% if request.GET.school or request.GET.subject %}
+                No questions match your current filters. Try adjusting your search criteria.
+            {% else %}
+                No past questions have been uploaded yet. Check back soon!
+            {% endif %}
+        </p>
+        {% if request.GET.school or request.GET.subject %}
+        <a href="{% url 'news:past_questions' %}" class="clear-filters-btn">
+            <i class="fas fa-redo"></i>
+            <span>Clear Filters</span>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
 {% endblock %}

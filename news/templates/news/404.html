@@ -3,26 +3,382 @@
 
 {% block title %}Page Not Found - NextMedia{% endblock %}
 
-{% block description %}The page you're looking for doesn't exist. Browse our latest news from schools and around the world.{% endblock %}
-
 {% block content %}
+<style>
+.error-section {
+    background: var(--primary-bg);
+    min-height: calc(100vh - 120px);
+    padding: 3rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.error-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.error-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    font-weight: 900;
+    font-size: clamp(4rem, 12vw, 8rem);
+    line-height: 1;
+}
+
+.error-number span {
+    background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.error-number .zero {
+    animation-delay: 0.2s;
+}
+
+.error-number .four:last-child {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+.error-message {
+    margin-bottom: 2rem;
+}
+
+.error-message h1 {
+    color: var(--text-primary);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.error-message p {
+    color: var(--text-secondary);
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.error-search {
+    margin-bottom: 3rem;
+}
+
+.error-search > p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.error-search-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.search-wrapper:focus-within {
+    border-color: var(--accent);
+}
+
+.search-wrapper i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    z-index: 2;
+}
+
+.error-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.error-search-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.error-search-input:focus {
+    outline: none;
+}
+
+.error-search-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.875rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.error-search-btn:hover {
+    background: var(--accent-secondary);
+}
+
+.quick-nav {
+    margin-bottom: 3rem;
+}
+
+.quick-nav h3 {
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.nav-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 0.75rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+}
+
+.nav-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px var(--shadow);
+    border-color: var(--accent);
+}
+
+.nav-card i {
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.nav-card:hover i {
+    transform: scale(1.1);
+}
+
+.nav-card span {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.nav-card small {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+.recent-news-section {
+    text-align: left;
+}
+
+.recent-news-section h3 {
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.recent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.recent-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.recent-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px var(--shadow);
+}
+
+.recent-image {
+    height: 150px;
+    overflow: hidden;
+}
+
+.recent-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.recent-card:hover .recent-image img {
+    transform: scale(1.05);
+}
+
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    background: var(--secondary-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 2rem;
+}
+
+.recent-content {
+    padding: 1rem;
+}
+
+.recent-category {
+    background: rgba(var(--accent-rgb), 0.2);
+    color: var(--accent);
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.recent-content h4 {
+    margin-bottom: 0.5rem;
+}
+
+.recent-content h4 a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.recent-content h4 a:hover {
+    color: var(--accent);
+}
+
+.recent-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+.recent-school {
+    background: var(--secondary-bg);
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+}
+
+.no-recent {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 2rem;
+}
+
+.no-recent i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .nav-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .recent-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-section {
+        padding: 2rem 1rem;
+    }
+    
+    .nav-grid {
+        grid-template-columns: 1fr;
+        max-width: 300px;
+    }
+    
+    .search-wrapper {
+        flex-direction: column;
+        border-radius: 15px;
+    }
+    
+    .error-search-input {
+        padding: 1rem;
+    }
+    
+    .search-wrapper i {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        align-self: center;
+        margin: 0.5rem 0 0 0;
+    }
+    
+    .error-search-btn {
+        border-radius: 0 0 13px 13px;
+    }
+}
+</style>
+
 <section class="error-section">
     <div class="container">
         <div class="error-content">
-            <!-- Animated 404 -->
             <div class="error-number">
                 <span class="four">4</span>
                 <span class="zero">0</span>
                 <span class="four">4</span>
             </div>
             
-            <!-- Error Message -->
             <div class="error-message">
                 <h1>Page Not Found</h1>
                 <p>Oops! The page you're looking for seems to have wandered off into the news archives.</p>
             </div>
             
-            <!-- Search Alternative -->
             <div class="error-search">
                 <p>Try searching for what you're looking for:</p>
                 <form action="{% url 'news:search' %}" method="GET" class="error-search-form">
@@ -34,14 +390,13 @@
                 </form>
             </div>
             
-            <!-- Quick Navigation -->
             <div class="quick-nav">
                 <h3>Or explore these sections:</h3>
                 <div class="nav-grid">
                     <a href="{% url 'news:home' %}" class="nav-card">
                         <i class="fas fa-home"></i>
                         <span>Home</span>
-                        <small>Latest news and updates</small>
+                        <small>Latest news</small>
                     </a>
                     
                     <a href="{% url 'news:school_list' %}" class="nav-card">
@@ -76,7 +431,7 @@
                 </div>
             </div>
             
-            <!-- Recent News -->
+            {% if recent_news %}
             <div class="recent-news-section">
                 <h3>Recent News You Might Like</h3>
                 <div class="recent-grid">
@@ -84,11 +439,11 @@
                     <article class="recent-card">
                         <div class="recent-image">
                             {% if news.featured_image %}
-                                <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
+                            <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
                             {% else %}
-                                <div class="placeholder-image">
-                                    <i class="fas fa-newspaper"></i>
-                                </div>
+                            <div class="placeholder-image">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
                             {% endif %}
                         </div>
                         <div class="recent-content">
@@ -96,592 +451,26 @@
                             <h4><a href="{{ news.get_absolute_url }}">{{ news.title|truncatechars:60 }}</a></h4>
                             <div class="recent-meta">
                                 {% if news.school %}
-                                    <span class="recent-school">{{ news.school.abbreviation|default:news.school.name }}</span>
+                                <span class="recent-school">{{ news.school.abbreviation|default:news.school.name }}</span>
                                 {% endif %}
-                                <span class="recent-date">{{ news.published_date|date:"M d" }}</span>
+                                <time>{{ news.published_date|date:"M j" }}</time>
                             </div>
                         </div>
                     </article>
-                    {% empty %}
-                    <div class="no-recent">
-                        <i class="fas fa-newspaper"></i>
-                        <p>No recent news available</p>
-                    </div>
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </section>
 
-<style>
-/* 404 Error Page Styles */
-.error-section {
-    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-    min-height: calc(100vh - 200px);
-    padding: 4rem 0;
-    position: relative;
-    overflow: hidden;
-}
-
-.error-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.08) 0%, transparent 50%);
-}
-
-.error-content {
-    text-align: center;
-    position: relative;
-    z-index: 1;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.error-number {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    font-weight: 900;
-    font-size: 8rem;
-    line-height: 1;
-}
-
-.error-number span {
-    background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 50px rgba(255, 107, 53, 0.3);
-    animation: bounce 2s ease-in-out infinite;
-}
-
-.error-number .zero {
-    animation-delay: 0.2s;
-}
-
-.error-number .four:last-child {
-    animation-delay: 0.4s;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
-.error-message {
-    margin-bottom: 3rem;
-}
-
-.error-message h1 {
-    color: #fff;
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.error-message p {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.2rem;
-    max-width: 500px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
-.error-search {
-    margin-bottom: 4rem;
-}
-
-.error-search > p {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-}
-
-.error-search-form {
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.search-wrapper {
-    position: relative;
-    display: flex;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 25px;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-.search-wrapper:focus-within {
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
-}
-
-.search-wrapper i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgba(255, 255, 255, 0.6);
-    z-index: 2;
-}
-
-.error-search-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    padding: 1rem 1rem 1rem 3rem;
-    color: #fff;
-    font-size: 1rem;
-}
-
-.error-search-input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.error-search-input:focus {
-    outline: none;
-}
-
-.error-search-btn {
-    background: #ff6b35;
-    color: #fff;
-    border: none;
-    padding: 1rem 2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.error-search-btn:hover {
-    background: #e55a2b;
-}
-
-.quick-nav {
-    margin-bottom: 4rem;
-}
-
-.quick-nav h3 {
-    color: #fff;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    position: relative;
-}
-
-.quick-nav h3::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);
-    border-radius: 2px;
-}
-
-.nav-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.nav-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 1.5rem 1rem;
-    text-decoration: none;
-    color: #fff;
-    transition: all 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.5rem;
-}
-
-.nav-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 107, 53, 0.3);
-}
-
-.nav-card i {
-    font-size: 2rem;
-    color: #ff6b35;
-    margin-bottom: 0.5rem;
-    transition: all 0.3s ease;
-}
-
-.nav-card:hover i {
-    transform: scale(1.2);
-    color: #fff;
-}
-
-.nav-card span {
-    font-weight: 600;
-    font-size: 1rem;
-    color: #fff;
-}
-
-.nav-card small {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.8rem;
-}
-
-.recent-news-section {
-    text-align: left;
-}
-
-.recent-news-section h3 {
-    color: #fff;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    text-align: center;
-    position: relative;
-}
-
-.recent-news-section h3::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);
-    border-radius: 2px;
-}
-
-.recent-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.recent-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    overflow: hidden;
-    transition: all 0.4s ease;
-}
-
-.recent-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-}
-
-.recent-image {
-    height: 150px;
-    overflow: hidden;
-    position: relative;
-}
-
-.recent-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.recent-card:hover .recent-image img {
-    transform: scale(1.1);
-}
-
-.recent-content {
-    padding: 1rem;
-}
-
-.recent-category {
-    background: rgba(255, 107, 53, 0.2);
-    color: #ff6b35;
-    padding: 0.2rem 0.6rem;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 0.5rem;
-}
-
-.recent-content h4 {
-    margin-bottom: 0.5rem;
-}
-
-.recent-content h4 a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1.4;
-    transition: color 0.3s ease;
-}
-
-.recent-content h4 a:hover {
-    color: #ff6b35;
-}
-
-.recent-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-top: 0.5rem;
-}
-
-.recent-school {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.2rem 0.5rem;
-    border-radius: 8px;
-    font-size: 0.7rem;
-}
-
-.no-recent {
-    grid-column: 1 / -1;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.5);
-    padding: 2rem;
-}
-
-.no-recent i {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: rgba(255, 107, 53, 0.3);
-}
-
-/* Floating Elements Animation */
-.error-section::after {
-    content: '';
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    top: 20%;
-    right: -100px;
-    animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-20px) rotate(10deg);
-    }
-}
-
-/* Add some floating particles */
-.error-section::before {
-    content: '';
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
-    border-radius: 50%;
-    top: 60%;
-    left: -50px;
-    animation: float 4s ease-in-out infinite reverse;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .error-number {
-        font-size: 6rem;
-    }
-    
-    .error-message h1 {
-        font-size: 2rem;
-    }
-    
-    .error-message p {
-        font-size: 1rem;
-    }
-    
-    .nav-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
-    
-    .recent-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .error-search-form {
-        margin: 0 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .error-section {
-        padding: 2rem 0;
-    }
-    
-    .error-number {
-        font-size: 4rem;
-        gap: 0.5rem;
-    }
-    
-    .error-message h1 {
-        font-size: 1.8rem;
-    }
-    
-    .nav-grid {
-        grid-template-columns: 1fr;
-        max-width: 300px;
-    }
-    
-    .search-wrapper {
-        flex-direction: column;
-        border-radius: 15px;
-    }
-    
-    .error-search-input {
-        padding: 1rem;
-        text-align: center;
-    }
-    
-    .search-wrapper i {
-        position: relative;
-        left: auto;
-        top: auto;
-        transform: none;
-        align-self: center;
-        margin: 1rem 0 0 0;
-    }
-    
-    .error-search-btn {
-        border-radius: 0 0 13px 13px;
-    }
-}
-
-/* Loading states and interactions */
-.nav-card {
-    position: relative;
-    overflow: hidden;
-}
-
-.nav-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
-    transition: left 0.5s;
-}
-
-.nav-card:hover::before {
-    left: 100%;
-}
-
-/* Accessibility improvements */
-.error-search-input:focus {
-    outline: none;
-}
-
-.search-wrapper:focus-within {
-    border-color: #ff6b35;
-    box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
-}
-
-.nav-card:focus {
-    outline: 2px solid #ff6b35;
-    outline-offset: 2px;
-}
-
-/* Error illustration effect */
-.error-number {
-    position: relative;
-}
-
-.error-number::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 150%;
-    height: 150%;
-    border: 2px solid rgba(255, 107, 53, 0.2);
-    border-radius: 50%;
-    animation: pulse 3s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0% {
-        transform: translate(-50%, -50%) scale(0.8);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 0;
-    }
-}
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-focus search input
     const searchInput = document.querySelector('.error-search-input');
     if (searchInput) {
-        setTimeout(() => {
-            searchInput.focus();
-        }, 500);
-    }
-    
-    // Add entrance animations
-    const elements = document.querySelectorAll('.error-number, .error-message, .error-search, .nav-card, .recent-card');
-    elements.forEach((el, index) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        
-        setTimeout(() => {
-            el.style.transition = 'all 0.6s ease';
-            el.style.opacity = '1';
-            el.style.transform = 'translateY(0)';
-        }, index * 100);
-    });
-    
-    // Track 404 error
-    if (typeof trackEvent === 'function') {
-        trackEvent('Error', '404', window.location.pathname);
+        setTimeout(() => searchInput.focus(), 500);
     }
 });
-</script>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-// Add any additional JavaScript specific to the 404 page here
-console.log('404 Page loaded for:', window.location.pathname);
 </script>
 {% endblock %}

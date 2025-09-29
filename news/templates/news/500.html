@@ -1,33 +1,107 @@
+<!-- 500.html -->
 {% extends 'news/base.html' %}
 {% load static %}
 
 {% block title %}Server Error - NextMedia{% endblock %}
 
 {% block content %}
-<section class="error-section">
-    <div class="container">
-        <div class="error-content">
-            <div class="error-number">
-                <span class="five">5</span>
-                <span class="zero">0</span>
-                <span class="zero">0</span>
-            </div>
-            
-            <div class="error-message">
-                <h1>Internal Server Error</h1>
-                <p>Something went wrong on our end. Our team has been notified and is working to fix the issue.</p>
-            </div>
-            
-            <div class="error-actions">
-                <a href="{% url 'news:home' %}" class="error-btn primary">
-                    <i class="fas fa-home"></i>
-                    Go to Homepage
-                </a>
-                <button onclick="window.history.back()" class="error-btn secondary">
-                    <i class="fas fa-arrow-left"></i>
-                    Go Back
-                </button>
-            </div>
+<style>
+.error-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.error-container {
+    text-align: center;
+    max-width: 500px;
+}
+
+.error-code {
+    font-size: clamp(5rem, 15vw, 8rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 1rem;
+}
+
+.error-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.error-description {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.error-btn {
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.error-btn.primary {
+    background: var(--accent);
+    color: white;
+}
+
+.error-btn.primary:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-2px);
+}
+
+.error-btn.secondary {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.error-btn.secondary:hover {
+    background: var(--secondary-bg);
+    transform: translateY(-2px);
+}
+</style>
+
+<section class="error-page">
+    <div class="error-container">
+        <div class="error-code">500</div>
+        <h1 class="error-title">Internal Server Error</h1>
+        <p class="error-description">Something went wrong on our end. Our team has been notified and is working to fix the issue.</p>
+        
+        <div class="error-actions">
+            <a href="{% url 'news:home' %}" class="error-btn primary">
+                <i class="fas fa-home"></i>
+                Go to Homepage
+            </a>
+            <button onclick="window.history.back()" class="error-btn secondary">
+                <i class="fas fa-arrow-left"></i>
+                Go Back
+            </button>
         </div>
     </div>
 </section>

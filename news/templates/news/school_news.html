@@ -4,134 +4,10 @@
 {% block title %}{{ school.name }} News - NextMedia{% endblock %}
 
 {% block content %}
-<section class="school-header">
-    <div class="container">
-        <div class="school-header-content">
-            <div class="school-info-header">
-                <div class="school-logo-header">
-                    {% if school.logo %}
-                        <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
-                    {% else %}
-                        <div class="school-placeholder-header">
-                            <i class="fas fa-university"></i>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="school-details">
-                    <h1>{{ school.name }}</h1>
-                    {% if school.abbreviation %}
-                        <span class="school-abbr-header">{{ school.abbreviation }}</span>
-                    {% endif %}
-                    {% if school.description %}
-                        <p class="school-description">{{ school.description }}</p>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="school-stats">
-                <div class="stat">
-                    <span class="stat-number">{{ news.paginator.count }}</span>
-                    <span class="stat-label">News Articles</span>
-                </div>
-                {% if school.established %}
-                <div class="stat">
-                    <span class="stat-number">{{ school.established|date:"Y" }}</span>
-                    <span class="stat-label">Established</span>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="news-content">
-    <div class="container">
-        <div class="content-header">
-            <h2>Latest News from {{ school.name }}</h2>
-            <div class="breadcrumb">
-                <a href="{% url 'news:home' %}">Home</a>
-                <i class="fas fa-chevron-right"></i>
-                <a href="{% url 'news:school_list' %}">Schools</a>
-                <i class="fas fa-chevron-right"></i>
-                <span>{{ school.name }}</span>
-            </div>
-        </div>
-
-        {% if news %}
-            <div class="news-grid">
-                {% for article in news %}
-                <article class="news-item">
-                    <div class="news-image">
-                        {% if article.featured_image %}
-                            <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
-                        {% else %}
-                            <div class="placeholder-image">
-                                <i class="fas fa-newspaper"></i>
-                            </div>
-                        {% endif %}
-                        <div class="news-overlay">
-                            <span class="news-category">{{ article.category.name }}</span>
-                        </div>
-                    </div>
-                    <div class="news-content">
-                        <h3 class="news-title">
-                            <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
-                        </h3>
-                        <p class="news-excerpt">{{ article.excerpt|truncatewords:25 }}</p>
-                        <div class="news-meta">
-                            <span class="news-date">
-                                <i class="fas fa-clock"></i>
-                                {{ article.published_date|date:"M j, Y" }}
-                            </span>
-                            <a href="{{ article.get_absolute_url }}" class="read-more">
-                                Read More <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-
-            <!-- Pagination -->
-            {% if news.has_other_pages %}
-            <div class="pagination-container">
-                <div class="pagination">
-                    {% if news.has_previous %}
-                        <a href="?page=1" class="page-link">&laquo; First</a>
-                        <a href="?page={{ news.previous_page_number }}" class="page-link">Previous</a>
-                    {% endif %}
-                    
-                    {% for num in news.paginator.page_range %}
-                        {% if news.number == num %}
-                            <span class="page-link current">{{ num }}</span>
-                        {% elif num > news.number|add:'-3' and num < news.number|add:'3' %}
-                            <a href="?page={{ num }}" class="page-link">{{ num }}</a>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if news.has_next %}
-                        <a href="?page={{ news.next_page_number }}" class="page-link">Next</a>
-                        <a href="?page={{ news.paginator.num_pages }}" class="page-link">Last &raquo;</a>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-        {% else %}
-            <div class="no-news">
-                <div class="no-content">
-                    <i class="fas fa-newspaper"></i>
-                    <h3>No News Available</h3>
-                    <p>There are currently no news articles for {{ school.name }}. Check back later for updates!</p>
-                    <a href="{% url 'news:school_list' %}" class="back-btn">Browse Other Schools</a>
-                </div>
-            </div>
-        {% endif %}
-    </div>
-</section>
-
 <style>
 .school-header {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 3rem 0;
+    background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+    padding: 3rem 1rem;
     position: relative;
     overflow: hidden;
 }
@@ -143,10 +19,12 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+    background: radial-gradient(circle at 20% 80%, rgba(100, 255, 218, 0.1) 0%, transparent 50%);
 }
 
 .school-header-content {
+    max-width: 1400px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -162,15 +40,16 @@
 }
 
 .school-logo-header {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    width: 90px;
+    height: 90px;
+    border-radius: 16px;
     overflow: hidden;
-    background: rgba(255, 107, 53, 0.1);
+    background: var(--card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    border: 2px solid var(--border);
 }
 
 .school-logo-header img {
@@ -180,80 +59,83 @@
 }
 
 .school-placeholder-header {
-    color: #ff6b35;
-    font-size: 2.5rem;
+    color: var(--accent);
+    font-size: 2.25rem;
 }
 
 .school-details h1 {
-    color: #fff;
-    font-size: 2.5rem;
-    font-weight: 700;
+    color: var(--text-primary);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 800;
     margin-bottom: 0.5rem;
+    line-height: 1.2;
 }
 
 .school-abbr-header {
-    background: rgba(255, 107, 53, 0.2);
-    color: #ff6b35;
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    background: linear-gradient(135deg, rgba(100, 255, 218, 0.2) 0%, rgba(0, 168, 255, 0.2) 100%);
+    color: var(--accent);
+    padding: 0.4rem 0.95rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
     margin-bottom: 1rem;
     display: inline-block;
 }
 
 .school-description {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
     line-height: 1.6;
-    max-width: 500px;
+    max-width: 600px;
 }
 
 .school-stats {
     display: flex;
-    gap: 2rem;
+    gap: 1.75rem;
 }
 
 .stat {
     text-align: center;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 1.5rem;
-    border-radius: 15px;
+    background: var(--card-bg);
+    padding: 1.35rem;
+    border-radius: 16px;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border);
+    min-width: 110px;
 }
 
 .stat-number {
     display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #ff6b35;
-    margin-bottom: 0.5rem;
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
 }
 
 .stat-label {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
     font-weight: 500;
 }
 
-.news-content {
-    padding: 4rem 0;
-    background: #0f0f23;
+.news-content-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
 }
 
 .content-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
     flex-wrap: wrap;
     gap: 1rem;
 }
 
 .content-header h2 {
-    color: #fff;
-    font-size: 2rem;
+    color: var(--text-primary);
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
     font-weight: 700;
 }
 
@@ -261,45 +143,47 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .breadcrumb a {
-    color: #ff6b35;
+    color: var(--accent);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .breadcrumb a:hover {
-    color: #e55a2b;
+    color: var(--accent-secondary);
 }
 
 .breadcrumb i {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.65rem;
 }
 
 .breadcrumb span {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
 }
 
 .news-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.75rem;
 }
 
 .news-item {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: 15px;
+    background: var(--card-bg);
+    border-radius: 16px;
     overflow: hidden;
     transition: all 0.4s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border);
+    animation: fadeInUp 0.6s ease;
 }
 
 .news-item:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px var(--shadow);
+    border-color: var(--accent);
 }
 
 .news-image {
@@ -312,11 +196,22 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.5s ease;
 }
 
 .news-item:hover .news-image img {
     transform: scale(1.1);
+}
+
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    background: var(--secondary-bg);
+    font-size: 2.75rem;
 }
 
 .news-overlay {
@@ -326,13 +221,17 @@
 }
 
 .news-category {
-    background: rgba(255, 107, 53, 0.9);
-    color: #fff;
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    background: var(--accent);
+    color: var(--primary-bg);
+    padding: 0.4rem 0.85rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
     backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .news-category {
+    color: white;
 }
 
 .news-content {
@@ -340,54 +239,56 @@
 }
 
 .news-title a {
-    color: #fff;
+    color: var(--text-primary);
     text-decoration: none;
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-size: 1.15rem;
+    font-weight: 700;
     line-height: 1.4;
     transition: color 0.3s ease;
 }
 
 .news-title a:hover {
-    color: #ff6b35;
+    color: var(--accent);
 }
 
 .news-excerpt {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     margin: 1rem 0;
     line-height: 1.6;
+    font-size: 0.9rem;
 }
 
 .news-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
 }
 
 .news-date {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
+    font-size: 0.8rem;
 }
 
 .read-more {
-    color: #ff6b35;
+    color: var(--accent);
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.3rem;
+    font-size: 0.85rem;
 }
 
 .read-more:hover {
-    color: #e55a2b;
     transform: translateX(5px);
 }
 
-/* Pagination */
 .pagination-container {
     display: flex;
     justify-content: center;
@@ -396,54 +297,95 @@
 
 .pagination {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.65rem;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .page-link {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    padding: 0.8rem 1.2rem;
-    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 0.7rem 0.95rem;
+    border-radius: 12px;
     text-decoration: none;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.85rem;
 }
 
 .page-link:hover {
-    background: rgba(255, 107, 53, 0.2);
-    color: #ff6b35;
+    background: var(--accent);
+    color: var(--primary-bg);
+    border-color: var(--accent);
+    transform: translateY(-2px);
 }
 
 .page-link.current {
-    background: #ff6b35;
-    color: #fff;
-    border-color: #ff6b35;
+    background: var(--accent);
+    color: var(--primary-bg);
+    border-color: var(--accent);
 }
 
 .no-news {
-    padding: 4rem 0;
+    padding: 4rem 2rem;
     text-align: center;
 }
 
+.no-content {
+    max-width: 500px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.no-content i {
+    font-size: 3.5rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    opacity: 0.3;
+}
+
+.no-content h3 {
+    color: var(--text-primary);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.no-content p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
 .back-btn {
-    background: #ff6b35;
-    color: #fff;
-    padding: 1rem 2rem;
-    border-radius: 25px;
+    background: var(--accent);
+    color: var(--primary-bg);
+    padding: 0.95rem 1.85rem;
+    border-radius: 12px;
     text-decoration: none;
-    font-weight: 600;
-    display: inline-block;
-    margin-top: 1rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     transition: all 0.3s ease;
 }
 
 .back-btn:hover {
-    background: #e55a2b;
+    background: var(--accent-secondary);
     transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
 }
 
 @media (max-width: 768px) {
+    .school-header {
+        padding: 2rem 1rem;
+    }
+    
     .school-header-content {
         flex-direction: column;
         text-align: center;
@@ -454,12 +396,9 @@
         text-align: center;
     }
     
-    .school-details h1 {
-        font-size: 2rem;
-    }
-    
     .school-stats {
         justify-content: center;
+        flex-wrap: wrap;
     }
     
     .content-header {
@@ -471,5 +410,147 @@
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 480px) {
+    .school-logo-header {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .stat {
+        padding: 1.15rem;
+        min-width: 95px;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+    
+    .news-content {
+        padding: 1.25rem;
+    }
+}
 </style>
+
+<section class="school-header">
+    <div class="school-header-content">
+        <div class="school-info-header">
+            <div class="school-logo-header">
+                {% if school.logo %}
+                    <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
+                {% else %}
+                    <div class="school-placeholder-header">
+                        <i class="fas fa-university"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="school-details">
+                <h1>{{ school.name }}</h1>
+                {% if school.abbreviation %}
+                    <span class="school-abbr-header">{{ school.abbreviation }}</span>
+                {% endif %}
+                {% if school.description %}
+                    <p class="school-description">{{ school.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="school-stats">
+            <div class="stat">
+                <span class="stat-number">{{ news.paginator.count }}</span>
+                <span class="stat-label">News Articles</span>
+            </div>
+            {% if school.established %}
+            <div class="stat">
+                <span class="stat-number">{{ school.established|date:"Y" }}</span>
+                <span class="stat-label">Established</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="news-content-section">
+    <div class="content-header">
+        <h2>Latest News from {{ school.name }}</h2>
+        <div class="breadcrumb">
+            <a href="{% url 'news:home' %}">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="{% url 'news:school_list' %}">Schools</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>{{ school.name }}</span>
+        </div>
+    </div>
+
+    {% if news %}
+        <div class="news-grid">
+            {% for article in news %}
+            <article class="news-item">
+                <div class="news-image">
+                    {% if article.featured_image %}
+                        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
+                    {% else %}
+                        <div class="placeholder-image">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                    {% endif %}
+                    <div class="news-overlay">
+                        <span class="news-category">{{ article.category.name }}</span>
+                    </div>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title">
+                        <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                    </h3>
+                    <p class="news-excerpt">{{ article.excerpt|truncatewords:25 }}</p>
+                    <div class="news-meta">
+                        <span class="news-date">
+                            <i class="fas fa-clock"></i>
+                            {{ article.published_date|date:"M j, Y" }}
+                        </span>
+                        <a href="{{ article.get_absolute_url }}" class="read-more">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        {% if news.has_other_pages %}
+        <div class="pagination-container">
+            <div class="pagination">
+                {% if news.has_previous %}
+                    <a href="?page=1" class="page-link"><i class="fas fa-angle-double-left"></i> First</a>
+                    <a href="?page={{ news.previous_page_number }}" class="page-link"><i class="fas fa-angle-left"></i> Previous</a>
+                {% endif %}
+                
+                {% for num in news.paginator.page_range %}
+                    {% if news.number == num %}
+                        <span class="page-link current">{{ num }}</span>
+                    {% elif num > news.number|add:'-3' and num < news.number|add:'3' %}
+                        <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if news.has_next %}
+                    <a href="?page={{ news.next_page_number }}" class="page-link">Next <i class="fas fa-angle-right"></i></a>
+                    <a href="?page={{ news.paginator.num_pages }}" class="page-link">Last <i class="fas fa-angle-double-right"></i></a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="no-news">
+            <div class="no-content">
+                <i class="fas fa-newspaper"></i>
+                <h3>No News Available</h3>
+                <p>There are currently no news articles for {{ school.name }}. Check back later for updates!</p>
+                <a href="{% url 'news:school_list' %}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Browse Other Schools
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</section>
 {% endblock %}

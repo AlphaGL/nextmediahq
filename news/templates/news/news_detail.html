@@ -5,58 +5,412 @@
 {% block description %}{{ news.excerpt }}{% endblock %}
 
 {% block content %}
+<style>
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+    padding: 0 1rem;
+}
+
+.breadcrumb a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb i {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+}
+
+.breadcrumb span {
+    color: var(--text-secondary);
+}
+
+.article-header {
+    padding: 0 1rem 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.article-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.meta-badge {
+    padding: 0.3rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.category-badge {
+    background: rgba(var(--accent-rgb), 0.2);
+    color: var(--accent);
+}
+
+.school-badge {
+    background: var(--secondary-bg);
+    color: var(--text-secondary);
+}
+
+.author-badge {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+}
+
+.publish-date {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.article-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.article-excerpt {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.social-share {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.social-share span {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.share-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.share-btn.twitter { background: #1DA1F2; }
+.share-btn.facebook { background: #4267B2; }
+.share-btn.whatsapp { background: #25D366; }
+.share-btn.copy { background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--border); }
+
+.share-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px var(--shadow);
+}
+
+.featured-image {
+    margin: 0 1rem 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.featured-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.article-body {
+    padding: 0 1rem;
+    margin-bottom: 2rem;
+}
+
+.content-wrapper {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    line-height: 1.8;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+}
+
+.content-wrapper p {
+    margin-bottom: 1.25rem;
+}
+
+.content-wrapper h2,
+.content-wrapper h3 {
+    color: var(--text-primary);
+    margin: 1.5rem 0 1rem;
+}
+
+.article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin: 0 1rem 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.article-tags {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: var(--secondary-bg);
+    color: var(--accent);
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.article-date-info {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-align: right;
+}
+
+.related-news {
+    padding: 3rem 1rem;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .related-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+.related-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.related-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px var(--shadow);
+}
+
+.related-image {
+    height: 140px;
+    overflow: hidden;
+}
+
+.related-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.related-item:hover .related-image img {
+    transform: scale(1.05);
+}
+
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    background: var(--secondary-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 2rem;
+}
+
+.related-content {
+    padding: 1rem;
+}
+
+.related-content h3 a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.related-content h3 a:hover {
+    color: var(--accent);
+}
+
+.related-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.related-school {
+    background: rgba(var(--accent-rgb), 0.2);
+    color: var(--accent);
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.related-meta time {
+    color: var(--text-secondary);
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    transform: translateY(-3px);
+}
+
+.reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-secondary) 100%);
+    z-index: 9999;
+    transition: width 0.1s ease;
+}
+
+@media (max-width: 768px) {
+    .related-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .article-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .article-date-info {
+        text-align: left;
+    }
+    
+    .content-wrapper {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .share-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+</style>
+
 <article class="news-detail">
     <div class="container">
-        <!-- Breadcrumb -->
         <nav class="breadcrumb">
             <a href="{% url 'news:home' %}">Home</a>
             <i class="fas fa-chevron-right"></i>
             {% if news.school %}
-                <a href="{% url 'news:school_news' news.school.slug %}">{{ news.school.name }}</a>
-                <i class="fas fa-chevron-right"></i>
+            <a href="{% url 'news:school_news' news.school.slug %}">{{ news.school.name }}</a>
+            <i class="fas fa-chevron-right"></i>
             {% endif %}
             <a href="{% url 'news:category_news' news.category.slug %}">{{ news.category.name }}</a>
             <i class="fas fa-chevron-right"></i>
             <span>{{ news.title|truncatewords:5 }}</span>
         </nav>
 
-        <!-- News Header -->
-        <header class="news-header">
-            <div class="news-meta">
-                <span class="category-tag">{{ news.category.name }}</span>
+        <header class="article-header">
+            <div class="article-meta-top">
+                <span class="meta-badge category-badge">{{ news.category.name }}</span>
                 {% if news.school %}
-                    <span class="school-tag">{{ news.school.name }}</span>
+                <span class="meta-badge school-badge">{{ news.school.name }}</span>
                 {% endif %}
-                {% if news.author %}
-                    <span class="author-tag">
-                        <i class="fas fa-user"></i>
-                        {{ news.author }}
-                    </span>
-                {% else %}
-                    <span class="author-tag">
-                        <i class="fas fa-user"></i>
-                        {{ news.published_by.get_full_name|default:news.published_by.username }}
-                    </span>
-                {% endif %}
+                <span class="meta-badge author-badge">
+                    <i class="fas fa-user"></i>
+                    {% if news.author %}{{ news.author }}{% else %}{{ news.published_by.get_full_name|default:news.published_by.username }}{% endif %}
+                </span>
                 <time class="publish-date">
                     <i class="fas fa-clock"></i>
-                    {{ news.published_date|date:"F j, Y \a\t g:i A" }}
+                    {{ news.published_date|date:"F j, Y" }}
                 </time>
             </div>
             
-            <h1 class="news-title">{{ news.title }}</h1>
+            <h1 class="article-title">{{ news.title }}</h1>
             
-            <div class="news-excerpt">
+            <div class="article-excerpt">
                 <p>{{ news.excerpt }}</p>
             </div>
             
-            <!-- Social Share -->
-             
             <div class="social-share">
                 <span>Share:</span>
-                <a href="https://x.com/intent/tweet?text={{ news.title|urlencode }}&url={{ request.build_absolute_uri }}" 
-                   target="_blank" class="share-btn x" aria-label="Share on x">
-                    <i class="fab fa-x"></i>
+                <a href="https://twitter.com/intent/tweet?text={{ news.title|urlencode }}&url={{ request.build_absolute_uri }}" 
+                   target="_blank" class="share-btn twitter" aria-label="Share on Twitter">
+                    <i class="fab fa-twitter"></i>
                 </a>
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
                    target="_blank" class="share-btn facebook" aria-label="Share on Facebook">
@@ -72,54 +426,37 @@
             </div>
         </header>
 
-        <!-- Featured Image -->
         {% if news.featured_image %}
         <div class="featured-image">
             <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
         </div>
         {% endif %}
 
-        <!-- News Content -->
-        <div class="news-content">
+        <div class="article-body">
             <div class="content-wrapper">
                 {{ news.content|linebreaks }}
             </div>
         </div>
 
-        <!-- Article Footer -->
         <footer class="article-footer">
-            <div class="article-info">
-                <div class="article-tags">
-                    <i class="fas fa-tags"></i>
-                    <span class="tag">{{ news.category.name }}</span>
-                    {% if news.school %}
-                        <span class="tag">{{ news.school.name }}</span>
-                    {% endif %}
-                </div>
-                
-                <div class="article-author">
-                    <i class="fas fa-user-edit"></i>
-                    <span>
-                        {% if news.author %}
-                            By {{ news.author }}
-                        {% else %}
-                            By {{ news.published_by.get_full_name|default:news.published_by.username }}
-                        {% endif %}
-                    </span>
-                </div>
+            <div class="article-tags">
+                <i class="fas fa-tags"></i>
+                <span class="tag">{{ news.category.name }}</span>
+                {% if news.school %}
+                <span class="tag">{{ news.school.name }}</span>
+                {% endif %}
             </div>
             
-            <div class="article-date">
-                <p>Published on {{ news.published_date|date:"F j, Y" }}</p>
+            <div class="article-date-info">
+                <p>Published: {{ news.published_date|date:"F j, Y" }}</p>
                 {% if news.updated_at != news.created_at %}
-                    <p>Last updated: {{ news.updated_at|date:"F j, Y" }}</p>
+                <p>Updated: {{ news.updated_at|date:"F j, Y" }}</p>
                 {% endif %}
             </div>
         </footer>
     </div>
 </article>
 
-<!-- Related News -->
 {% if related_news %}
 <section class="related-news">
     <div class="container">
@@ -129,21 +466,18 @@
             <article class="related-item">
                 <div class="related-image">
                     {% if article.featured_image %}
-                        <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
+                    <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
                     {% else %}
-                        <div class="placeholder-image">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
+                    <div class="placeholder-image">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
                     {% endif %}
                 </div>
                 <div class="related-content">
-                    <h3>
-                        <a href="{{ article.get_absolute_url }}">{{ article.title|truncatewords:10 }}</a>
-                    </h3>
-                    <p>{{ article.excerpt|truncatewords:15 }}</p>
+                    <h3><a href="{{ article.get_absolute_url }}">{{ article.title|truncatewords:10 }}</a></h3>
                     <div class="related-meta">
                         {% if article.school %}
-                            <span class="school-badge">{{ article.school.abbreviation|default:article.school.name }}</span>
+                        <span class="related-school">{{ article.school.abbreviation|default:article.school.name }}</span>
                         {% endif %}
                         <time>{{ article.published_date|date:"M j" }}</time>
                     </div>
@@ -155,460 +489,33 @@
 </section>
 {% endif %}
 
-<!-- Back to Top -->
 <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top">
     <i class="fas fa-arrow-up"></i>
 </button>
 
-<style>
-.news-detail {
-    background: #0f0f23;
-    padding: 2rem 0 4rem;
-    min-height: 100vh;
-}
-
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
-    flex-wrap: wrap;
-}
-
-.breadcrumb a {
-    color: #ff6b35;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.breadcrumb a:hover {
-    color: #e55a2b;
-}
-
-.breadcrumb i {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.7rem;
-}
-
-.breadcrumb span {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.news-header {
-    margin-bottom: 3rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.news-meta {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.category-tag,
-.school-tag,
-.author-tag {
-    background: rgba(255, 107, 53, 0.2);
-    color: #ff6b35;
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-.school-tag {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.author-tag {
-    background: rgba(76, 175, 80, 0.2);
-    color: #4CAF50;
-}
-
-.publish-date {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.news-title {
-    color: #fff;
-    font-size: 2.5rem;
-    font-weight: 700;
-    line-height: 1.3;
-    margin-bottom: 1.5rem;
-}
-
-.news-excerpt {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.2rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-}
-
-.social-share {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.social-share span {
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 600;
-}
-
-.share-btn {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    color: #fff;
-}
-
-.share-btn.x { background: #052130; }
-.share-btn.facebook { background: #4267b2; }
-.share-btn.whatsapp { background: #25d366; }
-.share-btn.copy { background: rgba(255, 255, 255, 0.1); }
-
-.share-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.featured-image {
-    margin-bottom: 3rem;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.featured-image img {
-    width: 100%;
-    height: auto;
-    max-height: 500px;
-    object-fit: cover;
-}
-
-.news-content {
-    margin-bottom: 3rem;
-}
-
-.content-wrapper {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 3rem;
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    line-height: 1.8;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
-}
-
-.content-wrapper p {
-    margin-bottom: 1.5rem;
-}
-
-.content-wrapper h2,
-.content-wrapper h3,
-.content-wrapper h4 {
-    color: #fff;
-    margin: 2rem 0 1rem;
-}
-
-.content-wrapper a {
-    color: #ff6b35;
-    text-decoration: underline;
-}
-
-.content-wrapper a:hover {
-    color: #e55a2b;
-}
-
-.article-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.article-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-.article-tags,
-.article-author {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.article-author i {
-    color: #4CAF50;
-}
-
-.tag {
-    background: rgba(255, 107, 53, 0.1);
-    color: #ff6b35;
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
-.article-date {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-    text-align: right;
-}
-
-.related-news {
-    background: #0f0f23;
-    padding: 4rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.related-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.related-item {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: 15px;
-    overflow: hidden;
-    transition: all 0.4s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.related-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-}
-
-.related-image {
-    height: 150px;
-    overflow: hidden;
-    position: relative;
-}
-
-.related-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.placeholder-image {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 107, 53, 0.3);
-    font-size: 2rem;
-}
-
-.related-item:hover .related-image img {
-    transform: scale(1.1);
-}
-
-.related-content {
-    padding: 1.5rem;
-}
-
-.related-content h3 a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.4;
-    transition: color 0.3s ease;
-}
-
-.related-content h3 a:hover {
-    color: #ff6b35;
-}
-
-.related-content p {
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0.5rem 0 1rem;
-    font-size: 0.9rem;
-}
-
-.related-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-}
-
-.school-badge {
-    background: rgba(255, 107, 53, 0.2);
-    color: #ff6b35;
-    padding: 0.2rem 0.6rem;
-    border-radius: 10px;
-    font-weight: 600;
-}
-
-.related-meta time {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.back-to-top {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #ff6b35;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
-}
-
-.back-to-top.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.back-to-top:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 7px 20px rgba(255, 107, 53, 0.4);
-}
-
-@media (max-width: 768px) {
-    .news-title {
-        font-size: 2rem;
-    }
-    
-    .content-wrapper {
-        padding: 2rem;
-    }
-    
-    .article-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem;
-    }
-    
-    .article-date {
-        text-align: left;
-    }
-    
-    .social-share {
-        justify-content: center;
-        width: 100%;
-    }
-    
-    .related-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .news-meta {
-        justify-content: center;
-    }
-    
-    .breadcrumb {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .news-title {
-        font-size: 1.8rem;
-    }
-    
-    .content-wrapper {
-        padding: 1.5rem;
-        font-size: 1rem;
-    }
-    
-    .share-btn {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .article-info {
-        width: 100%;
-    }
-}
-</style>
+<div class="reading-progress"></div>
 
 <script>
-// Copy to clipboard function
 function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(function() {
-            showNotification('Link copied to clipboard!', 'success');
-        }).catch(function(err) {
-            console.error('Could not copy text: ', err);
-            showNotification('Failed to copy link', 'error');
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Link copied to clipboard!');
         });
     } else {
-        // Fallback for older browsers
         const textArea = document.createElement('textarea');
         textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
         document.body.appendChild(textArea);
-        textArea.focus();
         textArea.select();
-        
-        try {
-            document.execCommand('copy');
-            showNotification('Link copied to clipboard!', 'success');
-        } catch (err) {
-            console.error('Fallback: Could not copy text: ', err);
-            showNotification('Failed to copy link', 'error');
-        }
-        
+        document.execCommand('copy');
         document.body.removeChild(textArea);
+        alert('Link copied to clipboard!');
     }
 }
 
-// Scroll to top function
 function scrollToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Show/hide back to top button
 window.addEventListener('scroll', function() {
     const backToTopBtn = document.querySelector('.back-to-top');
     if (window.pageYOffset > 300) {
@@ -616,198 +523,22 @@ window.addEventListener('scroll', function() {
     } else {
         backToTopBtn.classList.remove('show');
     }
-});
-
-// Reading progress indicator
-function updateReadingProgress() {
+    
+    // Reading progress
     const article = document.querySelector('.content-wrapper');
-    if (!article) return;
-    
-    const articleTop = article.offsetTop;
-    const articleHeight = article.offsetHeight;
-    const windowHeight = window.innerHeight;
-    const scrollTop = window.pageYOffset;
-    
-    const progress = Math.min(
-        Math.max((scrollTop - articleTop + windowHeight * 0.5) / articleHeight * 100, 0),
-        100
-    );
-    
-    // Update progress bar if exists
-    const progressBar = document.querySelector('.reading-progress');
-    if (progressBar) {
-        progressBar.style.width = progress + '%';
+    if (article) {
+        const articleTop = article.offsetTop;
+        const articleHeight = article.offsetHeight;
+        const windowHeight = window.innerHeight;
+        const scrollTop = window.pageYOffset;
+        
+        const progress = Math.min(
+            Math.max((scrollTop - articleTop + windowHeight * 0.5) / articleHeight * 100, 0),
+            100
+        );
+        
+        document.querySelector('.reading-progress').style.width = progress + '%';
     }
-}
-
-window.addEventListener('scroll', updateReadingProgress);
-window.addEventListener('resize', updateReadingProgress);
-
-// Add reading progress bar
-document.addEventListener('DOMContentLoaded', function() {
-    const progressBar = document.createElement('div');
-    progressBar.className = 'reading-progress';
-    progressBar.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0%;
-        height: 3px;
-        background: linear-gradient(90deg, #ff6b35, #e55a2b);
-        z-index: 9999;
-        transition: width 0.1s ease;
-    `;
-    document.body.appendChild(progressBar);
-    
-    updateReadingProgress();
 });
-
-// Enhanced social sharing
-document.addEventListener('DOMContentLoaded', function() {
-    // Track social shares
-    const shareButtons = document.querySelectorAll('.share-btn');
-    shareButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const platform = this.classList.contains('x') ? 'x' :
-                            this.classList.contains('facebook') ? 'Facebook' :
-                            this.classList.contains('whatsapp') ? 'WhatsApp' :
-                            'Copy Link';
-            
-            // Track the share event
-            if (typeof trackEvent === 'function') {
-                trackEvent('Social', 'Share', platform);
-            }
-        });
-    });
-});
-
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        z-index: 10000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        font-weight: 500;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
-</script>
-{% endblock %}
-
-{% block extra_head %}
-<!-- Enhanced Open Graph Meta Tags for Social Media Sharing -->
-<meta property="og:title" content="{{ news.title }}">
-<meta property="og:description" content="{{ news.excerpt }}">
-<meta property="og:type" content="article">
-<meta property="og:url" content="{{ request.build_absolute_uri }}">
-<meta property="og:site_name" content="NextMedia">
-
-{% if news.featured_image %}
-<!-- Use featured image for social media preview -->
-<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:alt" content="{{ news.title }}">
-{% else %}
-<!-- Fallback to site logo if no featured image -->
-<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/icon-512x512.png' %}">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:alt" content="NextMedia">
-{% endif %}
-
-<!-- Article specific Open Graph tags -->
-<meta property="article:published_time" content="{{ news.published_date|date:'c' }}">
-<meta property="article:modified_time" content="{{ news.updated_at|date:'c' }}">
-<meta property="article:section" content="{{ news.category.name }}">
-{% if news.author %}
-<meta property="article:author" content="{{ news.author }}">
-{% endif %}
-{% if news.school %}
-<meta property="article:tag" content="{{ news.school.name }}">
-{% endif %}
-<meta property="article:tag" content="{{ news.category.name }}">
-
-<!-- Enhanced x Card Meta Tags -->
-<meta name="x:card" content="summary_large_image">
-<meta name="x:title" content="{{ news.title }}">
-<meta name="x:description" content="{{ news.excerpt }}">
-<meta name="x:site" content="@NextMedia">
-
-{% if news.featured_image %}
-<!-- Use featured image for x preview -->
-<meta name="x:image" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
-<meta name="x:image:alt" content="{{ news.title }}">
-{% else %}
-<!-- Fallback to site logo if no featured image -->
-<meta name="x:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/icon-512x512.png' %}">
-<meta name="x:image:alt" content="NextMedia">
-{% endif %}
-
-<!-- Additional meta tags for better SEO -->
-<meta name="author" content="{% if news.author %}{{ news.author }}{% else %}{{ news.published_by.get_full_name|default:news.published_by.username }}{% endif %}">
-<meta name="publish_date" property="og:publish_date" content="{{ news.published_date|date:'c' }}">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-
-<!-- Canonical URL -->
-<link rel="canonical" href="{{ request.build_absolute_uri }}">
-{% endblock %}
-
-{% block extra_js %}
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    "headline": "{{ news.title }}",
-    "description": "{{ news.excerpt }}",
-    "datePublished": "{{ news.published_date|date:'c' }}",
-    "dateModified": "{{ news.updated_at|date:'c' }}",
-    "author": {
-        "@type": "{% if news.author %}Person{% else %}Organization{% endif %}",
-        "name": "{% if news.author %}{{ news.author }}{% else %}{{ news.published_by.get_full_name|default:news.published_by.username }}{% endif %}"
-    },
-    "publisher": {
-        "@type": "Organization",
-        "name": "NextMedia",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/icon-512x512.png' %}"
-        }
-    }{% if news.featured_image %},
-    "image": {
-        "@type": "ImageObject",
-        "url": "{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}",
-        "width": 1200,
-        "height": 630
-    }{% endif %},
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "{{ request.build_absolute_uri }}"
-    }
-}
 </script>
 {% endblock %}
