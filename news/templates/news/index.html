@@ -5,24 +5,68 @@
 
 {% block content %}
 <style>
-    /* News Ticker */
+    /* CSS Variables for better theming */
+    :root {
+        --transition-base: 0.3s ease;
+        --transition-smooth: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --spacing-xs: 0.5rem;
+        --spacing-sm: 1rem;
+        --spacing-md: 1.5rem;
+        --spacing-lg: 2rem;
+        --spacing-xl: 3rem;
+    }
+
+    /* News Ticker - Enhanced */
     .news-ticker-wrapper {
         background: var(--secondary-bg);
         border-bottom: 1px solid var(--border);
-        padding: 0.75rem 0;
+        padding: 0.875rem 0;
         overflow: hidden;
+        position: relative;
+    }
+
+    .news-ticker-wrapper::before {
+        content: 'BREAKING';
+        position: absolute;
+        left: 0;
+        background: var(--accent);
+        color: white;
+        padding: 0.5rem 1rem;
+        font-weight: 700;
+        font-size: 0.75rem;
+        z-index: 1;
+        clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
     }
 
     .news-ticker {
         display: flex;
-        animation: scroll 30s linear infinite;
+        animation: scroll 40s linear infinite;
+        padding-left: 120px;
+    }
+
+    .news-ticker:hover {
+        animation-play-state: paused;
     }
 
     .news-ticker-item {
-        padding: 0 2rem;
+        padding: 0 3rem;
         white-space: nowrap;
         color: var(--text-secondary);
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .news-ticker-item::before {
+        content: '•';
+        color: var(--accent);
+        margin-right: 1rem;
+        font-weight: 700;
     }
 
     @keyframes scroll {
@@ -30,10 +74,14 @@
         100% { transform: translateX(-50%); }
     }
 
-    /* Hero Section */
+    /* Hero Section - Enhanced Gradient */
     .hero-section {
-        background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
-        padding: 3rem 1rem 2rem;
+        background: linear-gradient(135deg, 
+            var(--secondary-bg) 0%, 
+            var(--primary-bg) 50%,
+            var(--secondary-bg) 100%
+        );
+        padding: clamp(2rem, 5vw, 4rem) var(--spacing-sm);
         position: relative;
         overflow: hidden;
     }
@@ -41,12 +89,22 @@
     .hero-section::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at 30% 50%, rgba(100, 255, 218, 0.1) 0%, transparent 50%);
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            circle at center,
+            rgba(100, 255, 218, 0.08) 0%,
+            transparent 70%
+        );
+        animation: heroGlow 8s ease-in-out infinite;
         pointer-events: none;
+    }
+
+    @keyframes heroGlow {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(5%, 5%) scale(1.1); }
     }
 
     .hero-content {
@@ -58,60 +116,97 @@
     }
 
     .hero-content h1 {
-        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-size: clamp(1.75rem, 5vw, 3rem);
         font-weight: 800;
-        margin-bottom: 1rem;
+        margin-bottom: var(--spacing-md);
         line-height: 1.2;
-        background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+        background: linear-gradient(135deg, 
+            var(--text-primary) 0%, 
+            var(--accent) 50%,
+            var(--text-primary) 100%
+        );
+        background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+        to { background-position: 200% center; }
     }
 
     .hero-content p {
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
         color: var(--text-secondary);
-        margin-bottom: 1.5rem;
+        margin-bottom: var(--spacing-lg);
         max-width: 700px;
         margin-left: auto;
         margin-right: auto;
+        line-height: 1.6;
     }
 
     .hero-cta {
-        background: #25D366;
+        background: linear-gradient(135deg, #25D366 0%, #1ebe5d 100%);
         color: white;
-        padding: 0.875rem 2rem;
-        border-radius: 30px;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
         text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 1rem;
+        font-weight: 700;
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
+        gap: 0.75rem;
+        transition: all var(--transition-base);
+        box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-cta::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .hero-cta:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .hero-cta:hover {
-        background: #1ebe5d;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 32px rgba(37, 211, 102, 0.45);
     }
 
-    /* Section Container */
+    .hero-cta i {
+        font-size: 1.25rem;
+        z-index: 1;
+    }
+
+    /* Container */
     .container {
         max-width: 1400px;
         margin: 0 auto;
-        padding: 0 1rem;
+        padding: 0 var(--spacing-sm);
     }
 
+    /* Section Title - Improved */
     .section-title {
-        font-size: clamp(1.5rem, 3vw, 2rem);
-        font-weight: 700;
-        margin-bottom: 2rem;
+        font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+        font-weight: 800;
+        margin-bottom: var(--spacing-lg);
         color: var(--text-primary);
         position: relative;
-        padding-bottom: 0.75rem;
+        padding-bottom: 1rem;
+        display: inline-block;
     }
 
     .section-title::after {
@@ -119,112 +214,252 @@
         position: absolute;
         bottom: 0;
         left: 0;
-        width: 60px;
-        height: 3px;
-        background: var(--accent);
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
         border-radius: 2px;
     }
 
-    /* Featured Section */
+    .section-title::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--accent);
+        border-radius: 2px;
+        animation: titleSlide 3s ease-in-out infinite;
+    }
+
+    @keyframes titleSlide {
+        0%, 100% { width: 60px; }
+        50% { width: 120px; }
+    }
+
+    /* Featured Section - Enhanced Grid Layout */
     .featured-section {
-        padding: 3rem 0;
+        padding: var(--spacing-xl) 0;
     }
 
     .featured-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        gap: var(--spacing-md);
+        grid-template-columns: 1fr;
     }
 
+    /* Mobile: Hero post full width, rest in 2 columns */
+    @media (min-width: 480px) {
+        .featured-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .featured-card:first-child {
+            grid-column: 1 / -1;
+        }
+    }
+
+    /* Tablet: Better spacing */
     @media (min-width: 768px) {
         .featured-grid {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+            gap: var(--spacing-lg);
+        }
+    }
+
+    /* Desktop: Hero larger, 3 columns for rest */
+    @media (min-width: 1024px) {
+        .featured-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .featured-card:first-child {
+            grid-column: 1 / -1;
+            grid-row: 1;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .featured-grid {
+            gap: calc(var(--spacing-lg) * 1.25);
         }
     }
 
     .featured-card {
         background: var(--card-bg);
-        border-radius: 12px;
+        border-radius: var(--radius-md);
         overflow: hidden;
-        transition: all 0.3s ease;
+        transition: all var(--transition-smooth);
         border: 1px solid var(--border);
-        animation: fadeInUp 0.6s ease;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        height: 100%;
+    }
+
+    .featured-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, var(--accent) 0%, transparent 100%);
+        opacity: 0;
+        transition: opacity var(--transition-base);
+        pointer-events: none;
+        z-index: 1;
     }
 
     .featured-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px var(--shadow);
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--accent);
     }
 
-    .featured-main {
-        grid-column: span 2;
+    /* Hero card gets more dramatic hover effect */
+    .featured-card:first-child:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     }
 
-    @media (min-width: 768px) {
-        .featured-main {
-            grid-column: span 2;
+    .featured-card:hover::before {
+        opacity: 0.05;
+    }
+
+    /* Card Image - Improved Aspect Ratios */
+    .card-image {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 11;
+        overflow: hidden;
+        background: var(--secondary-bg);
+    }
+
+    /* Hero card (first child) gets special treatment */
+    .featured-card:first-child .card-image {
+        aspect-ratio: 21 / 9;
+    }
+
+    @media (max-width: 479px) {
+        .featured-card:first-child .card-image {
+            aspect-ratio: 16 / 10;
         }
     }
 
     @media (min-width: 1024px) {
-        .featured-main {
-            grid-column: span 2;
-        }
-    }
-
-    .card-image {
-        position: relative;
-        width: 100%;
-        height: 180px;
-        overflow: hidden;
-    }
-
-    .featured-main .card-image {
-        height: 250px;
-    }
-
-    @media (min-width: 768px) {
-        .card-image {
-            height: 250px;
-        }
-
-        .featured-main .card-image {
-            height: 350px;
+        .featured-card:first-child .card-image {
+            aspect-ratio: 24 / 9;
         }
     }
 
     .card-image img {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
+        transition: transform var(--transition-smooth);
     }
 
     .featured-card:hover .card-image img {
-        transform: scale(1.1);
+        transform: scale(1.08);
+    }
+
+    .placeholder-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        background: var(--secondary-bg);
+    }
+
+    /* Card Content - Better Spacing */
+    .card-content {
+        padding: var(--spacing-md);
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: var(--spacing-sm);
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Hero card gets extra padding */
+    .featured-card:first-child .card-content {
+        padding: var(--spacing-lg);
+    }
+
+    @media (min-width: 768px) {
+        .card-content {
+            padding: var(--spacing-lg);
+        }
+
+        .featured-card:first-child .card-content {
+            padding: var(--spacing-xl);
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .featured-card:first-child .card-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            align-items: start;
+        }
+
+        .featured-card:first-child .card-badges {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .card-content {
+            gap: var(--spacing-md);
+        }
+
+        .featured-card:first-child .card-content {
+            gap: var(--spacing-xl);
+        }
     }
 
     .card-badges {
         display: flex;
-        gap: 0.5rem;
+        gap: var(--spacing-xs);
         flex-wrap: wrap;
-        margin-bottom: 0.75rem;
     }
 
     .card-category, .card-school {
-        padding: 0.35rem 0.75rem;
-        border-radius: 15px;
-        font-size: 0.7rem;
-        font-weight: 600;
+        padding: 0.4rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all var(--transition-base);
+    }
+
+    /* Hero card gets larger badges */
+    .featured-card:first-child .card-category,
+    .featured-card:first-child .card-school {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    @media (min-width: 768px) {
+        .featured-card:first-child .card-category,
+        .featured-card:first-child .card-school {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
     }
 
     .card-category {
-        background: var(--accent);
-        color: var(--primary-bg);
-    }
-
-    [data-theme="light"] .card-category {
         background: var(--accent);
         color: white;
     }
@@ -234,35 +469,51 @@
         color: white;
     }
 
-    .card-content {
-        padding: 1rem;
-    }
-
-    @media (min-width: 768px) {
-        .card-content {
-            padding: 1.25rem;
-        }
+    .featured-card:hover .card-category,
+    .featured-card:hover .card-school {
+        transform: translateY(-2px);
     }
 
     .card-title {
-        font-size: 0.95rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        line-height: 1.3;
+        font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+        font-weight: 700;
+        line-height: 1.35;
+        flex-grow: 1;
+        margin: 0;
+    }
+
+    /* Hero card gets larger title */
+    .featured-card:first-child .card-title {
+        font-size: clamp(1.35rem, 3.5vw, 2.5rem);
+        line-height: 1.25;
+        font-weight: 800;
     }
 
     @media (min-width: 768px) {
         .card-title {
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            line-height: 1.4;
+            line-height: 1.45;
+        }
+
+        .featured-card:first-child .card-title {
+            line-height: 1.3;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .card-title {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+        }
+
+        .featured-card:first-child .card-title {
+            font-size: clamp(1.75rem, 3vw, 2.75rem);
         }
     }
 
     .card-title a {
         color: var(--text-primary);
         text-decoration: none;
-        transition: color 0.3s ease;
+        transition: color var(--transition-base);
+        display: block;
     }
 
     .card-title a:hover {
@@ -272,17 +523,45 @@
     .read-more {
         color: var(--accent);
         text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 600;
+        font-size: 0.9rem;
+        font-weight: 700;
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
-        transition: all 0.3s ease;
+        gap: 0.5rem;
+        transition: all var(--transition-base);
+        align-self: flex-start;
+    }
+
+    /* Hero card gets larger read more button */
+    .featured-card:first-child .read-more {
+        font-size: 0.7rem;
+        padding: 0.65rem 1.0rem;
+        background: var(--accent);
+        color: white;
+        border-radius: 50px;
+        gap: 0.75rem;
+    }
+
+    .featured-card:first-child .read-more:hover {
+        background: var(--text-primary);
+        transform: translateX(5px);
+    }
+
+    @media (min-width: 768px) {
+        .featured-card:first-child .read-more {
+            font-size: 1.1rem;
+            padding: 0.875rem 2rem;
+        }
     }
 
     .read-more::after {
         content: '→';
-        transition: transform 0.3s ease;
+        transition: transform var(--transition-base);
+        font-size: 1.1rem;
+    }
+
+    .read-more:hover {
+        gap: 0.75rem;
     }
 
     .read-more:hover::after {
@@ -291,110 +570,185 @@
 
     /* Categories Section */
     .categories-section {
-        padding: 2rem 0 3rem;
+        padding: var(--spacing-lg) 0 var(--spacing-xl);
+        background: linear-gradient(180deg, transparent 0%, var(--secondary-bg) 100%);
     }
 
     .news-grid {
-        display: grid;
-        gap: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
     }
 
     .news-category {
         background: var(--card-bg);
-        border-radius: 12px;
-        padding: 1.5rem;
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
         border: 1px solid var(--border);
-        animation: fadeInUp 0.6s ease;
+        transition: all var(--transition-base);
+    }
+
+    @media (min-width: 768px) {
+        .news-category {
+            padding: var(--spacing-lg);
+        }
+    }
+
+    .news-category:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent);
     }
 
     .category-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
+        margin-bottom: var(--spacing-md);
+        padding-bottom: var(--spacing-sm);
         border-bottom: 2px solid var(--border);
     }
 
     .category-header h2 {
-        font-size: 1.1rem;
-        font-weight: 700;
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        font-weight: 800;
         color: var(--text-primary);
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
+        position: relative;
     }
 
     .view-all {
         color: var(--accent);
         text-decoration: none;
-        font-size: 0.8rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        font-size: 0.875rem;
+        font-weight: 700;
+        transition: all var(--transition-base);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .view-all::after {
+        content: '→';
+        transition: transform var(--transition-base);
     }
 
     .view-all:hover {
-        transform: translateX(5px);
+        gap: 0.5rem;
+    }
+
+    .view-all:hover::after {
+        transform: translateX(3px);
+    }
+
+    /* Category News Container - Improved 3-2 Layout */
+    .category-news-container {
+        display: grid;
+        gap: var(--spacing-md);
+        grid-template-columns: 1fr;
+    }
+
+    /* Mobile: Stack vertically */
+    @media (max-width: 767px) {
+        .category-news-container {
+            gap: var(--spacing-sm);
+        }
+    }
+
+    /* Tablet: 2 columns (Main news takes full width, sub news in row) */
+    @media (min-width: 768px) and (max-width: 1023px) {
+        .category-news-container {
+            grid-template-columns: 1fr;
+        }
+
+        .sub-news {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+        }
+    }
+
+    /* Desktop: 3-2 layout (Main news left, 2 columns of sub news right) */
+    @media (min-width: 1024px) {
+        .category-news-container {
+            grid-template-columns: 1.5fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .sub-news {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
     }
 
     .main-news {
-        margin-bottom: 1.5rem;
+        width: 100%;
     }
 
+    .sub-news-wrapper {
+        width: 100%;
+    }
+
+    /* News Cards - Enhanced */
     .news-card {
         background: var(--secondary-bg);
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         overflow: hidden;
-        transition: all 0.3s ease;
+        transition: all var(--transition-smooth);
         border: 1px solid var(--border);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .news-card:hover {
-        transform: translateX(5px);
-        box-shadow: 0 5px 15px var(--shadow);
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent);
     }
 
     .news-image {
         width: 100%;
-        height: 200px;
+        aspect-ratio: 16 / 10;
+        position: relative;
         overflow: hidden;
         background: var(--primary-bg);
     }
 
     .news-image img {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
+        transition: transform var(--transition-smooth);
     }
 
     .news-card:hover .news-image img {
-        transform: scale(1.05);
-    }
-
-    .placeholder-image {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-secondary);
-        background: var(--primary-bg);
+        transform: scale(1.06);
     }
 
     .news-content {
-        padding: 1.25rem;
+        padding: var(--spacing-md);
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        gap: var(--spacing-sm);
     }
 
     .news-content h3 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
+        font-size: clamp(1rem, 2vw, 1.15rem);
+        font-weight: 700;
         line-height: 1.4;
+        flex-grow: 1;
+        margin: 0;
     }
 
     .news-content h3 a {
         color: var(--text-primary);
         text-decoration: none;
-        transition: color 0.3s ease;
+        transition: color var(--transition-base);
     }
 
     .news-content h3 a:hover {
@@ -403,289 +757,408 @@
 
     .news-content p {
         color: var(--text-secondary);
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         line-height: 1.6;
-        margin-bottom: 0.75rem;
+        margin: 0;
     }
 
     .news-meta {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: var(--spacing-sm);
         flex-wrap: wrap;
+        padding-top: var(--spacing-xs);
+        border-top: 1px solid var(--border);
     }
 
     .school-badge {
         background: var(--accent);
-        color: var(--primary-bg);
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
         font-size: 0.7rem;
-        font-weight: 600;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .news-date {
         color: var(--text-secondary);
-        font-size: 0.75rem;
-        font-weight: 500;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
     }
 
-    .sub-news {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+    .news-date::before {
+        content: '•';
+        color: var(--accent);
     }
 
-    @media (min-width: 768px) {
-        .sub-news {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-    }
-
+    /* Sub News - Compact Cards */
     .news-card.sub {
-        padding: 0.875rem;
+        padding: var(--spacing-md);
         background: var(--primary-bg);
-    }
-
-    @media (min-width: 768px) {
-        .news-card.sub {
-            padding: 1rem;
-        }
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .news-card.sub h4 {
-        font-size: 0.85rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 700;
         line-height: 1.3;
-    }
-
-    @media (min-width: 768px) {
-        .news-card.sub h4 {
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
+        margin: 0 0 var(--spacing-xs) 0;
+        flex-grow: 1;
     }
 
     .news-card.sub h4 a {
         color: var(--text-primary);
         text-decoration: none;
-        transition: color 0.3s ease;
+        transition: color var(--transition-base);
     }
 
     .news-card.sub h4 a:hover {
         color: var(--accent);
     }
 
+    /* No News State */
     .no-news {
         text-align: center;
-        padding: 3rem 1rem;
+        padding: var(--spacing-xl) var(--spacing-sm);
         color: var(--text-secondary);
     }
 
     .no-news i {
         font-size: 3rem;
-        margin-bottom: 1rem;
-        opacity: 0.5;
+        margin-bottom: var(--spacing-sm);
+        opacity: 0.4;
     }
 
-    /* Schools Section */
+    /* Schools Section - Better Grid */
     .schools-section {
-        margin-top: 2rem;
+        margin-top: var(--spacing-md);
     }
 
     .schools-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.75rem;
+        gap: var(--spacing-md);
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
 
-    @media (min-width: 480px) {
+    @media (max-width: 639px) {
         .schools-grid {
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-        }
-    }
-
-    @media (min-width: 768px) {
-        .schools-grid {
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: var(--spacing-sm);
         }
     }
 
     .school-card {
         background: var(--secondary-bg);
-        border-radius: 8px;
-        padding: 1rem;
+        border-radius: var(--radius-sm);
+        padding: var(--spacing-md);
         text-align: center;
-        transition: all 0.3s ease;
+        transition: all var(--transition-smooth);
         border: 1px solid var(--border);
         text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-xs);
     }
 
     .school-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px var(--shadow);
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent);
     }
 
     .school-logo {
-        margin-bottom: 0.75rem;
+        width: 100%;
+        max-width: 70px;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .school-logo img {
         width: 100%;
-        max-width: 80px;
-        height: auto;
-        border-radius: 8px;
-        margin: 0 auto;
-        display: block;
+        height: 100%;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+        transition: transform var(--transition-base);
+    }
+
+    .school-card:hover .school-logo img {
+        transform: scale(1.1);
     }
 
     .school-abbr {
         color: var(--text-primary);
         font-size: 0.85rem;
-        font-weight: 600;
-        display: block;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    /* Newsletter Section */
+    /* Newsletter Section - Enhanced */
     .newsletter-section {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 3rem 1rem;
-        margin: 3rem 0;
+        padding: var(--spacing-xl) var(--spacing-sm);
+        margin: var(--spacing-xl) 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .newsletter-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: newsletterGlow 10s ease-in-out infinite;
+    }
+
+    @keyframes newsletterGlow {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(10%, 10%); }
     }
 
     .newsletter-content {
-        max-width: 800px;
+        max-width: 600px;
         margin: 0 auto;
         text-align: center;
+        position: relative;
+        z-index: 1;
     }
 
     .newsletter-text h3 {
         color: white;
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        font-weight: 800;
+        margin-bottom: var(--spacing-xs);
     }
 
     .newsletter-text p {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
+        color: rgba(255, 255, 255, 0.95);
+        font-size: clamp(0.95rem, 2vw, 1.1rem);
+        margin-bottom: var(--spacing-lg);
     }
 
     .newsletter-form {
         display: flex;
-        gap: 0.75rem;
-        max-width: 500px;
-        margin: 0 auto;
+        gap: var(--spacing-sm);
         flex-wrap: wrap;
+        justify-content: center;
     }
 
     .newsletter-form input {
         flex: 1;
-        min-width: 200px;
-        padding: 0.875rem 1.25rem;
+        min-width: min(100%, 250px);
+        padding: 1rem 1.5rem;
         border: none;
-        border-radius: 25px;
-        font-size: 0.9rem;
+        border-radius: 50px;
+        font-size: 1rem;
         background: white;
         color: #333;
+        transition: all var(--transition-base);
     }
 
     .newsletter-form input:focus {
         outline: none;
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
     }
 
     .newsletter-form button {
-        padding: 0.875rem 2rem;
-        background: #ff6b35;
+        padding: 1rem 2.5rem;
+        background: linear-gradient(135deg, #ff6b35 0%, #e64a19 100%);
         color: white;
         border: none;
-        border-radius: 25px;
-        font-size: 0.9rem;
-        font-weight: 600;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 700;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all var(--transition-base);
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .newsletter-form button:hover {
-        background: #e64a19;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(255, 107, 53, 0.5);
     }
 
-    /* Past Questions CTA */
+    /* CTA Section - Enhanced */
     .cta-section {
         background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        padding: 2rem 1rem;
+        padding: var(--spacing-xl) var(--spacing-sm);
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+        opacity: 0.3;
     }
 
     .cta-card {
-        max-width: 450px;
+        max-width: 500px;
         width: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 2rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-xl);
         text-align: center;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        position: relative;
+        z-index: 1;
+        transform: translateY(0);
+        transition: transform var(--transition-smooth);
+    }
+
+    .cta-card:hover {
+        transform: translateY(-8px);
     }
 
     .cta-icon {
-        font-size: 2.5rem;
+        font-size: 3.5rem;
         color: #ff5722;
-        margin-bottom: 1rem;
+        margin-bottom: var(--spacing-md);
+        animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
 
     .cta-card h3 {
-        font-size: 1.5rem;
-        font-weight: 700;
+        font-size: clamp(1.5rem, 3vw, 1.75rem);
+        font-weight: 800;
         color: #2c3e50;
-        margin-bottom: 0.75rem;
+        margin-bottom: var(--spacing-sm);
     }
 
     .cta-card p {
-        font-size: 0.95rem;
+        font-size: clamp(0.95rem, 2vw, 1.05rem);
         color: #5a6c7d;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
+        line-height: 1.7;
+        margin-bottom: var(--spacing-lg);
     }
 
     .cta-btn {
         display: inline-block;
         background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
         color: white;
-        padding: 0.875rem 2rem;
-        border-radius: 25px;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
         text-decoration: none;
-        font-size: 0.875rem;
-        font-weight: 700;
+        font-size: 0.95rem;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 20px rgba(255, 87, 34, 0.4);
+        letter-spacing: 1.5px;
+        transition: all var(--transition-smooth);
+        box-shadow: 0 8px 24px rgba(255, 87, 34, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .cta-btn:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .cta-btn:hover {
-        background: linear-gradient(135deg, #e64a19 0%, #d84315 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 87, 34, 0.5);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 32px rgba(255, 87, 34, 0.6);
     }
 
-    /* Mobile Optimizations */
-    @media (max-width: 768px) {
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .featured-card,
+    .news-category {
+        animation: fadeInUp 0.6s ease backwards;
+    }
+
+    .featured-card:nth-child(1) { animation-delay: 0.1s; }
+    .featured-card:nth-child(2) { animation-delay: 0.2s; }
+    .featured-card:nth-child(3) { animation-delay: 0.3s; }
+    .featured-card:nth-child(4) { animation-delay: 0.4s; }
+    .featured-card:nth-child(5) { animation-delay: 0.5s; }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 480px) {
         .hero-section {
-            padding: 2rem 1rem 1.5rem;
+            padding: var(--spacing-lg) var(--spacing-sm);
         }
 
-        .featured-section, .categories-section {
-            padding: 2rem 0;
+        .card-badges {
+            gap: 0.4rem;
+        }
+
+        .card-category, .card-school {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+        }
+
+        .news-category {
+            padding: var(--spacing-sm);
+        }
+
+        .category-header h2 {
+            font-size: 1rem;
+        }
+
+        .school-card {
+            padding: var(--spacing-sm);
+        }
+
+        .school-logo {
+            max-width: 55px;
+        }
+
+        .school-abbr {
+            font-size: 0.75rem;
+        }
+
+        .cta-card {
+            padding: var(--spacing-lg);
         }
 
         .newsletter-form {
@@ -698,68 +1171,80 @@
         }
     }
 
-    @media (max-width: 480px) {
-        .card-badges {
-            gap: 0.35rem;
-            margin-bottom: 0.5rem;
+    /* Print Styles */
+    @media print {
+        .news-ticker-wrapper,
+        .hero-cta,
+        .newsletter-section,
+        .cta-section {
+            display: none;
         }
 
-        .card-category, .card-school {
-            font-size: 0.65rem;
-            padding: 0.25rem 0.6rem;
-        }
-
-        .cta-card {
-            padding: 1.5rem;
-        }
-
-        .cta-card h3 {
-            font-size: 1.25rem;
-        }
-
-        .news-category {
-            padding: 1.25rem;
-        }
-
-        .category-header h2 {
-            font-size: 1rem;
-        }
-
-        .school-card {
-            padding: 0.75rem;
-        }
-
-        .school-logo img {
-            max-width: 60px;
-        }
-
-        .school-abbr {
-            font-size: 0.75rem;
+        .featured-card,
+        .news-card {
+            break-inside: avoid;
         }
     }
 
-    /* Extra responsive adjustments */
-    @media (max-width: 360px) {
-        .featured-grid,
-        .sub-news {
-            gap: 0.5rem;
+    /* Accessibility Improvements */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    /* Focus Styles for Keyboard Navigation */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+    }
+
+    /* High Contrast Mode Support */
+    @media (prefers-contrast: high) {
+        .card-category,
+        .card-school,
+        .school-badge {
+            border: 2px solid currentColor;
         }
 
-        .schools-grid {
-            gap: 0.5rem;
+        .featured-card,
+        .news-card,
+        .school-card {
+            border-width: 2px;
         }
+    }
 
-        .card-content {
-            padding: 0.75rem;
-        }
+    /* Dark Mode Enhancements */
+    [data-theme="dark"] .hero-cta {
+        box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5);
+    }
 
-        .card-title {
-            font-size: 0.875rem;
-        }
+    [data-theme="dark"] .featured-card:hover,
+    [data-theme="dark"] .news-card:hover {
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
 
-        .news-card.sub h4 {
-            font-size: 0.8rem;
-        }
+    /* Loading Skeleton (Optional - for future use) */
+    .skeleton {
+        background: linear-gradient(
+            90deg,
+            var(--secondary-bg) 25%,
+            var(--border) 50%,
+            var(--secondary-bg) 75%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.5s ease-in-out infinite;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
     }
 </style>
 
@@ -771,9 +1256,155 @@
     <div class="hero-content">
         <h1>NEXT MEDIA - YOUR TRUSTED SOURCE FOR FAST AND CREDIBLE INFORMATION</h1>
         <p>Stay ahead with the latest updates on schools, entertainment, sports and global news - all in one trusted platform</p>
-        <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="hero-cta" target="_blank">
-            <i class="fab fa-whatsapp"></i>
-            Join Our WhatsApp Channel
+        <style>
+        @keyframes rainbow-glow {
+            0% {
+                box-shadow: 0 0 20px rgba(37, 211, 102, 0.8),
+                            0 0 40px rgba(37, 211, 102, 0.6),
+                            0 0 60px rgba(37, 211, 102, 0.4);
+                border-color: rgba(37, 211, 102, 0.8);
+            }
+            25% {
+                box-shadow: 0 0 25px rgba(0, 255, 127, 0.8),
+                            0 0 50px rgba(0, 255, 127, 0.6),
+                            0 0 75px rgba(0, 255, 127, 0.4);
+                border-color: rgba(0, 255, 127, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(34, 139, 34, 0.8),
+                            0 0 60px rgba(34, 139, 34, 0.6),
+                            0 0 90px rgba(34, 139, 34, 0.4);
+                border-color: rgba(34, 139, 34, 0.8);
+            }
+            75% {
+                box-shadow: 0 0 25px rgba(144, 238, 144, 0.8),
+                            0 0 50px rgba(144, 238, 144, 0.6),
+                            0 0 75px rgba(144, 238, 144, 0.4);
+                border-color: rgba(144, 238, 144, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(37, 211, 102, 0.8),
+                            0 0 40px rgba(37, 211, 102, 0.6),
+                            0 0 60px rgba(37, 211, 102, 0.4);
+                border-color: rgba(37, 211, 102, 0.8);
+            }
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% {
+                background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
+            }
+            33% {
+                background: linear-gradient(135deg, #00FF7F 0%, #25D366 100%);
+            }
+            66% {
+                background: linear-gradient(135deg, #228B22 0%, #32CD32 100%);
+            }
+        }
+
+        @keyframes icon-bounce {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-5px) rotate(-10deg);
+            }
+            75% {
+                transform: translateY(-5px) rotate(10deg);
+            }
+        }
+
+        @keyframes pulse-scale {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        .hero-cta {
+            position: relative;
+            animation: rainbow-glow 3s ease-in-out infinite, 
+                    gradient-shift 3s ease-in-out infinite,
+                    pulse-scale 2s ease-in-out infinite;
+            background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
+            border: 3px solid rgba(37, 211, 102, 0.8);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .hero-cta::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            background: linear-gradient(45deg, 
+                #25D366, #00FF7F, #228B22, 
+                #90EE90, #32CD32, #25D366);
+            background-size: 300% 300%;
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            filter: blur(15px);
+            animation: gradient-shift 3s ease-in-out infinite;
+        }
+
+        .hero-cta:hover::before {
+            opacity: 0.9;
+        }
+
+        .hero-cta::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            animation: shine 3s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+            50%, 100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-5px) scale(1.1);
+            animation: rainbow-glow 1.5s ease-in-out infinite,
+                    gradient-shift 1.5s ease-in-out infinite,
+                    pulse-scale 1s ease-in-out infinite;
+        }
+
+        .hero-cta .fab {
+            animation: icon-bounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+        }
+
+        .hero-cta:hover .fab {
+            animation: icon-bounce 1s ease-in-out infinite;
+        }
+
+        .hero-cta span {
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        </style>
+
+        <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="hero-cta" target="_blank" rel="noopener noreferrer" aria-label="Join our WhatsApp channel">
+            <i class="fab fa-whatsapp" aria-hidden="true"></i>
+            <span>Join Our WhatsApp Channel</span>
         </a>
     </div>
 </section>
@@ -785,13 +1416,13 @@
         <h2 class="section-title">Featured Stories</h2>
         <div class="featured-grid">
             {% for news in featured_news %}
-            <article class="featured-card {% if forloop.first %}featured-main{% endif %}">
+            <article class="featured-card">
                 <div class="card-image">
                     {% if news.featured_image %}
-                    <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
+                    <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy" width="800" height="500">
                     {% else %}
                     <div class="placeholder-image">
-                        <i class="fas fa-newspaper" style="font-size: 3rem;"></i>
+                        <i class="fas fa-newspaper" style="font-size: 3rem;" aria-hidden="true"></i>
                     </div>
                     {% endif %}
                 </div>
@@ -806,13 +1437,299 @@
                     <h3 class="card-title">
                         <a href="{{ news.get_absolute_url }}">{{ news.title }}</a>
                     </h3>
-                    <a href="{{ news.get_absolute_url }}" class="read-more">Read More</a>
+                    <a href="{{ news.get_absolute_url }}" class="read-more" aria-label="Read more about {{ news.title }}">
+                        <span>Read More</span>
+                    </a>
                 </div>
             </article>
             {% endfor %}
         </div>
     </div>
 </section>
+
+<style>
+.featured-section {
+    padding: 3rem 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.featured-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.featured-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.featured-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px var(--shadow);
+}
+
+.card-image {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: var(--secondary-bg);
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.featured-card:hover .card-image img {
+    transform: scale(1.1);
+}
+
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    background: var(--secondary-bg);
+}
+
+.card-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.card-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.card-category,
+.card-school {
+    padding: 0.3rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.card-category {
+    background: rgba(var(--accent-rgb), 0.2);
+    color: var(--accent);
+}
+
+.card-school {
+    background: var(--secondary-bg);
+    color: var(--text-secondary);
+}
+
+.card-title {
+    margin: 0;
+    flex: 1;
+}
+
+.card-title a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s ease;
+}
+
+.card-title a:hover {
+    color: var(--accent);
+}
+
+.read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+}
+
+.read-more:hover {
+    gap: 0.75rem;
+}
+
+.read-more::after {
+    content: '→';
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.read-more:hover::after {
+    transform: translateX(3px);
+}
+
+/* Tablet view - 2 columns */
+@media (max-width: 1024px) {
+    .featured-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+    
+    .card-image {
+        height: 200px;
+    }
+}
+
+/* Mobile landscape and small tablets - 3 columns */
+@media (max-width: 768px) {
+    .featured-section {
+        padding: 2rem 0;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .featured-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.875rem;
+    }
+    
+    .card-image {
+        height: 140px;
+    }
+    
+    .card-content {
+        padding: 0.75rem;
+        gap: 0.625rem;
+    }
+    
+    .card-badges {
+        gap: 0.3rem;
+    }
+    
+    .card-category,
+    .card-school {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.65rem;
+    }
+    
+    .card-title a {
+        font-size: 0.8rem;
+        -webkit-line-clamp: 2;
+    }
+    
+    .read-more {
+        font-size: 0.75rem;
+    }
+    
+    .placeholder-image i {
+        font-size: 2rem !important;
+    }
+}
+
+/* Small mobile devices - 2 columns */
+@media (max-width: 480px) {
+    .featured-section {
+        padding: 1.5rem 0;
+    }
+    
+    .container {
+        padding: 0 0.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    
+    .featured-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .card-image {
+        height: 130px;
+    }
+    
+    .card-content {
+        padding: 0.625rem;
+        gap: 0.5rem;
+    }
+    
+    .card-title a {
+        font-size: 0.75rem;
+    }
+    
+    .read-more {
+        font-size: 0.7rem;
+    }
+}
+
+/* Extra small devices - 2 columns */
+@media (max-width: 360px) {
+    .featured-grid {
+        gap: 0.625rem;
+    }
+    
+    .card-image {
+        height: 110px;
+    }
+    
+    .card-content {
+        padding: 0.5rem;
+    }
+    
+    .card-category,
+    .card-school {
+        padding: 0.15rem 0.4rem;
+        font-size: 0.6rem;
+    }
+    
+    .card-title a {
+        font-size: 0.7rem;
+    }
+    
+    .read-more {
+        font-size: 0.65rem;
+    }
+    
+    .placeholder-image i {
+        font-size: 1.5rem !important;
+    }
+}
+</style>
 {% endif %}
 
 <!-- News Categories Grid -->
@@ -823,53 +1740,59 @@
             <div class="news-category">
                 <div class="category-header">
                     <h2>{{ category_data.category.name|upper }}</h2>
-                    <a href="{% url 'news:category_news' category_data.category.slug %}" class="view-all">View All</a>
+                    <a href="{% url 'news:category_news' category_data.category.slug %}" class="view-all" aria-label="View all {{ category_data.category.name }} news">
+                        <span>View All</span>
+                    </a>
                 </div>
                 
                 {% if category_data.news %}
-                <div class="main-news">
-                    {% with category_data.news.0 as main_news %}
-                    <article class="news-card main">
-                        <div class="news-image">
-                            {% if main_news.featured_image %}
-                            <img src="{{ main_news.featured_image.url }}" alt="{{ main_news.title }}" loading="lazy">
-                            {% else %}
-                            <div class="placeholder-image">
-                                <i class="fas fa-newspaper" style="font-size: 2.5rem;"></i>
-                            </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="news-content">
-                            <h3><a href="{{ main_news.get_absolute_url }}">{{ main_news.title }}</a></h3>
-                            <p>{{ main_news.excerpt|truncatewords:15 }}</p>
-                            <div class="news-meta">
-                                {% if main_news.school %}
-                                <span class="school-badge">{{ main_news.school.abbreviation|default:main_news.school.name }}</span>
+                <div class="category-news-container">
+                    <div class="main-news">
+                        {% with category_data.news.0 as main_news %}
+                        <article class="news-card main">
+                            <div class="news-image">
+                                {% if main_news.featured_image %}
+                                <img src="{{ main_news.featured_image.url }}" alt="{{ main_news.title }}" loading="lazy" width="600" height="375">
+                                {% else %}
+                                <div class="placeholder-image">
+                                    <i class="fas fa-newspaper" style="font-size: 2.5rem;" aria-hidden="true"></i>
+                                </div>
                                 {% endif %}
-                                <span class="news-date">{{ main_news.published_date|date:"M j" }}</span>
                             </div>
+                            
+                            <div class="news-content">
+                                <h3><a href="{{ main_news.get_absolute_url }}">{{ main_news.title }}</a></h3>
+                                <p>{{ main_news.excerpt|truncatewords:15 }}</p>
+                                <div class="news-meta">
+                                    {% if main_news.school %}
+                                    <span class="school-badge">{{ main_news.school.abbreviation|default:main_news.school.name }}</span>
+                                    {% endif %}
+                                    <time class="news-date" datetime="{{ main_news.published_date|date:'Y-m-d' }}">{{ main_news.published_date|date:"M j" }}</time>
+                                </div>
+                            </div>
+                        </article>
+                        {% endwith %}
+                    </div>
+                    
+                    <div class="sub-news-wrapper">
+                        <div class="sub-news">
+                            {% for news in category_data.news|slice:"1:4" %}
+                            <article class="news-card sub">
+                                <h4><a href="{{ news.get_absolute_url }}">{{ news.title|truncatewords:10 }}</a></h4>
+                                <div class="news-meta">
+                                    {% if news.school %}
+                                    <span class="school-badge">{{ news.school.abbreviation|default:news.school.name }}</span>
+                                    {% endif %}
+                                    <time class="news-date" datetime="{{ news.published_date|date:'Y-m-d' }}">{{ news.published_date|date:"M j" }}</time>
+                                </div>
+                            </article>
+                            {% endfor %}
                         </div>
-                    </article>
-                    {% endwith %}
-                </div>
-                
-                <div class="sub-news">
-                    {% for news in category_data.news|slice:"1:4" %}
-                    <article class="news-card sub">
-                        <h4><a href="{{ news.get_absolute_url }}">{{ news.title|truncatewords:8 }}</a></h4>
-                        <div class="news-meta">
-                            {% if news.school %}
-                            <span class="school-badge">{{ news.school.abbreviation|default:news.school.name }}</span>
-                            {% endif %}
-                            <span class="news-date">{{ news.published_date|date:"M j" }}</span>
-                        </div>
-                    </article>
-                    {% endfor %}
+                    </div>
                 </div>
                 {% else %}
                 <div class="no-news">
-                    <i class="fas fa-newspaper"></i>
+                    <i class="fas fa-newspaper" aria-hidden="true"></i>
                     <p>No {{ category_data.category.name|lower }} available</p>
                 </div>
                 {% endif %}
@@ -877,7 +1800,7 @@
             {% empty %}
             <div class="news-category">
                 <div class="no-news">
-                    <i class="fas fa-newspaper"></i>
+                    <i class="fas fa-newspaper" aria-hidden="true"></i>
                     <p>No news categories available</p>
                 </div>
             </div>
@@ -888,18 +1811,20 @@
             <div class="news-category schools-section">
                 <div class="category-header">
                     <h2>FEATURED SCHOOLS</h2>
-                    <a href="{% url 'news:school_list' %}" class="view-all">View All</a>
+                    <a href="{% url 'news:school_list' %}" class="view-all" aria-label="View all schools">
+                        <span>View All</span>
+                    </a>
                 </div>
                 
                 <div class="schools-grid">
                     {% for school in schools %}
-                    <a href="{% url 'news:school_news' school.slug %}" class="school-card">
+                    <a href="{% url 'news:school_news' school.slug %}" class="school-card" aria-label="{{ school.name }}">
                         <div class="school-logo">
                             {% if school.logo %}
-                            <img src="{{ school.logo.url }}" alt="{{ school.name }}" loading="lazy">
+                            <img src="{{ school.logo.url }}" alt="{{ school.name }} logo" loading="lazy" width="80" height="80">
                             {% else %}
-                            <div class="placeholder-image" style="height: 80px;">
-                                <i class="fas fa-university" style="font-size: 2rem;"></i>
+                            <div class="placeholder-image">
+                                <i class="fas fa-university" style="font-size: 1.5rem;" aria-hidden="true"></i>
                             </div>
                             {% endif %}
                         </div>
@@ -924,8 +1849,8 @@
         </div>
         <form class="newsletter-form" action="#" method="POST">
             {% csrf_token %}
-            <input type="email" name="email" placeholder="Enter your email" required>
-            <button type="submit">Subscribe</button>
+            <input type="email" name="email" placeholder="Enter your email" required aria-label="Email address">
+            <button type="submit" aria-label="Subscribe to newsletter">Subscribe</button>
         </form>
     </div>
 </section>
@@ -935,11 +1860,11 @@
 <section class="cta-section">
     <div class="cta-card">
         <div class="cta-icon">
-            <i class="fas fa-download"></i>
+            <i class="fas fa-download" aria-hidden="true"></i>
         </div>
         <h3>Download Past Questions</h3>
         <p>Access past questions for exam preparation. Download PDFs to study offline and boost your performance.</p>
-        <a href="{% url 'news:past_questions' %}" class="cta-btn">View Past Questions</a>
+        <a href="{% url 'news:past_questions' %}" class="cta-btn" aria-label="View past questions">View Past Questions</a>
     </div>
 </section>
 {% endif %}

@@ -69,7 +69,7 @@
             overflow-x: hidden;
         }
 
-        /* Navigation */
+        /* Updated Navigation - Punch Style */
         .navbar {
             position: fixed;
             top: 0;
@@ -82,21 +82,25 @@
             transition: all 0.3s ease;
         }
 
+        .nav-top {
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+        }
+
         .nav-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0.75rem 1rem;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 1rem;
+            align-items: center;
+            gap: 1.5rem;
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 1.1rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-primary);
             text-decoration: none;
@@ -108,8 +112,8 @@
         }
 
         .nav-brand img {
-            width: 35px;
-            height: 35px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -118,76 +122,56 @@
             color: var(--accent-secondary);
         }
 
-        /* Mobile Menu Toggle */
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            z-index: 1001;
-        }
-
-        .nav-toggle span {
-            display: block;
-            width: 22px;
-            height: 2px;
-            background: var(--text-primary);
-            transition: all 0.3s ease;
-            border-radius: 2px;
-        }
-
-        .nav-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .nav-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .nav-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
-        }
-
-        /* Desktop Navigation */
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            padding: 0.5rem 0;
-            transition: all 0.3s ease;
+        /* Central Search Bar */
+        .nav-search-center {
             position: relative;
+            max-width: 600px;
+            flex: 1;
         }
 
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent);
-            transition: width 0.3s ease;
+        .nav-search-center form {
+            position: relative;
+            display: flex;
         }
 
-        .nav-link:hover {
-            color: var(--accent);
-        }
-
-        .nav-link:hover::after {
+        .search-input-main {
             width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.7rem 3rem 0.7rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
 
-        /* Search and Theme Toggle */
+        .search-input-main:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
+        }
+
+        .search-btn-main {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--accent);
+            color: var(--primary-bg);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn-main:hover {
+            background: var(--accent-secondary);
+        }
+
+        /* Right Actions */
         .nav-actions {
             display: flex;
             align-items: center;
@@ -198,15 +182,15 @@
             background: var(--card-bg);
             border: 1px solid var(--border);
             color: var(--text-primary);
-            width: 35px;
-            height: 35px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         .theme-toggle:hover {
@@ -215,86 +199,155 @@
             transform: rotate(180deg);
         }
 
-        .nav-search {
-            position: relative;
+        /* Scrollable Navigation Menu */
+        .nav-menu-wrapper {
+            background: var(--secondary-bg);
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--secondary-bg);
         }
 
-        .search-input {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 0.5rem 2.5rem 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            width: 200px;
-            transition: all 0.3s ease;
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
         }
 
-        .search-input:focus {
-            outline: none;
-            border-color: var(--accent);
-            width: 250px;
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
         }
 
-        .search-btn {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            white-space: nowrap;
+        }
+
+        .nav-link {
             color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0.5rem;
-            font-size: 0.85rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.6rem 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 8px;
+            flex-shrink: 0;
         }
 
-        /* Mobile Navigation */
+        .nav-link:hover {
+            color: var(--accent);
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .nav-toggle {
-                display: flex;
+            .nav-container {
+                flex-wrap: wrap;
+            }
+
+            .nav-brand {
+                font-size: 1.2rem;
+                order: 1;
+            }
+
+            .nav-brand img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .nav-actions {
+                order: 2;
+            }
+
+            .nav-search-center {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            .search-input-main {
+                font-size: 0.85rem;
+                padding: 0.6rem 2.8rem 0.6rem 0.9rem;
+            }
+
+            .search-btn-main {
+                padding: 0.4rem 1rem;
+                font-size: 0.8rem;
             }
 
             .nav-menu {
-                position: fixed;
-                top: 60px;
-                left: 0;
-                right: 0;
-                background: var(--secondary-bg);
-                flex-direction: column;
-                padding: 1.5rem;
-                gap: 0;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                box-shadow: 0 10px 30px var(--shadow);
-                max-height: calc(100vh - 60px);
-                overflow-y: auto;
-            }
-
-            .nav-menu.active {
-                transform: translateX(0);
+                gap: 0.5rem;
+                padding: 0.6rem 1rem;
             }
 
             .nav-link {
-                width: 100%;
-                padding: 1rem;
-                border-bottom: 1px solid var(--border);
-                font-size: 0.95rem;
+                font-size: 0.85rem;
+                padding: 0.5rem 0.85rem;
             }
 
-            .search-input {
-                width: 150px;
+            .theme-toggle {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-top {
+                padding: 0.6rem 0.75rem;
             }
 
-            .search-input:focus {
-                width: 180px;
+            .nav-brand {
+                font-size: 1rem;
+            }
+
+            .nav-brand img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .search-input-main {
+                font-size: 0.8rem;
+                padding: 0.55rem 2.5rem 0.55rem 0.85rem;
+            }
+
+            .search-btn-main {
+                padding: 0.35rem 0.85rem;
+                font-size: 0.75rem;
+            }
+
+            .nav-menu {
+                gap: 0.4rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .nav-link {
+                font-size: 0.8rem;
+                padding: 0.45rem 0.75rem;
             }
         }
 
         /* Main Content */
         .main-content {
-            margin-top: 60px;
-            min-height: calc(100vh - 60px);
+            margin-top: 140px;
+            min-height: calc(100vh - 140px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-top: 130px;
+            }
         }
 
         /* Footer */
@@ -465,22 +518,15 @@
             }
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 480px) {
-            .nav-brand {
-                font-size: 1rem;
-            }
-
-            .nav-brand img {
-                width: 30px;
-                height: 30px;
-            }
-
+        /* Mobile Responsive Footer */
+        @media (max-width: 768px) {
             .footer-links {
                 flex-direction: column;
                 gap: 1.5rem;
             }
+        }
 
+        @media (max-width: 480px) {
             .social-link {
                 width: 32px;
                 height: 32px;
@@ -492,39 +538,38 @@
 <body>
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="nav-container">
-            <a href="{% url 'news:home' %}" class="nav-brand">
-                <img src="{% static 'img/logo.jpg' %}" alt="NextMedia">
-                <span>Next<span class="nav-brand-text">Media</span></span>
-            </a>
-            
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            
+        <div class="nav-top">
+            <div class="nav-container">
+                <a href="{% url 'news:home' %}" class="nav-brand">
+                    <img src="{% static 'img/logo.jpg' %}" alt="NextMedia">
+                    <span>Next<span class="nav-brand-text">Media</span></span>
+                </a>
+                
+                <div class="nav-search-center">
+                    <form action="{% url 'news:search' %}" method="GET">
+                        <input type="text" name="q" placeholder="Search news..." class="search-input-main">
+                        <button type="submit" class="search-btn-main">Search</button>
+                    </form>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scrollable Menu -->
+        <div class="nav-menu-wrapper">
             <div class="nav-menu" id="navMenu">
                 <a href="{% url 'news:home' %}" class="nav-link">Home</a>
                 <a href="{% url 'news:school_list' %}" class="nav-link">School News</a>
                 <a href="{% url 'news:category_news' 'global-news' %}" class="nav-link">Global News</a>
                 <a href="{% url 'news:category_news' 'entertainment' %}" class="nav-link">Entertainment</a>
+                <a href="{% url 'news:category_news' 'sports' %}" class="nav-link">Sports</a>
                 <a href="{% url 'news:past_questions' %}" class="nav-link">Past Questions</a>
                 <a href="#contact" class="nav-link">Contact</a>
-            </div>
-            
-            <div class="nav-actions">
-                <div class="nav-search">
-                    <form action="{% url 'news:search' %}" method="GET">
-                        <input type="text" name="q" placeholder="Search..." class="search-input">
-                        <button type="submit" class="search-btn" aria-label="Search">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
             </div>
         </div>
     </nav>
@@ -595,23 +640,6 @@
 
     <!-- JavaScript -->
     <script>
-        // Mobile Navigation Toggle
-        const navToggle = document.getElementById('navToggle');
-        const navMenu = document.getElementById('navMenu');
-
-        navToggle.addEventListener('click', () => {
-            navToggle.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                navToggle.classList.remove('active');
-                navMenu.classList.remove('active');
-            }
-        });
-
         // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
         const html = document.documentElement;
@@ -645,8 +673,6 @@
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth' });
-                    navToggle.classList.remove('active');
-                    navMenu.classList.remove('active');
                 }
             });
         });
