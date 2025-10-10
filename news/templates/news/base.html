@@ -581,6 +581,46 @@
         {% endblock %}
     </main>
 
+
+    <!-- Back to Top Button -->
+<button id="backToTop" class="back-to-top" aria-label="Back to top" style="position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%); color: #fff; border: none; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4); transition: all 0.3s ease; z-index: 999; font-size: 1.5rem;">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+// Back to Top Button Functionality
+(function() {
+    const backToTopBtn = document.getElementById('backToTop');
+    
+    // Show button when user scrolls down 300px
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            backToTopBtn.style.display = 'flex';
+        } else {
+            backToTopBtn.style.display = 'none';
+        }
+    });
+    
+    // Smooth scroll to top when clicked
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Add hover effect
+    backToTopBtn.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.1) translateY(-5px)';
+        this.style.boxShadow = '0 6px 30px rgba(255, 107, 53, 0.6)';
+    });
+    
+    backToTopBtn.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1) translateY(0)';
+        this.style.boxShadow = '0 4px 20px rgba(255, 107, 53, 0.4)';
+    });
+})();
+</script>
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
