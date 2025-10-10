@@ -544,11 +544,12 @@
                     <img src="{% static 'img/logo.jpg' %}" alt="NextMedia">
                     <span>Next<span class="nav-brand-text">Media</span></span>
                 </a>
-                
                 <div class="nav-search-center">
                     <form action="{% url 'news:search' %}" method="GET">
                         <input type="text" name="q" placeholder="Search news..." class="search-input-main">
-                        <button type="submit" class="search-btn-main">Search</button>
+                        <button type="submit" class="search-btn-main">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
                     </form>
                 </div>
                 

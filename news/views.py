@@ -20,7 +20,7 @@ def custom_404_view(request, exception=None):
         # Get 3 recent news articles to show on 404 page
         recent_news = News.objects.filter(
             is_published=True
-        ).select_related('school', 'category').order_by('-published_date')[:3]
+        ).select_related('school', 'category').order_by('-published_date')[:5]
         
         context = {
             'recent_news': recent_news,
@@ -74,7 +74,7 @@ def home(request):
     from django.db.models import Prefetch
     
     # Get the 6 most recently uploaded news (for ticker animation)
-    latest_news = News.objects.filter(is_published=True).select_related('school', 'category').order_by('-created_at')[:3]
+    latest_news = News.objects.filter(is_published=True).select_related('school', 'category').order_by('-created_at')[:6]
     
     # Get featured news
     featured_news = News.objects.filter(is_published=True, is_featured=True).select_related('school', 'category')[:12]
@@ -104,6 +104,7 @@ def home(request):
         'schools': School.objects.filter(is_active=True)[:6],
     }
     return render(request, 'news/index.html', context)
+
 
 def school_list(request):
     schools = School.objects.filter(is_active=True)
