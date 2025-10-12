@@ -350,6 +350,243 @@
             }
         }
 
+        /* Floating Action Buttons Container */
+        .floating-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .back-to-top:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 6px 30px rgba(255, 107, 53, 0.6);
+        }
+
+        /* Next AI Button */
+        .next-ai-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            font-size: 1.3rem;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        .next-ai-btn:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 30px rgba(102, 126, 234, 0.7);
+            }
+        }
+
+        /* Install App Button */
+        .install-app-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(58, 123, 213, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .install-app-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(58, 123, 213, 0.5);
+        }
+
+        /* Coming Soon Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content h2 {
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .modal-content p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .modal-close-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Mobile Responsive Floating Buttons */
+        @media (max-width: 768px) {
+            .floating-buttons {
+                bottom: 20px;
+                right: 20px;
+                gap: 12px;
+            }
+
+            .back-to-top,
+            .next-ai-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+
+            .next-ai-btn {
+                font-size: 1.1rem;
+            }
+
+            .install-app-btn {
+                padding: 0.65rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .modal-content {
+                padding: 2rem;
+            }
+
+            .modal-icon {
+                font-size: 3rem;
+            }
+
+            .modal-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .modal-content p {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .floating-buttons {
+                bottom: 15px;
+                right: 15px;
+                gap: 10px;
+            }
+
+            .back-to-top,
+            .next-ai-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 1.1rem;
+            }
+
+            .next-ai-btn {
+                font-size: 1rem;
+            }
+
+            .install-app-btn {
+                padding: 0.6rem 0.9rem;
+                font-size: 0.75rem;
+            }
+        }
+
         /* Footer */
         .footer {
             background: var(--secondary-bg);
@@ -541,7 +778,7 @@
         <div class="nav-top">
             <div class="nav-container">
                 <a href="{% url 'news:home' %}" class="nav-brand">
-                    <img src="{% static 'img/logo.jpg' %}" alt="NextMedia">
+                    <img src="{% static 'img/logo.jpg' %}" alt="NextMedia" style="margin-bottom: 20px;">
                     <span>Next<span class="nav-brand-text">Media</span></span>
                 </a>
                 <div class="nav-search-center">
@@ -574,6 +811,7 @@
             </div>
         </div>
     </nav>
+    <br>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -581,46 +819,28 @@
         {% endblock %}
     </main>
 
+    <!-- Floating Action Buttons -->
+    <div class="floating-buttons">
+        <button id="nextAiBtn" class="next-ai-btn" aria-label="Next AI Assistant">
+            <i class="fas fa-robot"></i>
+        </button>
+        <button id="backToTop" class="back-to-top" aria-label="Back to top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
 
-    <!-- Back to Top Button -->
-<button id="backToTop" class="back-to-top" aria-label="Back to top" style="position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%); color: #fff; border: none; border-radius: 50%; cursor: pointer; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4); transition: all 0.3s ease; z-index: 999; font-size: 1.5rem;">
-    <i class="fas fa-arrow-up"></i>
-</button>
+    <!-- Coming Soon Modal -->
+    <div id="comingSoonModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h2>Next AI Assistant</h2>
+            <p>Our intelligent AI assistant is coming soon! Get ready for personalized news recommendations and instant answers to your questions.</p>
+            <button class="modal-close-btn" id="closeModal">Got it!</button>
+        </div>
+    </div>
 
-<script>
-// Back to Top Button Functionality
-(function() {
-    const backToTopBtn = document.getElementById('backToTop');
-    
-    // Show button when user scrolls down 300px
-    window.addEventListener('scroll', function() {
-        if (window.pageYOffset > 300) {
-            backToTopBtn.style.display = 'flex';
-        } else {
-            backToTopBtn.style.display = 'none';
-        }
-    });
-    
-    // Smooth scroll to top when clicked
-    backToTopBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-    
-    // Add hover effect
-    backToTopBtn.addEventListener('mouseenter', function() {
-        this.style.transform = 'scale(1.1) translateY(-5px)';
-        this.style.boxShadow = '0 6px 30px rgba(255, 107, 53, 0.6)';
-    });
-    
-    backToTopBtn.addEventListener('mouseleave', function() {
-        this.style.transform = 'scale(1) translateY(0)';
-        this.style.boxShadow = '0 4px 20px rgba(255, 107, 53, 0.4)';
-    });
-})();
-</script>
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
@@ -707,6 +927,59 @@
             }
         }
 
+        // Back to Top Button Functionality
+        (function() {
+            const backToTopBtn = document.getElementById('backToTop');
+            
+            // Show button when user scrolls down 300px
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopBtn.style.display = 'flex';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+            
+            // Smooth scroll to top when clicked
+            backToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        })();
+
+        // Next AI Button - Coming Soon Modal
+        (function() {
+            const nextAiBtn = document.getElementById('nextAiBtn');
+            const modal = document.getElementById('comingSoonModal');
+            const closeModalBtn = document.getElementById('closeModal');
+
+            // Show modal when Next AI button is clicked
+            nextAiBtn.addEventListener('click', function() {
+                modal.classList.add('active');
+            });
+
+            // Close modal when close button is clicked
+            closeModalBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+            });
+
+            // Close modal when clicking outside the modal content
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                }
+            });
+        })();
+
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -757,38 +1030,12 @@
         }
 
         function showInstallButton() {
+            const floatingButtons = document.querySelector('.floating-buttons');
+            
             const installButton = document.createElement('button');
+            installButton.className = 'install-app-btn';
             installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
-            installButton.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                border: none;
-                padding: 0.75rem 1.25rem;
-                border-radius: 25px;
-                font-weight: 600;
-                cursor: pointer;
-                box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-                z-index: 1000;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-family: 'Inter', sans-serif;
-                font-size: 0.85rem;
-                transition: all 0.3s ease;
-            `;
-            
-            installButton.addEventListener('mouseover', () => {
-                installButton.style.transform = 'translateY(-2px)';
-                installButton.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.5)';
-            });
-            
-            installButton.addEventListener('mouseout', () => {
-                installButton.style.transform = 'translateY(0)';
-                installButton.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.4)';
-            });
+            installButton.id = 'installAppBtn';
             
             installButton.addEventListener('click', function() {
                 if (deferredPrompt) {
@@ -800,7 +1047,8 @@
                 }
             });
             
-            document.body.appendChild(installButton);
+            // Insert install button as first child in floating buttons container
+            floatingButtons.insertBefore(installButton, floatingButtons.firstChild);
         }
     </script>
     
