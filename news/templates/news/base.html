@@ -949,37 +949,40 @@
             });
         })();
 
-        // Next AI Button - Coming Soon Modal
+        // Next AI Button - Navigate to Chat Interface
         (function() {
             const nextAiBtn = document.getElementById('nextAiBtn');
             const modal = document.getElementById('comingSoonModal');
             const closeModalBtn = document.getElementById('closeModal');
 
-            // Show modal when Next AI button is clicked
+            // Navigate to chat when Next AI button is clicked
             nextAiBtn.addEventListener('click', function() {
-                modal.classList.add('active');
+                window.location.href = '/ai-chat/';
             });
 
-            // Close modal when close button is clicked
-            closeModalBtn.addEventListener('click', function() {
-                modal.classList.remove('active');
-            });
-
-            // Close modal when clicking outside the modal content
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
+            // Remove modal event listeners since we're not using the modal anymore
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
                     modal.classList.remove('active');
-                }
-            });
+                });
+            }
 
-            // Close modal with Escape key
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            }
+
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
                     modal.classList.remove('active');
                 }
             });
         })();
-
+                
+        
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {

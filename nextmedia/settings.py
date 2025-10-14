@@ -17,7 +17,7 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'news/templates')
 SECRET_KEY = 'django-insecure-f&at%3l0)huwa-xy)*x!q5@c!azw1y8e+4vh_irv3zbn*89t=p'
 
 # FORCE DEVELOPMENT MODE
-DEBUG = False
+DEBUG = True
 DEVELOPMENT_MODE = False
 
 
@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'news',
+    'ai_chat',
     'cloudinary',
     'cloudinary_storage',
 ]
@@ -162,3 +163,9 @@ LOGGING = {
         },
     },
 }
+
+
+# ============================================
+# GROQ AI CONFIGURATION
+# ============================================
+GROQ_API_KEY = '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'
