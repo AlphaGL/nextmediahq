@@ -2029,9 +2029,9 @@
                             <div class="news-content-horizontal">
                                 <h3>{{ news.title }}</h3>
                                 <div class="news-meta-horizontal">
-                                    <time datetime="{{ news.published_date|date:'Y-m-d' }}">
+                                    <time datetime="{{ news.created_at|date:'Y-m-d' }}">
                                         <i class="fas fa-clock"></i>
-                                        {{ news.published_date|date:"M j, Y" }}
+                                        {{ news.created_at|date:"M j, Y" }}
                                     </time>
                                 </div>
                             </div>
