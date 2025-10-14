@@ -57,7 +57,7 @@ def ping_view(request):
     return JsonResponse({"status": "OK"})
 
 @require_GET
-@cache_control(max_age=86400)  # Cache for 24 hours
+@cache_control(max_age=812400)  # Cache for 24 hours
 def service_worker(request):
     """Serve the service worker with proper content type and headers"""
     try:
@@ -73,8 +73,8 @@ def service_worker(request):
 def home(request):
     from django.db.models import Prefetch
     
-    # Get the 6 most recently uploaded news (for ticker animation)
-    latest_news = News.objects.filter(is_published=True).select_related('school', 'category').order_by('-created_at')[:6]
+    # Get the 12 most recently uploaded news (for ticker animation)
+    latest_news = News.objects.filter(is_published=True).select_related('school', 'category').order_by('-created_at')[:12]
     
     # Get featured news
     featured_news = News.objects.filter(is_published=True, is_featured=True).select_related('school', 'category')[:12]
@@ -88,7 +88,7 @@ def home(request):
         category_news = News.objects.filter(
             is_published=True,
             category=category
-        ).select_related('school', 'category').order_by('-created_at')[:6]
+        ).select_related('school', 'category').order_by('-created_at')[:12]
         
         # Only include categories that have news
         if category_news.exists():
@@ -101,7 +101,7 @@ def home(request):
         'latest_news': latest_news,
         'featured_news': featured_news,
         'categories_with_news': categories_with_news,
-        'schools': School.objects.filter(is_active=True)[:6],
+        'schools': School.objects.filter(is_active=True)[:12],
     }
     return render(request, 'news/index.html', context)
 
@@ -137,7 +137,7 @@ def school_news(request, slug):
         
     except Http404:
         # School not found
-        schools = School.objects.filter(is_active=True)[:6]
+        schools = School.objects.filter(is_active=True)[:12]
         context = {
             'schools': schools,
             'missing_slug': slug,
@@ -271,7 +271,7 @@ def search(request):
     }
     return render(request, 'news/search.html', context)
 
-@cache_control(max_age=86400)  # Cache for 24 hours
+@cache_control(max_age=812400)  # Cache for 24 hours
 def manifest(request):
     """Serve PWA manifest with proper headers"""
     manifest_data = {
@@ -281,7 +281,7 @@ def manifest(request):
         "start_url": "/",
         "display": "standalone",
         "background_color": "#1a1a2e",
-        "theme_color": "#ff6b35",
+        "theme_color": "#ff12b35",
         "orientation": "portrait-primary",
         "scope": "/",
         "icons": [
@@ -292,8 +292,8 @@ def manifest(request):
                 "purpose": "maskable any"
             },
             {
-                "src": "/static/img/icon-96x96.png",
-                "sizes": "96x96",
+                "src": "/static/img/icon-912x912.png",
+                "sizes": "912x912",
                 "type": "image/png",
                 "purpose": "maskable any"
             },
