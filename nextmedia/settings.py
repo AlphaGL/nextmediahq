@@ -14,10 +14,11 @@ import cloudinary.api
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'news/templates')
 
-SECRET_KEY = 'django-insecure-f&at%3l0)huwa-xy)*x!q5@c!azw1y8e+4vh_irv3zbn*89t=p'
+SECRET_KEY = config('SECRET_KEY', default='your-secret-key-here')
+
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # FORCE DEVELOPMENT MODE
-DEBUG = False
 DEVELOPMENT_MODE = False
 
 
@@ -69,10 +70,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'nextmedia.wsgi.application'
 
 DATABASES = {
-
-    'default': dj_database_url.parse(
-        'postgresql://postgres.tittsxyrrxrolajodbbh:nextmediahq_db3@aws-1-us-east-1.pooler.supabase.com:6543/postgres'
-    ),
+    'default': dj_database_url.parse(config('DATABASE_URL'))
 }
 
 # Cloudinary configuration
