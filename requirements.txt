@@ -21,6 +21,9 @@ paystackapi==2.1.3
 google-generativeai==0.8.0  # For Gemini API (lightweight)
 groq==0.4.2                 # For Groq/OpenAI-style chat API support
 
+# Real-time data for chatbot
+feedparser==6.0.11          # For RSS feeds (no API key needed, unlimited)
+
 # Optional Django utilities
 django-taggit==6.1.0
 django-ckeditor==6.7.3

@@ -69,7 +69,7 @@
             overflow-x: hidden;
         }
 
-        /* Updated Navigation - Punch Style */
+        /* Navigation */
         .navbar {
             position: fixed;
             top: 0;
@@ -114,7 +114,6 @@
         .nav-brand img {
             width: 50px;
             height: 50px;
-            /* border-radius: 50%; */
             object-fit: cover;
         }
 
@@ -249,7 +248,7 @@
             background: rgba(100, 255, 218, 0.1);
         }
 
-        /* Mobile Responsive */
+        /* Mobile Responsive Navigation */
         @media (max-width: 768px) {
             .nav-container {
                 flex-wrap: wrap;
@@ -361,26 +360,46 @@
             z-index: 999;
         }
 
-        /* Back to Top Button */
-        .back-to-top {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
-            color: #fff;
+        /* Install App Button */
+        .install-app-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
             border: none;
-            border-radius: 50%;
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            font-weight: 600;
             cursor: pointer;
+            box-shadow: 0 5px 20px rgba(58, 123, 213, 0.4);
             display: none;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
-            font-size: 1.5rem;
+            white-space: nowrap;
+            width: auto;
+            height: auto;
         }
 
-        .back-to-top:hover {
-            transform: scale(1.1) translateY(-5px);
-            box-shadow: 0 6px 30px rgba(255, 107, 53, 0.6);
+        .install-app-btn.show {
+            display: flex;
+            animation: slideInRight 0.4s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .install-app-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(58, 123, 213, 0.5);
         }
 
         /* Next AI Button */
@@ -416,28 +435,75 @@
             }
         }
 
-        /* Install App Button */
-        .install-app-btn {
-            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-            color: white;
+        /* Back to Top Button */
+        .back-to-top {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+            color: #fff;
             border: none;
-            padding: 0.75rem 1.25rem;
-            border-radius: 25px;
-            font-weight: 600;
+            border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(58, 123, 213, 0.4);
-            display: flex;
+            display: none;
             align-items: center;
-            gap: 0.5rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
             transition: all 0.3s ease;
-            white-space: nowrap;
+            font-size: 1.5rem;
         }
 
-        .install-app-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(58, 123, 213, 0.5);
+        .back-to-top:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 6px 30px rgba(255, 107, 53, 0.6);
+        }
+
+        /* Mobile Responsive Floating Buttons */
+        @media (max-width: 768px) {
+            .floating-buttons {
+                bottom: 20px;
+                right: 20px;
+                gap: 12px;
+            }
+
+            .back-to-top,
+            .next-ai-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+
+            .next-ai-btn {
+                font-size: 1.1rem;
+            }
+
+            .install-app-btn {
+                padding: 0.65rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .floating-buttons {
+                bottom: 15px;
+                right: 15px;
+                gap: 10px;
+            }
+
+            .back-to-top,
+            .next-ai-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 1.1rem;
+            }
+
+            .next-ai-btn {
+                font-size: 1rem;
+            }
+
+            .install-app-btn {
+                padding: 0.6rem 0.9rem;
+                font-size: 0.75rem;
+            }
         }
 
         /* Coming Soon Modal */
@@ -522,30 +588,7 @@
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
         }
 
-        /* Mobile Responsive Floating Buttons */
         @media (max-width: 768px) {
-            .floating-buttons {
-                bottom: 20px;
-                right: 20px;
-                gap: 12px;
-            }
-
-            .back-to-top,
-            .next-ai-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 1.2rem;
-            }
-
-            .next-ai-btn {
-                font-size: 1.1rem;
-            }
-
-            .install-app-btn {
-                padding: 0.65rem 1rem;
-                font-size: 0.8rem;
-            }
-
             .modal-content {
                 padding: 2rem;
             }
@@ -560,30 +603,6 @@
 
             .modal-content p {
                 font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .floating-buttons {
-                bottom: 15px;
-                right: 15px;
-                gap: 10px;
-            }
-
-            .back-to-top,
-            .next-ai-btn {
-                width: 42px;
-                height: 42px;
-                font-size: 1.1rem;
-            }
-
-            .next-ai-btn {
-                font-size: 1rem;
-            }
-
-            .install-app-btn {
-                padding: 0.6rem 0.9rem;
-                font-size: 0.75rem;
             }
         }
 
@@ -621,7 +640,6 @@
         .footer-logo img {
             width: 40px;
             height: 40px;
-            /* border-radius: 50%; */
         }
 
         .footer-brand p {
@@ -738,6 +756,22 @@
             font-size: 0.75rem;
         }
 
+        /* Mobile Responsive Footer */
+        @media (max-width: 768px) {
+            .footer-links {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .social-link {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+        }
+
         /* Smooth Scrolling */
         html {
             scroll-behavior: smooth;
@@ -752,22 +786,6 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
-            }
-        }
-
-        /* Mobile Responsive Footer */
-        @media (max-width: 768px) {
-            .footer-links {
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .social-link {
-                width: 32px;
-                height: 32px;
-                font-size: 0.85rem;
             }
         }
     </style>
@@ -878,11 +896,21 @@
         
         <div class="footer-bottom">
             <div class="social-links">
-                <a href="https://x.com/NEXTMEDIA_NG?t=PDjKpbv6cQogdaoAuPU95w&s=09" class="social-link" aria-label="X"><i class="fab fa-x"></i></a>
-                <a href="https://www.facebook.com/profile.php?id=61580041737517" class="social-link" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                <a href="https://www.instagram.com/nextmedia_ng?utm_source=qr&igsh=MWlubzVoaDBiYzhjbg==" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.tiktok.com/@next_media_ng?_t=ZS-8zHv5vPL263&_r=1" class="social-link" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-                <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="social-link" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://x.com/NEXTMEDIA_NG?t=PDjKpbv6cQogdaoAuPU95w&s=09" class="social-link" aria-label="X">
+                    <i class="fab fa-x"></i>
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61580041737517" class="social-link" aria-label="Facebook">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="https://www.instagram.com/nextmedia_ng?utm_source=qr&igsh=MWlubzVoaDBiYzhjbg==" class="social-link" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@next_media_ng?_t=ZS-8zHv5vPL263&_r=1" class="social-link" aria-label="TikTok">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="social-link" aria-label="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
             </div>
             
             <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="whatsapp-btn">
@@ -961,7 +989,7 @@
                 window.location.href = '/ai-chat/';
             });
 
-            // Remove modal event listeners since we're not using the modal anymore
+            // Modal event listeners for fallback
             if (closeModalBtn) {
                 closeModalBtn.addEventListener('click', function() {
                     modal.classList.remove('active');
@@ -982,7 +1010,6 @@
                 }
             });
         })();
-                
         
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -995,7 +1022,7 @@
             });
         });
 
-        // PWA Installation
+        // PWA Installation - Improved and Fixed
         const isDevelopment = location.hostname === 'localhost' || 
                              location.hostname === '127.0.0.1' || 
                              location.hostname.startsWith('192.168.') ||
@@ -1005,6 +1032,7 @@
         const isHTTP = location.protocol === 'http:';
         const isHTTPS = location.protocol === 'https:';
         
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             const shouldRegister = isDevelopment ? isHTTP : isHTTPS;
             
@@ -1014,46 +1042,119 @@
                         scope: '/'
                     })
                     .then(function(registration) {
-                        console.log('Service Worker registered:', registration.scope);
+                        console.log('✅ Service Worker registered:', registration.scope);
                     })
                     .catch(function(error) {
-                        console.log('Service Worker registration failed:', error);
+                        console.log('❌ Service Worker registration failed:', error);
                     });
                 });
             }
         }
 
+        // PWA Install Prompt Handler
         let deferredPrompt;
-        
-        if ((isDevelopment && isHTTP) || (!isDevelopment && isHTTPS)) {
-            window.addEventListener('beforeinstallprompt', function(e) {
-                e.preventDefault();
-                deferredPrompt = e;
-                showInstallButton();
-            });
-        }
+        let installButton = null;
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', function(e) {
+            console.log('🎉 beforeinstallprompt event fired - PWA is installable!');
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+
+        // Check if app is already installed
+        window.addEventListener('appinstalled', function() {
+            console.log('✅ PWA was installed successfully');
+            hideInstallButton();
+            deferredPrompt = null;
+        });
 
         function showInstallButton() {
+            // Check if button already exists
+            if (installButton) {
+                console.log('⚠️ Install button already exists');
+                return;
+            }
+            
             const floatingButtons = document.querySelector('.floating-buttons');
             
-            const installButton = document.createElement('button');
+            if (!floatingButtons) {
+                console.error('❌ Floating buttons container not found');
+                return;
+            }
+            
+            // Create install button
+            installButton = document.createElement('button');
             installButton.className = 'install-app-btn';
             installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
             installButton.id = 'installAppBtn';
             
+            // Add click event listener
             installButton.addEventListener('click', function() {
+                console.log('🔘 Install button clicked');
                 if (deferredPrompt) {
+                    // Show the install prompt
                     deferredPrompt.prompt();
+                    
+                    // Wait for the user to respond to the prompt
                     deferredPrompt.userChoice.then(function(choiceResult) {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('✅ User accepted the install prompt');
+                        } else {
+                            console.log('❌ User dismissed the install prompt');
+                        }
+                        
+                        // Clear the deferredPrompt
                         deferredPrompt = null;
-                        installButton.remove();
+                        
+                        // Hide the button
+                        hideInstallButton();
                     });
+                } else {
+                    console.error('❌ No deferred prompt available');
                 }
             });
             
             // Insert install button as first child in floating buttons container
             floatingButtons.insertBefore(installButton, floatingButtons.firstChild);
+            
+            // Trigger animation by adding show class after a brief delay
+            setTimeout(() => {
+                installButton.classList.add('show');
+                console.log('✅ Install button displayed');
+            }, 100);
         }
+
+        function hideInstallButton() {
+            if (installButton) {
+                console.log('🔄 Hiding install button');
+                installButton.classList.remove('show');
+                setTimeout(() => {
+                    if (installButton && installButton.parentNode) {
+                        installButton.parentNode.removeChild(installButton);
+                        console.log('✅ Install button removed');
+                    }
+                    installButton = null;
+                }, 300);
+            }
+        }
+
+        // For testing: Check if the browser supports PWA installation
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('📱 PWA Support Check:');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('✓ Service Worker supported:', 'serviceWorker' in navigator);
+        console.log('✓ Is HTTPS or localhost:', (isDevelopment && isHTTP) || (!isDevelopment && isHTTPS));
+        console.log('✓ Protocol:', location.protocol);
+        console.log('✓ Hostname:', location.hostname);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('ℹ️ The install button will appear when:');
+        console.log('  1. Manifest is valid');
+        console.log('  2. Service worker is registered');
+        console.log('  3. App meets PWA criteria');
+        console.log('  4. beforeinstallprompt event fires');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     </script>
     
     {% block extra_js %}{% endblock %}

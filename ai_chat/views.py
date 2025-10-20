@@ -5,17 +5,16 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from .models import ChatSession, ChatMessage, ConversationContext
+from .ai_service import EnhancedAIService
 import json
 from datetime import timedelta
-from django.conf import settings
 import logging
-from groq import Groq
 
 logger = logging.getLogger(__name__)
 
-# Initialize Groq client
-groq_client = Groq(api_key=settings.GROQ_API_KEY)
-logger.info("Groq client initialized")
+# Initialize enhanced AI service
+ai_service = EnhancedAIService()
+logger.info("Enhanced AI service initialized")
 
 def chat_view(request):
     """Main chat interface view"""
@@ -49,50 +48,29 @@ def send_message(request):
             content=user_message
         )
         
-        # Get previous messages
-        all_messages = list(ChatMessage.objects.filter(session=session).order_by('timestamp'))
-        previous_messages = all_messages[:-1]
+        # Get conversation history (last 5 messages for context)
+        previous_messages = list(
+            ChatMessage.objects.filter(session=session)
+            .order_by('-timestamp')[:5]
+        )
+        previous_messages.reverse()
         
-        # Build conversation history - simplified for classification models
-        messages = [
-            {
-                "role": "system",
-                "content": """You are Next AI, a friendly and helpful AI assistant for NextMedia - a news platform. 
-Be concise, friendly, and helpful. Use a conversational tone.
-Always maintain a positive and supportive attitude."""
-            },
-            {
-                "role": "user",
-                "content": user_message
-            }
+        conversation_history = [
+            {'role': msg.message_type, 'content': msg.content}
+            for msg in previous_messages[:-1]  # Exclude current message
         ]
         
-        logger.info(f"Session {session.session_id}: Sending {len(messages)} messages to Groq")
+        logger.info(f"Session {session.session_id}: Processing message with {len(conversation_history)} history items")
         
-        try:
-            models = groq_client.models.list()
-            available_models = [m.id for m in models.data]
-            logger.info(f"Available models: {available_models}")
-
-            # Pick any model that supports chat
-            chat_models = [m for m in available_models if "chat" in m]
-            model_to_use = chat_models[0] if chat_models else "llama-3.1-8b-instant"
-            logger.info(f"Using model: {model_to_use}")
-        except Exception as e:
-            logger.warning(f"Could not list models, using default chat model: {str(e)}")
-            model_to_use = "llama-3.1-8b-instant"
-
+        # Generate enhanced AI response
+        ai_result = ai_service.generate_response(user_message, conversation_history)
         
-        # Call Groq API
-        response = groq_client.chat.completions.create(
-            model=model_to_use,
-            messages=messages,
-            temperature=0.7,
-            max_tokens=512,
-        )
-        
-        ai_response = response.choices[0].message.content
-        logger.info("Response received from Groq")
+        if ai_result['success']:
+            ai_response = ai_result['message']
+            logger.info(f"Response generated using context: {ai_result.get('context_used', [])}")
+        else:
+            ai_response = ai_result['message']
+            logger.error(f"AI service error: {ai_result.get('error', 'Unknown error')}")
         
         # Save AI response
         ChatMessage.objects.create(
@@ -109,7 +87,8 @@ Always maintain a positive and supportive attitude."""
             'success': True,
             'message': ai_response,
             'session_id': str(session.session_id),
-            'timestamp': timezone.now().isoformat()
+            'timestamp': timezone.now().isoformat(),
+            'context_used': ai_result.get('context_used', [])
         })
         
     except json.JSONDecodeError as e:

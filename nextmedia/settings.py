@@ -161,8 +161,17 @@ LOGGING = {
     },
 }
 
+# ============================================
+# AI CONFIGURATION
+# ============================================
+GROQ_API_KEY = config('GROQ_API_KEY', default='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')
 
-# ============================================
-# GROQ AI CONFIGURATION
-# ============================================
-GROQ_API_KEY = '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'
+# Optional: NewsAPI.org (Free tier: 100 requests/day)
+# Sign up at https://newsapi.org/ to get a free API key
+# If not provided, the system will use Google News RSS (unlimited, no key needed)
+NEWS_API_KEY = config('NEWS_API_KEY', default='1e08a5cefedb4e27bf357d95800ef7f5')
+
+# Optional: OpenWeatherMap (Free tier: 1000 requests/day)
+# Sign up at https://openweathermap.org/api to get a free API key
+# If not provided, the system will use wttr.in (unlimited, no key needed)
+OPENWEATHER_API_KEY = config('OPENWEATHER_API_KEY', default='9ec8d46ed93e645a0e98fac1397dda00')

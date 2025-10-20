@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Next AI - Your Intelligent Assistant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,6 +12,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
     }
 
     :root {
@@ -44,59 +44,64 @@
         --ai-msg-bg: #f1f3f5;
     }
 
+    html {
+        height: 100%;
+        height: -webkit-fill-available;
+    }
+
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background: var(--primary-bg);
         color: var(--text-primary);
-        height: 100vh;
+        height: 100%;
+        height: -webkit-fill-available;
         overflow: hidden;
         display: flex;
         flex-direction: column;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
     }
 
     /* ========================================
-       HEADER STYLES
+       HEADER STYLES - Mobile Optimized
        ======================================== */
     .chat-header {
         background: var(--secondary-bg);
-        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem);
+        padding: 0.75rem 1rem;
         border-bottom: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
         align-items: center;
         box-shadow: 0 2px 10px var(--shadow);
-        z-index: 10;
+        z-index: 1000;
         flex-shrink: 0;
+        min-height: 60px;
     }
 
     .header-left {
         display: flex;
         align-items: center;
-        gap: clamp(0.5rem, 2vw, 1rem);
+        gap: 0.75rem;
         flex: 1;
         min-width: 0;
     }
 
     .ai-avatar {
-        width: clamp(35px, 8vw, 50px);
-        height: clamp(35px, 8vw, 50px);
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: clamp(1rem, 3vw, 1.5rem);
+        font-size: 1.2rem;
         color: white;
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        animation: pulse 2s ease-in-out infinite;
         flex-shrink: 0;
-    }
-
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
-        50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6); }
     }
 
     .header-info {
@@ -106,10 +111,10 @@
     }
 
     .header-info h1 {
-        font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        font-size: 1rem;
         font-weight: 700;
         color: var(--text-primary);
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.15rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -118,34 +123,28 @@
     .status {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.4rem;
         color: var(--text-secondary);
-        font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+        font-size: 0.75rem;
     }
 
     .status-dot {
-        width: clamp(6px, 1.5vw, 8px);
-        height: clamp(6px, 1.5vw, 8px);
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
         background: #4CAF50;
-        animation: blink 2s ease-in-out infinite;
         flex-shrink: 0;
-    }
-
-    @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
     }
 
     .header-actions {
         display: flex;
-        gap: clamp(0.4rem, 1.5vw, 0.75rem);
+        gap: 0.5rem;
         flex-shrink: 0;
     }
 
     .header-btn {
-        width: clamp(32px, 7vw, 40px);
-        height: clamp(32px, 7vw, 40px);
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         background: var(--card-bg);
         border: 1px solid var(--border);
@@ -155,22 +154,19 @@
         align-items: center;
         justify-content: center;
         transition: all var(--transition);
-        font-size: clamp(0.8rem, 2vw, 1rem);
+        font-size: 0.95rem;
         text-decoration: none;
-    }
-
-    .header-btn:hover {
-        background: var(--accent);
-        color: white;
-        transform: scale(1.1);
+        touch-action: manipulation;
     }
 
     .header-btn:active {
-        transform: scale(0.95);
+        transform: scale(0.9);
+        background: var(--accent);
+        color: white;
     }
 
     /* ========================================
-       CHAT CONTAINER
+       CHAT CONTAINER - Mobile Optimized
        ======================================== */
     .chat-container {
         flex: 1;
@@ -182,52 +178,34 @@
     }
 
     /* ========================================
-       WELCOME SCREEN
+       WELCOME SCREEN - Mobile Optimized
        ======================================== */
     .welcome-screen {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        padding: clamp(1rem, 4vw, 2rem);
+        padding: 1.5rem 1rem;
         text-align: center;
         height: 100%;
         overflow-y: auto;
         overflow-x: hidden;
-    }
-
-    .welcome-screen::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .welcome-screen::-webkit-scrollbar-track {
-        background: var(--secondary-bg);
-    }
-
-    .welcome-screen::-webkit-scrollbar-thumb {
-        background: var(--accent);
-        border-radius: 10px;
+        -webkit-overflow-scrolling: touch;
     }
 
     .welcome-icon {
-        font-size: clamp(3rem, 10vw, 5rem);
+        font-size: 3.5rem;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: clamp(1rem, 3vw, 1.5rem);
-        animation: float 3s ease-in-out infinite;
+        margin-bottom: 1rem;
         flex-shrink: 0;
     }
 
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-
     .welcome-screen h2 {
-        font-size: clamp(1.25rem, 4vw, 2.5rem);
+        font-size: 1.75rem;
         font-weight: 800;
-        margin-bottom: clamp(0.75rem, 2vw, 1rem);
+        margin-bottom: 0.75rem;
         background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -237,101 +215,89 @@
 
     .welcome-screen p {
         color: var(--text-secondary);
-        font-size: clamp(0.9rem, 2vw, 1.15rem);
-        max-width: 600px;
+        font-size: 1rem;
+        max-width: 90%;
         line-height: 1.6;
-        margin-bottom: clamp(1.5rem, 4vw, 2rem);
+        margin-bottom: 1.5rem;
         flex-shrink: 0;
-        padding: 0 1rem;
     }
 
     .suggestion-cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-        gap: clamp(0.75rem, 2vw, 1rem);
-        max-width: 900px;
+        grid-template-columns: 1fr;
+        gap: 0.875rem;
         width: 100%;
-        flex-shrink: 0;
+        max-width: 100%;
+        padding: 0 0.25rem;
     }
 
     .suggestion-card {
         background: var(--card-bg);
         border: 1px solid var(--border);
-        border-radius: clamp(8px, 2vw, 12px);
-        padding: clamp(1rem, 2.5vw, 1.25rem);
+        border-radius: 12px;
+        padding: 1rem;
         cursor: pointer;
-        transition: all var(--transition);
+        transition: all 0.2s ease;
         text-align: left;
-    }
-
-    .suggestion-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px var(--shadow);
-        border-color: var(--accent);
+        touch-action: manipulation;
     }
 
     .suggestion-card:active {
-        transform: translateY(-2px);
+        transform: scale(0.98);
+        background: var(--secondary-bg);
     }
 
     .suggestion-card i {
-        font-size: clamp(1.25rem, 4vw, 1.75rem);
+        font-size: 1.5rem;
         color: var(--accent);
-        margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
+        margin-bottom: 0.6rem;
         display: block;
     }
 
     .suggestion-card h3 {
-        font-size: clamp(0.9rem, 2vw, 1rem);
+        font-size: 0.95rem;
         font-weight: 600;
-        margin-bottom: clamp(0.35rem, 1vw, 0.5rem);
+        margin-bottom: 0.4rem;
         color: var(--text-primary);
         line-height: 1.3;
     }
 
     .suggestion-card p {
-        font-size: clamp(0.75rem, 1.8vw, 0.85rem);
+        font-size: 0.8rem;
         color: var(--text-secondary);
-        line-height: 1.5;
+        line-height: 1.4;
         margin: 0;
     }
 
     /* ========================================
-       MESSAGES AREA
+       MESSAGES AREA - Mobile Optimized
        ======================================== */
     .messages-area {
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
-        padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2vw, 1rem);
+        padding: 1rem 0.75rem;
         display: none;
         scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
         min-height: 0;
     }
 
     .messages-area::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .messages-area::-webkit-scrollbar-track {
-        background: var(--secondary-bg);
-    }
-
-    .messages-area::-webkit-scrollbar-thumb {
-        background: var(--accent);
-        border-radius: 10px;
+        width: 0;
+        display: none;
     }
 
     .message-wrapper {
-        max-width: min(800px, 100%);
-        margin: 0 auto clamp(1rem, 2.5vw, 1.5rem);
+        max-width: 100%;
+        margin: 0 auto 1rem;
         animation: fadeInUp 0.3s ease;
     }
 
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(15px);
         }
         to {
             opacity: 1;
@@ -341,7 +307,7 @@
 
     .message {
         display: flex;
-        gap: clamp(0.5rem, 2vw, 1rem);
+        gap: 0.6rem;
         align-items: flex-start;
     }
 
@@ -350,14 +316,14 @@
     }
 
     .message-avatar {
-        width: clamp(32px, 7vw, 40px);
-        height: clamp(32px, 7vw, 40px);
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        font-size: 1rem;
     }
 
     .message.user .message-avatar {
@@ -371,14 +337,14 @@
     }
 
     .message-content {
-        max-width: min(70%, 500px);
-        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.25rem);
-        border-radius: clamp(12px, 3vw, 16px);
+        max-width: 80%;
+        padding: 0.875rem 1rem;
+        border-radius: 16px;
         line-height: 1.6;
         position: relative;
         word-wrap: break-word;
         overflow-wrap: break-word;
-        font-size: clamp(0.85rem, 2vw, 1rem);
+        font-size: 0.9rem;
     }
 
     .message.user .message-content {
@@ -395,34 +361,35 @@
     }
 
     .message-time {
-        font-size: clamp(0.65rem, 1.5vw, 0.75rem);
+        font-size: 0.7rem;
         color: var(--text-secondary);
-        margin-top: clamp(0.35rem, 1vw, 0.5rem);
+        margin-top: 0.4rem;
         opacity: 0.7;
     }
 
     .message.user .message-time {
         color: rgba(255, 255, 255, 0.8);
+        text-align: right;
     }
 
     /* ========================================
-       TYPING INDICATOR
+       TYPING INDICATOR - Mobile Optimized
        ======================================== */
     .typing-indicator {
         display: none;
         align-items: center;
-        gap: 0.5rem;
-        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.25rem);
+        gap: 0.4rem;
+        padding: 0.875rem 1rem;
         background: var(--ai-msg-bg);
-        border-radius: clamp(12px, 3vw, 16px);
+        border-radius: 16px;
         border-bottom-left-radius: 4px;
-        max-width: 80px;
+        max-width: 70px;
         border: 1px solid var(--border);
     }
 
     .typing-indicator span {
-        width: clamp(6px, 1.5vw, 8px);
-        height: clamp(6px, 1.5vw, 8px);
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         background: var(--accent);
         animation: typing 1.4s ease-in-out infinite;
@@ -442,31 +409,31 @@
             opacity: 0.7;
         }
         30% {
-            transform: translateY(-10px);
+            transform: translateY(-8px);
             opacity: 1;
         }
     }
 
     /* ========================================
-       INPUT AREA
+       INPUT AREA - Mobile Optimized
        ======================================== */
     .input-area {
         background: var(--secondary-bg);
         border-top: 1px solid var(--border);
-        padding: clamp(1rem, 2.5vw, 1.25rem) clamp(1rem, 3vw, 1.5rem);
+        padding: 0.875rem 0.875rem calc(0.875rem + env(safe-area-inset-bottom));
         box-shadow: 0 -2px 10px var(--shadow);
         flex-shrink: 0;
     }
 
     .input-container {
-        max-width: 800px;
+        max-width: 100%;
         margin: 0 auto;
         position: relative;
     }
 
     .input-wrapper {
         display: flex;
-        gap: clamp(0.5rem, 1.5vw, 0.75rem);
+        gap: 0.625rem;
         align-items: flex-end;
     }
 
@@ -475,15 +442,16 @@
         background: var(--card-bg);
         border: 2px solid var(--border);
         color: var(--text-primary);
-        padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.25rem);
-        border-radius: clamp(20px, 4vw, 24px);
-        font-size: clamp(0.85rem, 2vw, 1rem);
+        padding: 0.875rem 1rem;
+        border-radius: 22px;
+        font-size: 0.9rem;
         font-family: inherit;
         resize: none;
-        min-height: clamp(45px, 10vw, 50px);
-        max-height: clamp(120px, 25vw, 150px);
+        min-height: 44px;
+        max-height: 120px;
         transition: all var(--transition);
         line-height: 1.5;
+        touch-action: manipulation;
     }
 
     #messageInput::placeholder {
@@ -494,32 +462,28 @@
     #messageInput:focus {
         outline: none;
         border-color: var(--accent);
-        box-shadow: 0 0 0 4px rgba(100, 255, 218, 0.1);
+        box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
     }
 
     #sendButton {
-        width: clamp(45px, 10vw, 50px);
-        height: clamp(45px, 10vw, 50px);
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
         border: none;
         color: white;
-        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        font-size: 1.1rem;
         cursor: pointer;
-        transition: all var(--transition);
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-    }
-
-    #sendButton:hover:not(:disabled) {
-        transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(100, 255, 218, 0.4);
+        touch-action: manipulation;
     }
 
     #sendButton:active:not(:disabled) {
-        transform: scale(0.95);
+        transform: scale(0.92);
     }
 
     #sendButton:disabled {
@@ -528,111 +492,204 @@
     }
 
     /* ========================================
-       RESPONSIVE BREAKPOINTS
+       TABLET OPTIMIZATIONS (481px - 768px)
        ======================================== */
-
-    /* Small Mobile Devices (320px - 480px) */
-    @media (max-width: 480px) {
-        .welcome-screen {
-            padding: 1rem 0.75rem;
+    @media (min-width: 481px) and (max-width: 768px) {
+        .chat-header {
+            padding: 0.875rem 1.25rem;
+            min-height: 65px;
         }
 
-        .welcome-screen p {
-            padding: 0 0.5rem;
-        }
-
-        .suggestion-cards {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-        }
-
-        .message-content {
-            max-width: 85%;
+        .ai-avatar {
+            width: 46px;
+            height: 46px;
+            font-size: 1.3rem;
         }
 
         .header-info h1 {
-            font-size: 0.85rem;
+            font-size: 1.1rem;
         }
 
-        .status {
-            font-size: 0.65rem;
-        }
-    }
-
-    /* Medium Mobile Devices (481px - 767px) */
-    @media (min-width: 481px) and (max-width: 767px) {
-        .suggestion-cards {
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        .header-btn {
+            width: 40px;
+            height: 40px;
         }
 
-        .message-content {
-            max-width: 80%;
+        .welcome-screen {
+            padding: 2rem 1.5rem;
         }
-    }
 
-    /* Tablets (768px - 1024px) */
-    @media (min-width: 768px) and (max-width: 1024px) {
+        .welcome-icon {
+            font-size: 4rem;
+        }
+
+        .welcome-screen h2 {
+            font-size: 2rem;
+        }
+
+        .welcome-screen p {
+            font-size: 1.05rem;
+            max-width: 500px;
+        }
+
         .suggestion-cards {
             grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
         }
 
         .message-content {
             max-width: 75%;
+            font-size: 0.95rem;
+        }
+
+        #messageInput {
+            font-size: 0.95rem;
+            padding: 1rem 1.15rem;
+        }
+
+        #sendButton {
+            width: 48px;
+            height: 48px;
+            font-size: 1.15rem;
+        }
+
+        .input-area {
+            padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom));
         }
     }
 
-    /* Large Screens (1025px+) */
-    @media (min-width: 1025px) {
-        .chat-container {
-            max-width: 100%;
+    /* ========================================
+       LARGE MOBILE (376px - 480px)
+       ======================================== */
+    @media (min-width: 376px) and (max-width: 480px) {
+        .message-content {
+            max-width: 82%;
         }
 
         .suggestion-cards {
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
         }
     }
 
-    /* Ultra Wide Screens (1440px+) */
-    @media (min-width: 1440px) {
-        .message-wrapper {
-            max-width: 900px;
+    /* ========================================
+       SMALL MOBILE (320px - 375px)
+       ======================================== */
+    @media (max-width: 375px) {
+        .chat-header {
+            padding: 0.65rem 0.875rem;
+            min-height: 58px;
         }
 
-        .input-container {
-            max-width: 900px;
-        }
-    }
-
-    /* Touch Device Optimizations */
-    @media (hover: none) and (pointer: coarse) {
-        .header-btn,
-        .suggestion-card,
-        #sendButton {
-            -webkit-tap-highlight-color: rgba(100, 255, 218, 0.1);
+        .ai-avatar {
+            width: 38px;
+            height: 38px;
+            font-size: 1.1rem;
         }
 
-        .suggestion-card:active {
-            transform: scale(0.98);
+        .header-info h1 {
+            font-size: 0.9rem;
         }
 
-        .header-btn:active {
-            transform: scale(0.9);
+        .status {
+            font-size: 0.7rem;
         }
-    }
 
-    /* Landscape Mobile Devices */
-    @media (max-height: 500px) and (orientation: landscape) {
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
+        }
+
         .welcome-screen {
-            padding: 0.75rem;
+            padding: 1.25rem 0.875rem;
         }
 
         .welcome-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.75rem;
+            font-size: 3rem;
         }
 
         .welcome-screen h2 {
             font-size: 1.5rem;
+        }
+
+        .welcome-screen p {
+            font-size: 0.9rem;
+        }
+
+        .suggestion-card {
+            padding: 0.875rem;
+        }
+
+        .suggestion-card i {
+            font-size: 1.35rem;
+        }
+
+        .suggestion-card h3 {
+            font-size: 0.875rem;
+        }
+
+        .suggestion-card p {
+            font-size: 0.75rem;
+        }
+
+        .message-content {
+            font-size: 0.85rem;
+            padding: 0.75rem 0.875rem;
+        }
+
+        .message-avatar {
+            width: 30px;
+            height: 30px;
+            font-size: 0.9rem;
+        }
+
+        #messageInput {
+            font-size: 0.875rem;
+            padding: 0.8rem 0.95rem;
+            min-height: 42px;
+        }
+
+        #sendButton {
+            width: 42px;
+            height: 42px;
+            font-size: 1rem;
+        }
+
+        .input-area {
+            padding: 0.75rem 0.75rem calc(0.75rem + env(safe-area-inset-bottom));
+        }
+    }
+
+    /* ========================================
+       LANDSCAPE MOBILE
+       ======================================== */
+    @media (max-height: 500px) and (orientation: landscape) {
+        .chat-header {
+            padding: 0.5rem 1rem;
+            min-height: 50px;
+        }
+
+        .ai-avatar {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+
+        .header-info h1 {
+            font-size: 0.9rem;
+        }
+
+        .welcome-screen {
+            padding: 1rem 1rem;
+        }
+
+        .welcome-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-screen h2 {
+            font-size: 1.35rem;
             margin-bottom: 0.5rem;
         }
 
@@ -642,105 +699,62 @@
         }
 
         .suggestion-cards {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 0.5rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.625rem;
         }
 
         .suggestion-card {
             padding: 0.75rem;
         }
 
-        .suggestion-card i {
-            font-size: 1.25rem;
-            margin-bottom: 0.35rem;
-        }
-
-        .suggestion-card h3 {
-            font-size: 0.8rem;
-        }
-
-        .suggestion-card p {
-            font-size: 0.7rem;
+        .messages-area {
+            padding: 0.75rem;
         }
 
         .input-area {
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.875rem calc(0.65rem + env(safe-area-inset-bottom));
         }
 
-        .chat-header {
-            padding: 0.5rem 1rem;
+        #messageInput {
+            min-height: 38px;
+            max-height: 80px;
+        }
+
+        #sendButton {
+            width: 38px;
+            height: 38px;
         }
     }
 
-    /* High DPI Screens */
-    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* ========================================
+       iOS SPECIFIC FIXES
+       ======================================== */
+    @supports (-webkit-touch-callout: none) {
         body {
-            -webkit-font-smoothing: subpixel-antialiased;
+            height: -webkit-fill-available;
+        }
+
+        .chat-container {
+            height: -webkit-fill-available;
+        }
+
+        #messageInput {
+            font-size: 16px !important; /* Prevents iOS zoom */
         }
     }
 
-    /* Dark Mode Preference */
-    @media (prefers-color-scheme: dark) {
-        :root {
-            color-scheme: dark;
-        }
+    /* Prevent pull-to-refresh on mobile */
+    body {
+        overscroll-behavior-y: contain;
     }
 
-    /* Reduced Motion Preference */
-    @media (prefers-reduced-motion: reduce) {
-        * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-        }
-
-        .ai-avatar,
-        .status-dot,
-        .welcome-icon {
-            animation: none !important;
-        }
-    }
-
-    /* Loading Animation */
-    .loading {
-        display: inline-block;
-        width: clamp(16px, 4vw, 20px);
-        height: clamp(16px, 4vw, 20px);
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: white;
-        animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    /* Utility Classes */
-    .hidden {
-        display: none !important;
-    }
-
-    .visible {
-        display: block !important;
-    }
-
-    /* Print Styles */
-    @media print {
-        .chat-header,
-        .input-area,
-        .suggestion-cards {
-            display: none !important;
-        }
-
-        .messages-area {
-            display: block !important;
-            overflow: visible !important;
-            padding: 1rem !important;
-        }
-
-        .message-wrapper {
-            page-break-inside: avoid;
+    /* Improve touch target sizes */
+    @media (hover: none) and (pointer: coarse) {
+        .header-btn,
+        .suggestion-card,
+        #sendButton {
+            min-width: 44px;
+            min-height: 44px;
         }
     }
 </style>
@@ -767,7 +781,7 @@
             <button class="header-btn" id="clearChat" title="Clear chat" aria-label="Clear chat">
                 <i class="fas fa-trash-alt"></i>
             </button>
-            <a href="/" class="header-btn" title="Back to home" aria-label="Back to home" style="text-decoration: none;">
+            <a href="/" class="header-btn" title="Back to home" aria-label="Back to home">
                 <i class="fas fa-home"></i>
             </a>
         </div>
@@ -864,7 +878,7 @@
         // Auto-resize textarea
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
 
         // Send message on Enter (Shift+Enter for new line)
@@ -885,7 +899,7 @@
         function sendSuggestion(text) {
             messageInput.value = text;
             messageInput.style.height = 'auto';
-            messageInput.style.height = Math.min(messageInput.scrollHeight, 150) + 'px';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
             sendMessage();
         }
 
@@ -1087,10 +1101,37 @@
             }
         }
 
+        // Prevent iOS keyboard from pushing content
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            messageInput.addEventListener('focus', () => {
+                setTimeout(() => {
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+                }, 100);
+            });
+        }
+
+        // Handle viewport resize (mobile keyboard)
+        let lastHeight = window.innerHeight;
+        window.addEventListener('resize', () => {
+            const currentHeight = window.innerHeight;
+            if (currentHeight < lastHeight && messagesArea.style.display === 'block') {
+                // Keyboard likely opened, scroll to bottom
+                setTimeout(() => {
+                    messagesArea.scrollTop = messagesArea.scrollHeight;
+                }, 100);
+            }
+            lastHeight = currentHeight;
+        });
+
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             loadChatHistory();
-            messageInput.focus();
+            
+            // Focus input after a slight delay on mobile
+            if (window.innerWidth > 768) {
+                messageInput.focus();
+            }
         });
     </script>
 </body>
