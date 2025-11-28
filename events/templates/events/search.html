@@ -1,0 +1,651 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}Search Results{% if query %} for "{{ query }}"{% endif %} - Events{% endblock %}
+
+{% block content %}
+<style>
+    .search-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 1rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .search-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: heroGlow 8s ease-in-out infinite;
+    }
+
+    @keyframes heroGlow {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(10%, 10%); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .search-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: white;
+        opacity: 0.9;
+    }
+
+    .search-title {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .search-query {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.95);
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        display: inline-block;
+        margin-top: 1rem;
+    }
+
+    .search-form-wrapper {
+        max-width: 600px;
+        margin: 2rem auto 0;
+    }
+
+    .search-form {
+        position: relative;
+        display: flex;
+    }
+
+    .search-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: #1a202c;
+        padding: 0.9rem 3rem 0.9rem 1.2rem;
+        border-radius: 30px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        background: white;
+        border-color: white;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(135deg, #ff6b35 0%, #f5576c 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 22px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 3rem 1rem;
+    }
+
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .results-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .results-count {
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+
+    .results-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .sort-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .sort-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    .sort-select {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 0.5rem 2rem 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .sort-select:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .event-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+        position: relative;
+    }
+
+    .event-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px var(--shadow);
+        border-color: var(--accent);
+    }
+
+    .event-image {
+        position: relative;
+        width: 100%;
+        padding-top: 60%;
+        overflow: hidden;
+        background: var(--secondary-bg);
+    }
+
+    .event-image img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .event-card:hover .event-image img {
+        transform: scale(1.1);
+    }
+
+    .event-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .event-date-badge {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 60px;
+    }
+
+    .event-day {
+        font-size: 1.5rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .event-month {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .event-content {
+        padding: 1.5rem;
+    }
+
+    .event-category {
+        display: inline-block;
+        background: rgba(255, 107, 53, 0.1);
+        color: var(--accent-secondary);
+        padding: 0.3rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+    }
+
+    .event-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .event-title a {
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .event-title a:hover {
+        color: var(--accent);
+    }
+
+    .event-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding: 1rem 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .event-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .event-meta-item i {
+        color: var(--accent);
+        width: 16px;
+    }
+
+    .event-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .event-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.25rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .event-btn:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .event-price {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+    }
+
+    .empty-icon {
+        font-size: 5rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+
+    .empty-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-text {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .suggestions {
+        margin-top: 2rem;
+        text-align: left;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+    }
+
+    .suggestions h3 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .suggestions ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .suggestions li {
+        color: var(--text-secondary);
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+    }
+
+    .suggestions li::before {
+        content: '•';
+        color: var(--accent);
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .search-hero {
+            padding: 2rem 1rem;
+        }
+
+        .search-icon {
+            font-size: 3rem;
+        }
+
+        .search-form-wrapper {
+            margin-top: 1.5rem;
+        }
+
+        .events-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .results-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .sort-section {
+            width: 100%;
+        }
+
+        .sort-select {
+            flex: 1;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="search-hero">
+    <div class="hero-content">
+        <div class="search-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        <h1 class="search-title">Search Events</h1>
+        {% if query %}
+        <div class="search-query">
+            <i class="fas fa-quote-left" style="font-size: 0.8rem; opacity: 0.6;"></i>
+            {{ query }}
+            <i class="fas fa-quote-right" style="font-size: 0.8rem; opacity: 0.6;"></i>
+        </div>
+        {% endif %}
+        
+        <div class="search-form-wrapper">
+            <form action="{% url 'events:search' %}" method="GET" class="search-form">
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="Search for events, schools, venues..." 
+                    class="search-input"
+                    value="{{ query }}"
+                    required
+                >
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Search Results -->
+<div class="container">
+    {% if query %}
+    <div class="results-header">
+        <div class="results-info">
+            <span class="results-count">{{ total_results }}</span>
+            <span class="results-text">
+                {% if total_results == 1 %}
+                    result found
+                {% else %}
+                    results found
+                {% endif %}
+            </span>
+        </div>
+        
+        {% if results %}
+        <div class="sort-section">
+            <span class="sort-label">Sort by:</span>
+            <select class="sort-select" id="sortSelect">
+                <option value="relevance">Relevance</option>
+                <option value="date-newest">Date (Newest)</option>
+                <option value="date-oldest">Date (Oldest)</option>
+                <option value="popular">Most Popular</option>
+            </select>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if results %}
+    <div class="events-grid">
+        {% for event in results %}
+        <article class="event-card">
+            <div class="event-image">
+                <a href="{{ event.get_absolute_url }}">
+                    {% if event.banner_image %}
+                    <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" loading="lazy">
+                    {% else %}
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--text-secondary); opacity: 0.3;">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    {% endif %}
+                </a>
+                {% if event.is_featured %}
+                <span class="event-badge">
+                    <i class="fas fa-star"></i> Featured
+                </span>
+                {% elif event.is_trending %}
+                <span class="event-badge">
+                    <i class="fas fa-fire"></i> Trending
+                </span>
+                {% endif %}
+                <div class="event-date-badge">
+                    <span class="event-day">{{ event.start_date|date:"d" }}</span>
+                    <span class="event-month">{{ event.start_date|date:"M" }}</span>
+                </div>
+            </div>
+            
+            <div class="event-content">
+                <span class="event-category">{{ event.category.name }}</span>
+                
+                <h3 class="event-title">
+                    <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+                </h3>
+                
+                <div class="event-meta">
+                    <div class="event-meta-item">
+                        <i class="fas fa-university"></i>
+                        <span>{{ event.school.name }}</span>
+                    </div>
+                    <div class="event-meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ event.venue }}</span>
+                    </div>
+                    <div class="event-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ event.start_date|date:"M d, Y - h:i A" }}</span>
+                    </div>
+                </div>
+                
+                <div class="event-footer">
+                    <a href="{{ event.get_absolute_url }}" class="event-btn">
+                        View Details <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-search-minus"></i>
+        </div>
+        <h2 class="empty-title">No Events Found</h2>
+        <p class="empty-text">
+            We couldn't find any events matching "<strong>{{ query }}</strong>". Try adjusting your search or browse all events.
+        </p>
+        
+        <div class="suggestions">
+            <h3>Search Tips:</h3>
+            <ul>
+                <li>Check your spelling and try again</li>
+                <li>Try more general keywords</li>
+                <li>Search for event type (concert, conference, workshop)</li>
+                <li>Search by school name or location</li>
+            </ul>
+        </div>
+        
+        <a href="{% url 'events:home' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Browse All Events
+        </a>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        <h2 class="empty-title">Start Your Search</h2>
+        <p class="empty-text">
+            Enter keywords to find events, schools, venues, or categories you're interested in.
+        </p>
+        <a href="{% url 'events:home' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Browse All Events
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Sort functionality (client-side for now)
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            const sortValue = this.value;
+            const eventsGrid = document.querySelector('.events-grid');
+            const eventCards = Array.from(eventsGrid.querySelectorAll('.event-card'));
+            
+            // Sort logic would go here
+            // For production, you'd want to handle this server-side with URL parameters
+            console.log('Sorting by:', sortValue);
+        });
+    }
+</script>
+
+{% endblock %}

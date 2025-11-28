@@ -8,7 +8,8 @@ from news.views import custom_404_view, custom_500_view, custom_403_view, custom
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('news.urls')),
-    path('ai-chat/', include('ai_chat.urls')),  # Changed from 'chat/' to 'ai-chat/'
+    path('ai-chat/', include('ai_chat.urls')),
+    path('events/', include('events.urls')),
 ]
 
 # Custom error handlers

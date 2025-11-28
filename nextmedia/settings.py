@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'news',
     'ai_chat',
+    'events',
     'cloudinary',
     'cloudinary_storage',
 ]
@@ -120,6 +121,21 @@ SECURE_BROWSER_XSS_FILTER = False
 SECURE_CONTENT_TYPE_NOSNIFF = False
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
+
+# Security Settings (MUST have for production payments)
+# SECURE_SSL_REDIRECT = True  # Force HTTPS
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_BROWSER_XSS_FILTER = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# X_FRAME_OPTIONS = 'DENY'
+# SECURE_HSTS_SECONDS = 31536000
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
+
+# Paystack requires HTTPS
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -175,3 +191,9 @@ NEWS_API_KEY = config('NEWS_API_KEY', default='1e08a5cefedb4e27bf357d95800ef7f5'
 # Sign up at https://openweathermap.org/api to get a free API key
 # If not provided, the system will use wttr.in (unlimited, no key needed)
 OPENWEATHER_API_KEY = config('OPENWEATHER_API_KEY', default='9ec8d46ed93e645a0e98fac1397dda00')
+
+# ============================================
+# PAYSTACK CONFIGURATION
+# ============================================
+PAYSTACK_PUBLIC_KEY = config('PAYSTACK_PUBLIC_KEY', default='pk_test_82cbf50854af160f931f8b9e6f9c84af8489536e')
+PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY', default='sk_test_3e89989f81e42e78b1bce3d756f9da62ff9c8612')

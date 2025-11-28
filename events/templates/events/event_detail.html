@@ -1,0 +1,769 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}{{ event.title }} - Events{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #ff6b35;
+        --accent: #764ba2;
+        --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --card-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .event-hero {
+        position: relative;
+        height: 90vh;
+        min-height: 500px;
+        background: var(--gradient);
+        overflow: hidden;
+        color: white;
+    }
+
+    .hero-image {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        object-fit: cover;
+        opacity: 0.7;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.9) 100%);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .event-badges {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .event-title {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin: 0 0 1rem;
+        text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+
+    .event-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .meta-item i {
+        font-size: 1.4rem;
+        width: 40px;
+        height: 40px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 1rem;
+    }
+
+    .event-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 3rem;
+    }
+
+    @media (max-width: 992px) {
+        .event-grid { grid-template-columns: 1fr; }
+    }
+
+    .section {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+        box-shadow: var(--card-shadow);
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .title-bar {
+        width: 6px;
+        height: 36px;
+        background: var(--primary);
+        border-radius: 3px;
+    }
+
+    .event-description {
+        font-size: 1.1rem;
+        line-height: 1.9;
+        color: var(--text-secondary);
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .detail-card {
+        background: var(--secondary-bg);
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+    }
+
+    .detail-icon {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .detail-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+
+    .detail-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    /* Voting Section */
+    .contestants-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .contestant {
+        background: var(--secondary-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        border: 1px solid var(--border);
+    }
+
+    .contestant:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .contestant-img {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+        background: #eee;
+    }
+
+    .contestant-body {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .contestant-number {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .contestant-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .vote-stats {
+        background: rgba(255,107,53,0.1);
+        padding: 1rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+    }
+
+    .vote-count {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .vote-btn {
+        background: var(--gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s;
+    }
+
+    .vote-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(118,75,162,0.4);
+    }
+
+    .vote-btn:disabled {
+        background: #999;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+
+    .action-box {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border);
+        box-shadow: var(--card-shadow);
+    }
+
+    .action-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .btn-large {
+        width: 100%;
+        padding: 1.2rem;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+    }
+
+    .btn-rsvp {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        color: white;
+    }
+
+    .btn-share {
+        background: var(--secondary-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+    }
+
+    .countdown {
+        background: linear-gradient(135deg, #ff6b35, #f5476c);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    /* Gallery */
+    .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .gallery img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .gallery img:hover {
+        transform: scale(1.05);
+    }
+
+    /* Modals */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 500px;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.8rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="event-hero">
+    {% if event.banner_image %}
+        <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" class="hero-image">
+    {% endif %}
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="event-badges">
+            <span class="badge">
+                <i class="fas fa-calendar-alt"></i>
+                {{ event.start_date|date:"M d, Y" }}
+            </span>
+            <span class="badge">
+                <i class="fas fa-university"></i>
+                {{ event.school.name }}
+            </span>
+            {% if event.allow_voting and voting_active %}
+                <span class="badge" style="background: rgba(255,107,53,0.8);">
+                    Voting Active
+                </span>
+            {% endif %}
+        </div>
+        <h1 class="event-title">{{ event.title }}</h1>
+        <div class="event-meta">
+            <div class="meta-item">
+                <i class="fas fa-tag"></i> {{ event.category.name }}
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-clock"></i> {{ event.start_date|date:"h:i A" }}
+                {% if event.end_date %} – {{ event.end_date|date:"h:i A" }}{% endif %}
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-eye"></i> {{ event.views_count }} views
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-map-marker-alt"></i> {{ event.venue }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="event-grid">
+        <div class="main-content">
+            <!-- About -->
+            <div class="section">
+                <h2 class="section-title"><span class="title-bar"></span>About This Event</h2>
+                <div class="event-description">{{ event.description|linebreaks }}</div>
+            </div>
+
+            <!-- Details -->
+            <div class="section">
+                <h2 class="section-title"><span class="title-bar"></span>Event Details</h2>
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <div class="detail-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="detail-label">Date & Time</div>
+                        <div class="detail-value">
+                            {{ event.start_date|date:"l, F d, Y" }}<br>
+                            <small>{{ event.start_date|date:"h:i A" }}</small>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="detail-label">Location</div>
+                        <div class="detail-value">
+                            {{ event.venue }}<br>
+                            <small>{{ event.address }}</small>
+                        </div>
+                    </div>
+                    {% if event.map_link %}
+                    <div class="detail-card">
+                        <div class="detail-icon"><i class="fas fa-directions"></i></div>
+                        <div class="detail-label">Get Directions</div>
+                        <a href="{{ event.map_link }}" target="_blank" class="detail-value" style="color: var(--primary);">
+                            Open in Google Maps
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Voting -->
+            {% if event.allow_voting %}
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="title-bar"></span>
+                    Vote for Your Favorite Contestant
+                    {% if not voting_active %}
+                        <span style="color: #dc3545; font-size: 1rem; margin-left: 1rem;">(Voting Ended)</span>
+                    {% endif %}
+                </h2>
+
+                {% if contestants %}
+                <div class="contestants-grid">
+                    {% for c in contestants %}
+                    <div class="contestant">
+                        {% if c.photo %}
+                            <img src="{{ c.photo.url }}" alt="{{ c.name }}" class="contestant-img">
+                        {% else %}
+                            <div class="contestant-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0;">
+                                <i class="fas fa-user" style="font-size:5rem;color:#ccc;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="contestant-body">
+                            <div class="contestant-number">#{{ c.contestant_number }}</div>
+                            <div class="contestant-name">{{ c.name }}</div>
+                            <div class="vote-stats">
+                                <div class="vote-count">{{ c.total_votes }}</div>
+                                <div>votes received</div>
+                            </div>
+                            <button class="vote-btn" onclick="openVoteModal({{ c.id }}, '{{ c.name|escapejs }}')"
+                                {% if not voting_active %}disabled{% endif %}>
+                                {% if not voting_active %}Voting Closed{% else %}Vote Now{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>No contestants available yet.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Gallery -->
+            {% if event.gallery_images %}
+            <div class="section">
+                <h2 class="section-title"><span class="title-bar"></span>Photo Gallery</h2>
+                <div class="gallery">
+                    {% for url in event.gallery_images %}
+                    <img src="{{ url }}" alt="Gallery" onclick="openLightbox('{{ url }}')">
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Related Events -->
+            {% if related_events %}
+            <div class="section">
+                <h2 class="section-title"><span class="title-bar"></span>You Might Also Like</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                    {% for e in related_events %}
+                    <a href="{{ e.get_absolute_url }}" style="text-decoration:none;color:inherit;">
+                        <div style="border-radius:16px;overflow:hidden;background:var(--card-bg);border:1px solid var(--border);">
+                            {% if e.banner_image %}
+                            <img src="{{ e.banner_image.url }}" style="width:100%;height:180px;object-fit:cover;">
+                            {% endif %}
+                            <div style="padding:1.5rem;">
+                                <h3 style="margin:0 0 0.5rem;font-size:1.2rem;">{{ e.title|truncatewords:8 }}</h3>
+                                <p style="margin:0;color:var(--text-secondary);font-size:0.9rem;">
+                                    {{ e.start_date|date:"M d" }} • {{ e.school.name }}
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="action-box">
+                <div class="action-title">Coming to this event?</div>
+                <p>Let us know you're attending!</p>
+                <button class="btn-large btn-rsvp" onclick="openRSVPModal()">
+                    RSVP Now
+                </button>
+            </div>
+
+            <div class="action-box">
+                <div class="action-title">Share This Event</div>
+                <button class="btn-large btn-share" onclick="shareEvent()">
+                    Share with Friends
+                </button>
+            </div>
+
+            {% if event.allow_voting and voting_active and event.voting_ends_at %}
+            <div class="action-box">
+                <div class="action-title">Voting Ends In</div>
+                <div class="countdown" id="votingCountdown">
+                    Calculating...
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Vote Modal -->
+<div id="voteModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal('voteModal')">×</button>
+        <h2>Cast Your Vote</h2>
+        <p><strong>Contestant:</strong> <span id="voteContestantName"></span></p>
+        <form id="voteForm">
+            <input type="hidden" id="contestant_id">
+            <div style="margin:1.5rem 0;">
+                <label>Amount to Pay (₦)</label>
+                <input type="number" id="vote_amount" min="{{ event.voting_price_per_vote }}" 
+                       step="{{ event.voting_price_per_vote }}" value="{{ event.voting_price_per_vote }}"
+                       style="width:100%;padding:1rem;border-radius:12px;border:1px solid #ccc;font-size:1.1rem;">
+                <small style="display:block;margin-top:0.5rem;">
+                    ₦{{ event.voting_price_per_vote }} = 1 vote | You'll get <strong id="voteCount">1</strong> vote(s)
+                </small>
+            </div>
+            <div style="margin:1rem 0;">
+                <label>Name</label>
+                <input type="text" id="voter_name" required style="width:100%;padding:1rem;border-radius:12px;">
+            </div>
+            <div style="margin:1rem 0;">
+                <label>Email</label>
+                <input type="email" id="voter_email" required style="width:100%;padding:1rem;border-radius:12px;">
+            </div>
+            <div style="margin:1rem 0;">
+                <label>Phone (Optional)</label>
+                <input type="text" id="voter_phone" style="width:100%;padding:1rem;border-radius:12px;">
+            </div>
+            <button type="submit" id="voteSubmitBtn" class="btn-large" style="background:var(--gradient);color:white;">
+                Proceed to Payment
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- RSVP Modal -->
+<div id="rsvpModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal('rsvpModal')">×</button>
+        <h2>RSVP for "{{ event.title }}"</h2>
+        <form id="rsvpForm">
+            <input type="hidden" id="event_id" value="{{ event.id }}">
+            <div style="margin:1.5rem 0;">
+                <label>Name</label>
+                <input type="text" id="rsvp_name" required style="width:100%;padding:1rem;border-radius:12px;">
+            </div>
+            <div style="margin:1.5rem 0;">
+                <label>Email</label>
+                <input type="email" id="rsvp_email" required style="width:100%;padding:1rem;border-radius:12px;">
+            </div>
+            <div style="margin:1.5rem 0;">
+                <label>Phone (Optional)</label>
+                <input type="text" id="rsvp_phone" style="width:100%;padding:1rem;border-radius:12px;">
+            </div>
+            <button type="submit" class="btn-large btn-rsvp">
+                Confirm RSVP
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Paystack Key
+const PAYSTACK_PUBLIC_KEY = "{{ paystack_public_key }}";
+
+// Open/Close Modals
+function openVoteModal(id, name) {
+    document.getElementById('contestant_id').value = id;
+    document.getElementById('voteContestantName').textContent = name;
+    document.getElementById('voteModal').classList.add('active');
+
+    const input = document.getElementById('vote_amount');
+    const count = document.getElementById('voteCount');
+    const price = {{ event.voting_price_per_vote }};
+    input.addEventListener('input', () => {
+        count.textContent = Math.floor(input.value / price) || 0;
+    });
+}
+
+function openRSVPModal() {
+    document.getElementById('rsvpModal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// Close on outside click
+window.addEventListener('click', e => {
+    if (e.target.classList.contains('modal')) closeModal(e.target.id);
+});
+
+// Share
+function shareEvent() {
+    if (navigator.share) {
+        navigator.share({
+            title: "{{ event.title }}",
+            text: "Check out this amazing event!",
+            url: window.location.href
+        });
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert("Link copied to clipboard!");
+    }
+}
+
+// Voting Countdown
+{% if event.allow_voting and voting_active and event.voting_ends_at %}
+    const countdown = document.getElementById('votingCountdown');
+    const end = new Date("{{ event.voting_ends_at|date:'c' }}").getTime();
+    const timer = setInterval(() => {
+        const diff = end - new Date().getTime();
+        if (diff <= 0) {
+            countdown.textContent = "Voting Ended";
+            clearInterval(timer);
+            return;
+        }
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+        countdown.textContent = `${days}d ${hours}h ${minutes}m`;
+    }, 60000);
+{% endif %}
+
+// Vote & RSVP Forms (same logic as before – keep your working JS)
+document.getElementById('voteForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('voteSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = "Processing...";
+
+    const data = {
+        contestant_id: document.getElementById('contestant_id').value,
+        amount: parseFloat(document.getElementById('vote_amount').value),
+        voter_name: document.getElementById('voter_name').value,
+        voter_email: document.getElementById('voter_email').value,
+        voter_phone: document.getElementById('voter_phone').value
+    };
+
+    try {
+        const res = await fetch('{% url "events:cast_vote" %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+            const handler = PaystackPop.setup({
+                key: PAYSTACK_PUBLIC_KEY,
+                email: data.voter_email,
+                amount: data.amount * 100,
+                ref: json.reference,
+                callback: () => location.href = '{% url "events:payment_callback" %}?reference=' + json.reference,
+                onClose: () => { btn.disabled = false; btn.textContent = "Proceed to Payment"; }
+            });
+            handler.openIframe();
+        } else {
+            alert(json.error || "Payment failed");
+            btn.disabled = false;
+            btn.textContent = "Proceed to Payment";
+        }
+    } catch (err) {
+        alert("Network error");
+        btn.disabled = false;
+        btn.textContent = "Proceed to Payment";
+    }
+});
+
+document.getElementById('rsvpForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+
+    const data = {
+        event_id: {{ event.id }},
+        name: document.getElementById('rsvp_name').value,
+        email: document.getElementById('rsvp_email').value,
+        phone: document.getElementById('rsvp_phone').value
+    };
+
+    try {
+        const res = await fetch('{% url "events:rsvp" %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+            alert(json.message);
+            closeModal('rsvpModal');
+        } else {
+            alert(json.error);
+        }
+    } catch { alert("Failed to RSVP"); }
+    btn.disabled = false;
+    btn.textContent = "Confirm RSVP";
+});
+</script>
+{% endblock %}
