@@ -14,9 +14,15 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            '--start-page',
+            type=int,
+            default=1,
+            help='Page number to start scraping from (default: 1)'
+        )
+        parser.add_argument(
             '--max-pages',
             type=int,
-            default=999,
+            default=3,
             help='Maximum number of pages to scrape (default: 3)'
         )
         parser.add_argument(
@@ -27,16 +33,20 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        start_page = options['start_page']
         max_pages = options['max_pages']
         category_slug = options['category']
         
+        # Calculate end page
+        end_page = start_page + max_pages - 1
+        
         # Get or create a system user for scraped content
         scraper_user, created = User.objects.get_or_create(
-            username='nextmedia_sports',
+            username='sportingsun_scraper',
             defaults={
-                'email': 'nextmedia_sports@gmail.com',
-                'first_name': 'Nextmedia',
-                'last_name': 'Sports'
+                'email': 'scraper@sportingsun.ng',
+                'first_name': 'Sporting Sun',
+                'last_name': 'Scraper'
             }
         )
         if created:
@@ -52,6 +62,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"✅ Created category: {category.name}"))
         
         self.stdout.write(self.style.SUCCESS(f"🚀 Starting Sporting Sun scraper - Category: {category.name}"))
+        self.stdout.write(self.style.SUCCESS(f"📄 Scraping pages {start_page} to {end_page}"))
         
         base_url = "https://sportingsun.ng"
         api_url = "https://sportingsun.ng/wp-json/wp/v2/posts"
@@ -59,7 +70,7 @@ class Command(BaseCommand):
         total_scraped = 0
         total_skipped = 0
         
-        for page in range(1, max_pages + 1):
+        for page in range(start_page, end_page + 1):
             self.stdout.write(f"\n📄 Fetching page {page}...")
             
             try:
@@ -81,6 +92,8 @@ class Command(BaseCommand):
                 if not posts:
                     self.stdout.write(self.style.WARNING("⚠️ No more posts found"))
                     break
+                
+                self.stdout.write(f"   📰 Found {len(posts)} posts on page {page}")
                 
                 for post in posts:
                     try:
@@ -177,7 +190,7 @@ class Command(BaseCommand):
                             featured_image_url=image_url if image_url else None
                         )
                         
-                        # Log image URL (not downloading, just noting)
+                        # Log image URL
                         if image_url:
                             self.stdout.write(f"   🖼️ Image URL: {image_url[:60]}...")
                         

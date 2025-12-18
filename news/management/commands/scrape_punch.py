@@ -14,6 +14,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            '--start-page',
+            type=int,
+            default=1,
+            help='Page number to start scraping from (default: 1)'
+        )
+        parser.add_argument(
             '--max-pages',
             type=int,
             default=3,
@@ -27,8 +33,12 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        start_page = options['start_page']
         max_pages = options['max_pages']
         category_slug = options['category']
+        
+        # Calculate end page
+        end_page = start_page + max_pages - 1
         
         # Get or create a system user for scraped content
         scraper_user, created = User.objects.get_or_create(
@@ -52,6 +62,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"✅ Created category: {category.name}"))
         
         self.stdout.write(self.style.SUCCESS(f"🚀 Starting Punch scraper - Category: {category.name}"))
+        self.stdout.write(self.style.SUCCESS(f"📄 Scraping pages {start_page} to {end_page}"))
         
         base_url = "https://punchng.com"
         
@@ -72,7 +83,7 @@ class Command(BaseCommand):
             'Cache-Control': 'max-age=0'
         }
         
-        for page in range(1, max_pages + 1):
+        for page in range(start_page, end_page + 1):
             self.stdout.write(f"\n📄 Fetching page {page}...")
             
             try:
