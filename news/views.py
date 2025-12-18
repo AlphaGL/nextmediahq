@@ -353,7 +353,7 @@ def manifest(request):
                 "name": "Global News",
                 "short_name": "Global",
                 "description": "Read global news",
-                "url": "/category/global-news/",
+                "url": "/category/global/",
                 "icons": [
                     {
                         "src": "/static/img/icon-192x192.png",

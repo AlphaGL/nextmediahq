@@ -822,7 +822,8 @@
                 <a href="{% url 'news:home' %}" class="nav-link">Home</a>
                 <a href="{% url 'events:home' %}" class="nav-link">Events</a>
                 <a href="{% url 'news:school_list' %}" class="nav-link">School News</a>
-                <a href="{% url 'news:category_news' 'global-news' %}" class="nav-link">Global News</a>
+                <a href="{% url 'news:category_news' 'global' %}" class="nav-link">Global News</a>
+                <a href="{% url 'news:category_news' 'national' %}" class="nav-link">National News</a>
                 <a href="{% url 'news:category_news' 'entertainment' %}" class="nav-link">Entertainment</a>
                 <a href="{% url 'news:category_news' 'sports' %}" class="nav-link">Sports</a>
                 <a href="{% url 'news:category_news' 'ethicsandlifestyle' %}" class="nav-link">Ethics and Lifestyle</a>
@@ -878,7 +879,7 @@
                     <ul>
                         <li><a href="{% url 'news:home' %}">Home</a></li>
                         <li><a href="{% url 'news:school_list' %}">School News</a></li>
-                        <li><a href="{% url 'news:category_news' 'global-news' %}">Global News</a></li>
+                        <li><a href="{% url 'news:category_news' 'global' %}">Global News</a></li>
                         <li><a href="{% url 'news:past_questions' %}">Past Questions</a></li>
                     </ul>
                 </div>

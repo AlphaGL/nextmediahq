@@ -432,7 +432,7 @@
                 
                 <div class="category-nav">
                     <a href="{% url 'news:category_news' 'school-news' %}" class="category-link {% if category.slug == 'school-news' %}active{% endif %}">School News</a>
-                    <a href="{% url 'news:category_news' 'global-news' %}" class="category-link {% if category.slug == 'global-news' %}active{% endif %}">Global News</a>
+                    <a href="{% url 'news:category_news' 'global' %}" class="category-link {% if category.slug == 'global' %}active{% endif %}">Global News</a>
                     <a href="{% url 'news:category_news' 'sports' %}" class="category-link {% if category.slug == 'sports' %}active{% endif %}">Sports</a>
                     <a href="{% url 'news:category_news' 'entertainment' %}" class="category-link {% if category.slug == 'entertainment' %}active{% endif %}">Entertainment</a>
                 </div>
@@ -542,7 +542,7 @@
                 <p>Latest updates from schools</p>
             </a>
             
-            <a href="{% url 'news:category_news' 'global-news' %}" class="category-card {% if category.slug == 'global-news' %}current{% endif %}">
+            <a href="{% url 'news:category_news' 'global' %}" class="category-card {% if category.slug == 'global' %}current{% endif %}">
                 <i class="fas fa-globe"></i>
                 <h4>Global News</h4>
                 <p>International developments</p>

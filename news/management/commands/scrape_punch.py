@@ -29,7 +29,7 @@ class Command(BaseCommand):
             '--category',
             type=str,
             default='national',
-            help='Category slug to assign scraped news (default: global-news)'
+            help='Category slug to assign scraped news (default: global)'
         )
 
     def handle(self, *args, **options):
