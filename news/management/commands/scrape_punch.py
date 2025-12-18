@@ -28,7 +28,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--category',
             type=str,
-            default='global-news',
+            default='national',
             help='Category slug to assign scraped news (default: global-news)'
         )
 
