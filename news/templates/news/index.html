@@ -1453,9 +1453,11 @@
                     <a href="{{ news.get_absolute_url }}">
                         {% if news.featured_image %}
                         <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
+                        {% elif news.featured_image_url %}
+                        <img src="{{ news.featured_image_url }}" alt="{{ news.title }}" loading="lazy">
                         {% else %}
                         <div class="placeholder-image">
-                            <i class="fas fa-newspaper" aria-hidden="true"></i>
+                            <i class="fas fa-newspaper"></i>
                         </div>
                         {% endif %}
                     </a>
@@ -2016,6 +2018,8 @@
                             <div class="news-image-horizontal">
                                 {% if news.featured_image %}
                                 <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
+                                {% elif news.featured_image_url %}
+                                <img src="{{ news.featured_image_url }}" alt="{{ news.title }}" loading="lazy">
                                 {% else %}
                                 <div class="placeholder-image">
                                     <i class="fas fa-newspaper"></i>

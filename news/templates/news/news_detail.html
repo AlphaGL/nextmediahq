@@ -462,6 +462,10 @@
         <div class="featured-image">
             <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
         </div>
+        {% elif news.featured_image_url %}
+        <div class="featured-image">
+            <img src="{{ news.featured_image_url }}" alt="{{ news.title }}" loading="lazy">
+        </div>
         {% endif %}
 
         <div class="article-body">

@@ -65,7 +65,7 @@ class NewsAdmin(admin.ModelAdmin):
             'fields': ('title', 'slug', 'excerpt')
         }),
         ('Content', {
-            'fields': ('content', 'featured_image', 'image_preview')
+            'fields': ('content', 'featured_image', 'featured_image_url', 'image_preview')
         }),
         ('Classification', {
             'fields': ('school', 'category')
@@ -88,9 +88,14 @@ class NewsAdmin(admin.ModelAdmin):
                 '<img src="{}" width="100" height="60" style="border-radius: 5px; object-fit: cover;" />',
                 obj.featured_image.url
             )
+        elif obj.featured_image_url:
+            return format_html(
+                '<img src="{}" width="100" height="60" style="border-radius: 5px; object-fit: cover;" />',
+                obj.featured_image_url
+            )
         return mark_safe('<span style="color: #999;">No Image</span>')
     image_preview.short_description = 'Featured Image'
-    
+
     def author_display(self, obj):
         if obj.author:
             return format_html('<span style="color: #28a745; font-weight: bold;">{}</span>', obj.author)

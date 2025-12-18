@@ -735,13 +735,15 @@
                     {% for article in results %}
                         <article class="result-card" data-category="{{ article.category.slug }}">
                             <div class="result-image">
-                                {% if article.featured_image %}
-                                    <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
-                                {% else %}
-                                    <div class="placeholder-image">
-                                        <i class="fas fa-newspaper"></i>
-                                    </div>
-                                {% endif %}
+                            {% if article.featured_image %}
+                            <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="lazy">
+                            {% elif article.featured_image_url %}
+                            <img src="{{ article.featured_image_url }}" alt="{{ article.title }}" loading="lazy">
+                            {% else %}
+                            <div class="placeholder-image">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            {% endif %}
                                 
                                 <div class="result-overlay">
                                     <span class="result-category">{{ article.category.name }}</span>

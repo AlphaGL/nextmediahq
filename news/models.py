@@ -52,6 +52,7 @@ class News(models.Model):
     content = models.TextField()
     excerpt = models.TextField(max_length=500, blank=True)
     featured_image = CloudinaryField('news/', blank=True, null=True)
+    featured_image_url = models.URLField(blank=True, null=True)
     school = models.ForeignKey(School, on_delete=models.CASCADE, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     is_featured = models.BooleanField(default=False)
