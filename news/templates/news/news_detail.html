@@ -428,15 +428,15 @@
                 </span>
                 <time class="publish-date">
                     <i class="fas fa-clock"></i>
-                    {{ news.published_date|date:"F j, Y" }}
+                    {{ news.created_at|date:"F j, Y" }}
                 </time>
             </div>
             
             <h1 class="article-title">{{ news.title }}</h1>
             
-            <div class="article-excerpt">
+            <!-- <div class="article-excerpt">
                 <p>{{ news.excerpt }}</p>
-            </div>
+            </div> -->
             
             <div class="social-share">
                 <span>Share:</span>
