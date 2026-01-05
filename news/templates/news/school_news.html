@@ -507,7 +507,7 @@
                     <div class="news-meta">
                         <span class="news-date">
                             <i class="fas fa-clock"></i>
-                            {{ article.published_date|date:"M j, Y" }}
+                            {{ article.created_at|date:"M j, Y" }}
                         </span>
                         <a href="{{ article.get_absolute_url }}" class="read-more">
                             Read More <i class="fas fa-arrow-right"></i>

@@ -18,7 +18,7 @@
                                     <span class="ticker-separator">|</span>
                                     <span class="ticker-school">{{ news.school.abbreviation|default:news.school.name }}</span>
                                 {% endif %}
-                                <span class="ticker-time">{{ news.published_date|date:"H:i" }}</span>
+                                <span class="ticker-time">{{ news.created_at|date:"H:i" }}</span>
                             </div>
                         </div>
                     {% endfor %}
