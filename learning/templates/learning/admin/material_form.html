@@ -1,0 +1,206 @@
+<!-- learning/templates/learning/admin/material_form.html -->
+{% extends 'learning/admin/base.html' %}
+{% block title %}{{ action }} Material{% endblock %}
+{% block page_title %}{{ action }} Material{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="data-table">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="bi bi-{% if action == 'Create' %}plus-circle{% else %}pencil-square{% endif %} me-2"></i>
+                    {{ action }} Material
+                </h5>
+            </div>
+            <div class="p-4">
+                <!-- Instructions Box -->
+                <div class="alert alert-info mb-4">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-info-circle me-2"></i>Instructions
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Fill in the subject, title, and content (required fields)</li>
+                        <li>Optionally add a YouTube video URL for tutorial content</li>
+                        <li>You can upload a PDF or image file (optional)</li>
+                    </ul>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" id="materialForm">
+                    {% csrf_token %}
+                    
+                    <!-- Subject Selection -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-mortarboard me-2"></i>Subject *
+                        </label>
+                        <select name="subject" class="form-select" required>
+                            <option value="">-- Select Subject --</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}" 
+                                {% if material and material.subject.id == subject.id %}selected{% endif %}
+                                {% if post_data and post_data.subject == subject.id|stringformat:"s" %}selected{% endif %}>
+                                {{ subject.name }} ({{ subject.code }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Select the subject this material belongs to</small>
+                    </div>
+                    
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-text-left me-2"></i>Title *
+                        </label>
+                        <input type="text" 
+                               name="title" 
+                               class="form-control" 
+                               value="{% if material %}{{ material.title }}{% elif post_data %}{{ post_data.title }}{% endif %}" 
+                               placeholder="Enter material title"
+                               required>
+                        <small class="text-muted">Give this material a descriptive title</small>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-textarea-t me-2"></i>Content *
+                        </label>
+                        <textarea name="content" 
+                                  class="form-control" 
+                                  rows="12" 
+                                  placeholder="Enter the material content here..."
+                                  required>{% if material %}{{ material.content }}{% elif post_data %}{{ post_data.content }}{% endif %}</textarea>
+                        <small class="text-muted">Main text content of the material</small>
+                    </div>
+                    
+                    <!-- Video URL -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-youtube me-2"></i>Video URL (Optional)
+                        </label>
+                        <input type="url" 
+                               name="video_url" 
+                               class="form-control" 
+                               value="{% if material %}{{ material.video_url }}{% elif post_data %}{{ post_data.video_url }}{% endif %}" 
+                               placeholder="https://www.youtube.com/watch?v=...">
+                        <small class="text-muted">Add a YouTube video URL for tutorial or explanation</small>
+                        
+                        {% if material.video_url %}
+                        <div class="mt-2">
+                            <small class="text-success">
+                                <i class="bi bi-check-circle"></i> Current video: 
+                                <a href="{{ material.video_url }}" target="_blank">View Video</a>
+                            </small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- File Upload -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-paperclip me-2"></i>Upload File (Optional)
+                        </label>
+                        <input type="file" 
+                               name="file" 
+                               class="form-control" 
+                               accept=".pdf,.jpg,.jpeg,.png"
+                               id="fileInput">
+                        <small class="text-muted">Upload PDF or image files only (Max 10MB)</small>
+                        
+                        {% if material.file_url %}
+                        <div class="mt-2 p-2 bg-light rounded">
+                            <small class="text-success">
+                                <i class="bi bi-file-earmark-check"></i> Current file: 
+                                <a href="{{ material.file_url }}" target="_blank" class="text-decoration-none">
+                                    View File <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
+                            </small>
+                            <br>
+                            <small class="text-muted">Upload a new file to replace the current one</small>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Preview Section -->
+                    <div id="filePreview" class="mb-3" style="display: none;">
+                        <div class="alert alert-success">
+                            <i class="bi bi-file-earmark-check me-2"></i>
+                            <strong>File selected:</strong> <span id="fileName"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>
+                            {% if action == 'Create' %}Create Material{% else %}Update Material{% endif %}
+                        </button>
+                        <a href="{% url 'custom_material_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .alert {
+        border-radius: 8px;
+    }
+    
+    .form-label {
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+    }
+    
+    textarea.form-control {
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('fileInput');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    
+    // Show file preview when file is selected
+    fileInput.addEventListener('change', function(e) {
+        if (this.files.length > 0) {
+            fileName.textContent = this.files[0].name;
+            filePreview.style.display = 'block';
+        } else {
+            filePreview.style.display = 'none';
+        }
+    });
+    
+    // Form validation
+    const form = document.getElementById('materialForm');
+    form.addEventListener('submit', function(e) {
+        const subject = document.querySelector('[name="subject"]').value;
+        const title = document.querySelector('[name="title"]').value;
+        const content = document.querySelector('[name="content"]').value;
+        
+        if (!subject || !title || !content.trim()) {
+            e.preventDefault();
+            alert('Please fill in all required fields (Subject, Title, and Content)');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

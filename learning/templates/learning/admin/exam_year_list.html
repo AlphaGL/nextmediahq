@@ -1,0 +1,82 @@
+<!-- learning/templates/learning/admin/exam_year_list.html -->
+{% extends 'learning/admin/base.html' %}
+{% block title %}Exam Years{% endblock %}
+{% block page_title %}Manage Exam Years{% endblock %}
+
+{% block content %}
+<div class="data-table">
+    <div class="table-header flex-column flex-md-row gap-2">
+        <div class="w-100 w-md-auto flex-grow-1">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <form method="get" class="d-flex flex-column flex-sm-row gap-2">
+                    <input type="text" name="q" placeholder="Search..." value="{{ query }}" class="flex-grow-1">
+                    <select name="subject" class="form-select" style="min-width: 150px;" onchange="this.form.submit()">
+                        <option value="">All Subjects</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if selected_subject == subject.id|stringformat:"s" %}selected{% endif %}>
+                            {{ subject.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+        <a href="{% url 'custom_exam_year_create' %}" class="btn btn-primary w-100 w-md-auto">
+            <i class="bi bi-plus-circle me-2"></i>Add Exam Year
+        </a>
+    </div>
+    
+    <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <table class="table table-hover mb-0" style="min-width: 550px;">
+            <thead>
+                <tr>
+                    <th class="text-nowrap" style="min-width: 180px;">Subject</th>
+                    <th class="text-nowrap" style="min-width: 80px;">Year</th>
+                    <th class="text-nowrap" style="min-width: 100px;">Session</th>
+                    <th class="text-nowrap" style="min-width: 100px;">Questions</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam_year in exam_years %}
+                <tr>
+                    <td style="min-width: 180px;">
+                        <div class="fw-bold">{{ exam_year.subject.name }}</div>
+                        <small class="text-muted d-block">{{ exam_year.subject.code }}</small>
+                    </td>
+                    <td style="min-width: 80px;"><strong>{{ exam_year.year }}</strong></td>
+                    <td style="min-width: 100px;">
+                        <span class="badge bg-info">{{ exam_year.session }}</span>
+                    </td>
+                    <td style="min-width: 100px;">
+                        <span class="badge bg-primary">{{ exam_year.question_count }}</span>
+                    </td>
+                    <td style="min-width: 120px;">
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'custom_exam_year_edit' exam_year.id %}" class="btn-action btn-edit" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'custom_exam_year_delete' exam_year.id %}" class="btn-action btn-delete" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #cbd5e1;"></i>
+                        <p class="mt-3 text-muted">No exam years found</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Mobile scroll hint -->
+    <div class="d-md-none text-center py-2 border-top">
+        <small class="text-muted"><i class="bi bi-arrow-left-right"></i> Swipe to see more</small>
+    </div>
+</div>
+{% endblock %}

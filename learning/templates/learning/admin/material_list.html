@@ -1,0 +1,105 @@
+<!-- learning/templates/learning/admin/material_list.html -->
+{% extends 'learning/admin/base.html' %}
+{% block title %}Materials{% endblock %}
+{% block page_title %}Manage Materials{% endblock %}
+
+{% block content %}
+<div class="data-table">
+    <div class="table-header flex-column flex-lg-row gap-2">
+        <div class="w-100">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <form method="get" class="d-flex flex-column flex-sm-row gap-2">
+                    <input type="text" name="q" placeholder="Search materials..." value="{{ query }}" class="flex-grow-1">
+                    <select name="subject" class="form-select" style="min-width: 130px;" onchange="this.form.submit()">
+                        <option value="">All Subjects</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if selected_subject == subject.id|stringformat:"s" %}selected{% endif %}>
+                            {{ subject.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <select name="type" class="form-select" style="min-width: 130px;" onchange="this.form.submit()">
+                        <option value="">All Types</option>
+                        {% for type_code, type_name in material_types %}
+                        <option value="{{ type_code }}" {% if selected_type == type_code %}selected{% endif %}>
+                            {{ type_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+        <a href="{% url 'custom_material_create' %}" class="btn btn-primary w-100 w-lg-auto">
+            <i class="bi bi-plus-circle me-2"></i>Add Material
+        </a>
+    </div>
+    
+    <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <table class="table table-hover mb-0" style="min-width: 800px;">
+            <thead>
+                <tr>
+                    <th class="text-nowrap" style="min-width: 200px;">Title</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Subject</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Actions</th>
+                    <th class="text-nowrap" style="min-width: 100px;">Type</th>
+                    <th class="text-nowrap" style="min-width: 80px;">Views</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Created By</th>
+                    <th class="text-nowrap" style="min-width: 100px;">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materials %}
+                <tr>
+                    <td style="min-width: 200px;">
+                        <div class="fw-bold">{{ material.title|truncatewords:8 }}</div>
+                        <div class="d-flex gap-2 flex-wrap mt-1">
+                            {% if material.video_url %}
+                            <small class="text-primary"><i class="bi bi-play-circle"></i> Video</small>
+                            {% endif %}
+                            {% if material.file_url %}
+                            <small class="text-success"><i class="bi bi-file-earmark"></i> File</small>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td style="min-width: 120px;">{{ material.subject.name }}</td>
+                    <td style="min-width: 120px;">
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'material_detail' material.id %}" class="btn-action btn-view" target="_blank" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'custom_material_edit' material.id %}" class="btn-action btn-edit" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'custom_material_delete' material.id %}" class="btn-action btn-delete" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                    <td style="min-width: 100px;">
+                        <span class="badge bg-secondary">{{ material.get_material_type_display }}</span>
+                    </td>
+                    <td style="min-width: 80px;">
+                        <i class="bi bi-eye text-primary"></i>
+                        <strong>{{ material.views }}</strong>
+                    </td>
+                    <td style="min-width: 120px;">{{ material.created_by.username }}</td>
+                    <td style="min-width: 100px;">{{ material.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #cbd5e1;"></i>
+                        <p class="mt-3 text-muted">No materials found</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Mobile scroll hint -->
+    <div class="d-md-none text-center py-2 border-top">
+        <small class="text-muted"><i class="bi bi-arrow-left-right"></i> Swipe to see more</small>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+<!-- =========================== -->
+<!-- EXAM YEAR FORM TEMPLATE -->
+<!-- learning/templates/learning/admin/exam_year_form.html -->
+<!-- =========================== -->
+{% extends 'learning/admin/base.html' %}
+{% block title %}{{ action }} Exam Year{% endblock %}
+{% block page_title %}{{ action }} Exam Year{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="data-table">
+            <div class="table-header">
+                <h5 class="table-title">{{ action }} Exam Year</h5>
+            </div>
+            <div class="p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Subject *</label>
+                        {{ form.subject }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Year *</label>
+                            {{ form.year }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Session</label>
+                            {{ form.session }}
+                            <small class="text-muted d-block">e.g., First Semester, 2021/2022</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Description</label>
+                        {{ form.description }}
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Save Exam Year
+                        </button>
+                        <a href="{% url 'custom_exam_year_list' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+<!-- =========================== -->
+<!-- JSON UPLOAD TEMPLATE -->
+<!-- learning/templates/learning/admin/json_upload.html -->
+<!-- =========================== -->
+{% extends 'learning/admin/base.html' %}
+{% block title %}Upload JSON{% endblock %}
+{% block page_title %}Upload Questions from JSON{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="data-table">
+            <div class="table-header">
+                <h5 class="table-title">📤 Bulk Upload Questions</h5>
+            </div>
+            <div class="p-4">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>How it works:</strong> Upload a JSON file or paste JSON content to add multiple questions at once.
+                    The system will automatically create subjects and exam years if they don't exist.
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-file-earmark-code me-2"></i>Upload JSON File
+                        </label>
+                        <input type="file" name="json_file" class="form-control" accept=".json">
+                        <small class="text-muted">Select a .json file from your computer</small>
+                    </div>
+                    
+                    <div class="text-center my-3">
+                        <span class="badge bg-secondary">OR</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-code-square me-2"></i>Paste JSON Content
+                        </label>
+                        <textarea name="json_text" class="form-control" rows="15" 
+                                  style="font-family: 'Courier New', monospace; font-size: 13px;"
+                                  placeholder="Paste your JSON content here..."></textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-cloud-upload me-2"></i>Upload Questions
+                        </button>
+                        <a href="{% url 'custom_admin_dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Format Example -->
+        <div class="data-table mt-4">
+            <div class="table-header">
+                <h5 class="table-title">📄 JSON Format Example</h5>
+            </div>
+            <div class="p-4">
+                <pre style="background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5;">{
+  "subject_code": "CHM111",
+  "subject_name": "General Chemistry I",
+  "year": 2022,
+  "session": "2021/2022",
+  "questions": [
+    {
+      "number": 1,
+      "topic": "Atomic Structure",
+      "question": "The electrons and protons were discovered by ……",
+      "marks": 1,
+      "question_type": "multiple",
+      "options": {
+        "A": "Ernest Rutherford and J.J. Thomson",
+        "B": "J.J. Thomson and Ernest Rutherford",
+        "C": "Robert Millikan and James Chadwick",
+        "D": "John Dalton and Goldstein"
+      },
+      "correct_option": "B",
+      "explanation": "Electrons were discovered by J.J. Thomson...",
+      "option_analysis": {
+        "A": "WRONG - Explanation here",
+        "B": "CORRECT - Explanation here",
+        "C": "WRONG - Explanation here",
+        "D": "WRONG - Explanation here"
+      },
+      "cbt_tip": "Link names with discoveries..."
+    }
+  ]
+}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

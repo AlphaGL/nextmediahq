@@ -1,0 +1,275 @@
+{% extends 'learning/base.html' %}
+
+{% block title %}Upload Material{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .upload-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+
+    .file-upload-area {
+        border: 2px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        background: #f8fafc;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--primary-color);
+        background: #f0f9ff;
+    }
+
+    .file-upload-area.dragover {
+        border-color: var(--success-color);
+        background: #dcfce7;
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .preview-section {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+        display: none;
+    }
+
+    .preview-section.active {
+        display: block;
+    }
+
+    .instruction-box {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'learning:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'learning:materials_list' %}">Materials</a></li>
+                <li class="breadcrumb-item active">Upload Material</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Header -->
+<div class="upload-header">
+    <h1 class="mb-2">
+        <i class="bi bi-cloud-upload me-2"></i>Upload New Material
+    </h1>
+    <p class="mb-0">Upload study materials in PDF, image format, or enter text directly</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="upload-card">
+            <!-- Instructions -->
+            <div class="instruction-box">
+                <h5 class="mb-2">
+                    <i class="bi bi-info-circle me-2"></i>Upload Instructions
+                </h5>
+                <ul class="mb-0">
+                    <li>You can upload PDF documents or images (JPG, PNG)</li>
+                    <li>Text will be automatically extracted from PDFs and images using OCR</li>
+                    <li>Alternatively, you can manually enter or paste the content</li>
+                    <li>Provide either a file OR manual content (or both)</li>
+                </ul>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" id="uploadForm">
+                {% csrf_token %}
+                
+                <!-- Subject Selection -->
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="bi bi-mortarboard me-2"></i>Subject *
+                    </label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                    <div class="text-danger mt-2">
+                        {{ form.subject.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Title -->
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="bi bi-text-left me-2"></i>Material Title *
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <div class="text-danger mt-2">
+                        {{ form.title.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Material Type -->
+                <!-- <div class="mb-4">
+                    <label class="form-label">
+                        <i class="bi bi-file-earmark me-2"></i>Material Type (optional)
+                    </label>
+                    {{ form.material_type }}
+                    {% if form.material_type.errors %}
+                    <div class="text-danger mt-2">
+                        {{ form.material_type.errors }}
+                    </div>
+                    {% endif %}
+                </div> -->
+
+                <!-- File Upload -->
+                <!-- <div class="mb-4">
+                    <label class="form-label">
+                        <i class="bi bi-paperclip me-2"></i>Upload File (Optional)
+                    </label>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="upload-icon">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                        </div>
+                        <h5>Drag & Drop or Click to Upload</h5>
+                        <p class="text-muted mb-0">Supports PDF, JPG, PNG (Max 10MB)</p>
+                        {{ form.file }}
+                    </div>
+                    <div class="preview-section" id="previewSection">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="bi bi-file-earmark-check text-success me-2"></i>
+                                <strong id="fileName">File selected</strong>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-danger" id="removeFile">
+                                <i class="bi bi-x"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                    {% if form.file.errors %}
+                    <div class="text-danger mt-2">
+                        {{ form.file.errors }}
+                    </div>
+                    {% endif %}
+                </div> -->
+
+                <!-- Manual Content -->
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="bi bi-textarea-t me-2"></i>Content *
+                    </label>
+                    <small class="text-muted d-block mb-2">
+                        Leave blank to extract from file, or enter/paste content manually
+                    </small>
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                    <div class="text-danger mt-2">
+                        {{ form.content.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Form Errors -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- Submit Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-circle me-2"></i>Upload Material
+                    </button>
+                    <a href="{% url 'learning:materials_list' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-x-circle me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.querySelector('input[type="file"]');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const previewSection = document.getElementById('previewSection');
+        const fileName = document.getElementById('fileName');
+        const removeFileBtn = document.getElementById('removeFile');
+
+        // File input change
+        fileInput.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+                previewSection.classList.add('active');
+            }
+        });
+
+        // Drag and drop
+        fileUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                fileName.textContent = e.dataTransfer.files[0].name;
+                previewSection.classList.add('active');
+            }
+        });
+
+        // Click to upload
+        fileUploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        // Remove file
+        removeFileBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            previewSection.classList.remove('active');
+        });
+    });
+</script>
+{% endblock %}

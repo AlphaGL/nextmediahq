@@ -1,0 +1,110 @@
+<!-- learning/templates/learning/admin/exam_list.html -->
+{% extends 'learning/admin/base.html' %}
+{% block title %}Exam Submissions{% endblock %}
+{% block page_title %}Manage Exam Submissions{% endblock %}
+
+{% block content %}
+<div class="data-table">
+    <div class="table-header flex-column flex-lg-row gap-2">
+        <div class="w-100">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <form method="get" class="d-flex flex-column flex-sm-row gap-2">
+                    <input type="text" name="q" placeholder="Search students..." value="{{ query }}" class="flex-grow-1">
+                    <select name="student" class="form-select" style="min-width: 150px;" onchange="this.form.submit()">
+                        <option value="">All Students</option>
+                        {% for student in students %}
+                        <option value="{{ student.user.id }}" {% if selected_student == student.user.id|stringformat:"s" %}selected{% endif %}>
+                            {{ student.user.get_full_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <select name="subject" class="form-select" style="min-width: 150px;" onchange="this.form.submit()">
+                        <option value="">All Subjects</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if selected_subject == subject.id|stringformat:"s" %}selected{% endif %}>
+                            {{ subject.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <table class="table table-hover mb-0" style="min-width: 700px;">
+            <thead>
+                <tr>
+                    <th class="text-nowrap" style="min-width: 200px;">Student</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Subject</th>
+                    <th class="text-nowrap" style="min-width: 100px;">Actions</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Exam Year</th>
+                    <th class="text-nowrap" style="min-width: 100px;">Mode</th>
+                    <th class="text-nowrap" style="min-width: 80px;">Score</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Submitted</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr>
+                    <td style="min-width: 200px;">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                 style="width: 35px; height: 35px; font-size: 0.9rem; font-weight: 600;">
+                                {{ exam.student.first_name.0 }}{{ exam.student.last_name.0 }}
+                            </div>
+                            <div class="ms-2">
+                                <div class="fw-bold">{{ exam.student.get_full_name }}</div>
+                                <small class="text-muted">{{ exam.student.username }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="min-width: 120px;">{{ exam.exam_year.subject.name }}</td>
+                                        <td style="min-width: 100px;">
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'custom_exam_detail' exam.exam_id %}" class="btn-action btn-view" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'custom_exam_delete' exam.exam_id %}" class="btn-action btn-delete" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                    <td style="min-width: 120px;">{{ exam.exam_year.year }} {{ exam.exam_year.session }}</td>
+                    <td style="min-width: 100px;">
+                        <span class="badge {% if exam.mode == 'exam' %}bg-primary{% else %}bg-info{% endif %}">
+                            {{ exam.get_mode_display }}
+                        </span>
+                    </td>
+                    <td style="min-width: 80px;">
+                        {% if exam.score >= 70 %}
+                        <span class="badge bg-success">{{ exam.score|floatformat:1 }}%</span>
+                        {% elif exam.score >= 50 %}
+                        <span class="badge bg-warning">{{ exam.score|floatformat:1 }}%</span>
+                        {% else %}
+                        <span class="badge bg-danger">{{ exam.score|floatformat:1 }}%</span>
+                        {% endif %}
+                    </td>
+                    <td style="min-width: 120px;">
+                        <small>{{ exam.submitted_at|date:"M d, Y" }}</small><br>
+                        <small class="text-muted">{{ exam.submitted_at|time:"h:i A" }}</small>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #cbd5e1;"></i>
+                        <p class="mt-3 text-muted">No exam submissions found</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Mobile scroll hint -->
+    <div class="d-md-none text-center py-2 border-top">
+        <small class="text-muted"><i class="bi bi-arrow-left-right"></i> Swipe to see more</small>
+    </div>
+</div>
+{% endblock %}

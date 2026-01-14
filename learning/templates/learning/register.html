@@ -1,0 +1,244 @@
+<!-- register.html -->
+{% extends 'learning/base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 550px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+    }
+
+    .password-strength {
+        height: 5px;
+        border-radius: 5px;
+        background: #e5e7eb;
+        margin-top: 0.5rem;
+        overflow: hidden;
+    }
+
+    .strength-bar {
+        height: 100%;
+        transition: all 0.3s;
+    }
+
+    .strength-weak {
+        width: 33%;
+        background: #ef4444;
+    }
+
+    .strength-medium {
+        width: 66%;
+        background: #f59e0b;
+    }
+
+    .strength-strong {
+        width: 100%;
+        background: #10b981;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border: none;
+        padding: 0.75rem;
+        font-weight: 600;
+        transition: transform 0.2s;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h2 class="fw-bold mb-2">Create Account</h2>
+            <p class="text-muted mb-0">Join us and start learning today!</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" id="registerForm">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <small class="text-danger">{{ form.name.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Phone Number</label>
+                {{ form.phone_number }}
+                {% if form.phone_number.errors %}
+                    <small class="text-danger">{{ form.phone_number.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Registration Number</label>
+                {{ form.registration_number }}
+                <small class="text-muted d-block">This will be used as your login username</small>
+                {% if form.registration_number.errors %}
+                    <small class="text-danger d-block">{{ form.registration_number.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                {{ form.email }}
+                <small class="text-muted d-block">Required for password recovery</small>
+                {% if form.email.errors %}
+                    <small class="text-danger d-block">{{ form.email.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                {{ form.password1 }}
+                <div class="password-strength">
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
+                <small class="text-muted" id="strengthText">Password strength</small>
+                {% if form.password1.errors %}
+                    <small class="text-danger d-block">{{ form.password1.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <small class="text-danger d-block">{{ form.password2.errors.0 }}</small>
+                {% endif %}
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                <label class="form-check-label" for="agreeTerms">
+                    <small>I agree to the Terms of Service and Privacy Policy</small>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">
+                <i class="bi bi-person-plus me-2"></i>Create Account
+            </button>
+
+            <div class="text-center">
+                <small class="text-muted">
+                    Already have an account? 
+                    <a href="{% url 'learning:login' %}" class="text-primary fw-bold">Login here</a>
+                </small>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const password1 = document.getElementById('id_password1');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+
+    if (password1) {
+        password1.addEventListener('input', function() {
+            const value = this.value;
+            let strength = 0;
+
+            if (value.length >= 8) strength++;
+            if (/[a-z]/.test(value) && /[A-Z]/.test(value)) strength++;
+            if (/\d/.test(value)) strength++;
+            if (/[^a-zA-Z\d]/.test(value)) strength++;
+
+            strengthBar.className = 'strength-bar';
+            if (strength <= 1) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.textContent = 'Weak password';
+                strengthText.className = 'text-danger';
+            } else if (strength <= 3) {
+                strengthBar.classList.add('strength-medium');
+                strengthText.textContent = 'Medium password';
+                strengthText.className = 'text-warning';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                strengthText.textContent = 'Strong password';
+                strengthText.className = 'text-success';
+            }
+        });
+    }
+</script>
+{% endblock %}

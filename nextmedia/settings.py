@@ -15,6 +15,7 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'news/templates')
 
 SECRET_KEY = config('SECRET_KEY', default='your-secret-key-here')
 
+# DEBUG = True
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # FORCE DEVELOPMENT MODE
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
     'news',
     'ai_chat',
     'events',
+    'learning',
     'cloudinary',
     'cloudinary_storage',
 ]

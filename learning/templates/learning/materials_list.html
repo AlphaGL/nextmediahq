@@ -1,0 +1,292 @@
+{% extends 'learning/base.html' %}
+
+{% block title %}Study Materials{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .material-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .material-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(79, 70, 229, 0.1);
+    }
+
+    .material-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .material-type-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-pdf {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-text {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-image {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .subject-filter-btn {
+        margin-bottom: 0.5rem;
+        margin-right: 0.5rem;
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
+        border: 2px solid #e5e7eb;
+        background: white;
+        transition: all 0.3s;
+    }
+
+    .subject-filter-btn:hover, .subject-filter-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .view-count {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .exam-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .exam-subject-card {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .exam-subject-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .exam-btn {
+        background: white;
+        color: var(--primary-color);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .exam-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'learning:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Study Materials</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <h2 class="fw-bold">
+            <i class="bi bi-book-half me-2"></i>
+            {% if current_subject %}{{ current_subject.name }} - {% endif %}Study Materials
+        </h2>
+        <p class="text-muted">Browse and access comprehensive learning materials</p>
+    </div>
+    <div class="col-lg-4 text-lg-end">
+        {% if user.is_staff %}
+        <a href="{% url 'learning:custom_material_create' %}" class="btn btn-primary">
+            <i class="bi bi-cloud-upload me-2"></i>Upload Material
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="filter-section">
+    <div class="row align-items-center">
+        <div class="col-md-3 mb-3 mb-md-0">
+            <strong><i class="bi bi-funnel me-2"></i>Filter by Subject:</strong>
+        </div>
+        <div class="col-md-9">
+            <a href="{% url 'learning:materials_list' %}" class="btn subject-filter-btn {% if not current_subject %}active{% endif %}">
+                All Subjects
+            </a>
+            {% for subject in subjects %}
+            <a href="{% url 'learning:materials_by_subject' subject.id %}" 
+               class="btn subject-filter-btn {% if current_subject and current_subject.id == subject.id %}active{% endif %}">
+                {{ subject.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- CBT Exam Access Section -->
+<div class="exam-section">
+    <h4 class="mb-3">
+        <i class="bi bi-clipboard-check me-2"></i>Take CBT Exams
+    </h4>
+    <p class="text-muted mb-3">Select a subject to practice with past questions</p>
+    
+    <div class="row">
+        {% if current_subject %}
+        <!-- Show only current subject when filtered -->
+        <div class="col-lg-6 col-md-12">
+            <div class="exam-subject-card">
+                <div>
+                    <h5 class="mb-1">{{ current_subject.name }}</h5>
+                    <small>Practice Past Questions</small>
+                </div>
+                <a href="{% url 'learning:exam_years_list' current_subject.id %}" class="exam-btn">
+                    <i class="bi bi-play-circle me-1"></i>Start Exam
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <!-- Show all subjects when no filter -->
+        {% for subject in subjects %}
+        <div class="col-lg-6 col-md-12">
+            <div class="exam-subject-card">
+                <div>
+                    <h5 class="mb-1">{{ subject.name }}</h5>
+                    <small>Practice Past Questions</small>
+                </div>
+                <a href="{% url 'learning:exam_years_list' subject.id %}" class="exam-btn">
+                    <i class="bi bi-play-circle me-1"></i>Start Exam
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<!-- Materials List -->
+<div class="row">
+    <div class="col-12">
+        {% if materials %}
+        {% for material in materials %}
+        <div class="material-card">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="material-icon">
+                        {% if material.material_type == 'pdf' %}
+                        <i class="bi bi-file-pdf"></i>
+                        {% elif material.material_type == 'image' %}
+                        <i class="bi bi-image"></i>
+                        {% else %}
+                        <i class="bi bi-file-text"></i>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <h5 class="mb-2">{{ material.title }}</h5>
+                            <div class="mb-2">
+                                <span class="badge bg-primary me-2">
+                                    <i class="bi bi-mortarboard me-1"></i>{{ material.subject.name }}
+                                </span>
+                                <span class="material-type-badge {% if material.material_type == 'pdf' %}badge-pdf{% elif material.material_type == 'image' %}badge-image{% else %}badge-text{% endif %}">
+                                    <i class="bi bi-file-earmark me-1"></i>{{ material.get_material_type_display }}
+                                </span>
+                            </div>
+                            <div class="view-count">
+                                <i class="bi bi-eye me-1"></i>{{ material.views }} views
+                                <span class="ms-3">
+                                    <i class="bi bi-calendar me-1"></i>{{ material.created_at|date:"M d, Y" }}
+                                </span>
+                                {% if material.created_by %}
+                                <span class="ms-3">
+                                    <i class="bi bi-person me-1"></i>{{ material.created_by.username }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            <a href="{% url 'learning:material_detail' material.id %}" class="btn btn-primary">
+                                <i class="bi bi-arrow-right me-1"></i>Read
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <h4 class="mt-3">No Materials Found</h4>
+                <p class="text-muted">
+                    {% if current_subject %}
+                    No materials available for {{ current_subject.name }} yet.
+                    {% else %}
+                    No materials have been uploaded yet.
+                    {% endif %}
+                </p>
+                {% if user.is_staff %}
+                <a href="{% url 'learning:custom_material_create' %}" class="btn btn-primary mt-3">
+                    <i class="bi bi-cloud-upload me-2"></i>Upload First Material
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

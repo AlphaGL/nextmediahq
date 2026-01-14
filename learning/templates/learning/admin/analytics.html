@@ -1,0 +1,319 @@
+<!-- ========================================== -->
+<!-- RESPONSIVE ANALYTICS TEMPLATE -->
+<!-- learning/templates/learning/admin/analytics.html -->
+<!-- ========================================== -->
+{% extends 'learning/admin/base.html' %}
+
+{% block title %}Analytics{% endblock %}
+{% block page_title %}Analytics & Reports{% endblock %}
+
+{% block content %}
+<!-- Export Options -->
+<div class="row mb-3 mb-md-4">
+    <div class="col-12">
+        <div class="data-table">
+            <div class="table-header">
+                <h5 class="table-title mb-0">
+                    <i class="bi bi-download me-2"></i>Export Data
+                </h5>
+            </div>
+            <div class="p-3 p-md-4">
+                <div class="row g-2 g-md-3">
+                    <div class="col-12 col-sm-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-3">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="bi bi-people-fill text-primary me-2"></i>Student Data
+                                </h6>
+                                <p class="text-muted small mb-3">Export complete student information.</p>
+                                <a href="{% url 'learning:custom_export_data' %}?type=students" class="btn btn-primary btn-sm w-100">
+                                    <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body p-3">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="bi bi-clipboard-data text-success me-2"></i>Exam Results
+                                </h6>
+                                <p class="text-muted small mb-3">Export all completed exam results.</p>
+                                <a href="{% url 'learning:custom_export_data' %}?type=exams" class="btn btn-success btn-sm w-100">
+                                    <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subject Performance -->
+<div class="row mb-3 mb-md-4">
+    <div class="col-12">
+        <div class="data-table">
+            <div class="table-header">
+                <h5 class="table-title mb-0">
+                    <i class="bi bi-graph-up me-2"></i>Subject Performance
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 table-mobile-optimized">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap">Subject</th>
+                            <th class="text-nowrap text-center">Exams</th>
+                            <th class="text-nowrap text-center">Avg Score</th>
+                            <th class="text-nowrap d-none d-lg-table-cell">Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subject_stats %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ subject.name }}</div>
+                                <small class="badge bg-secondary mt-1">{{ subject.code }}</small>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-primary">{{ subject.total_exams }}</span>
+                            </td>
+                            <td class="text-center">
+                                {% if subject.avg_score %}
+                                <strong class="{% if subject.avg_score >= 70 %}text-success{% elif subject.avg_score >= 50 %}text-warning{% else %}text-danger{% endif %}">
+                                    {{ subject.avg_score|floatformat:1 }}%
+                                </strong>
+                                {% else %}
+                                <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td class="d-none d-lg-table-cell" style="min-width: 200px;">
+                                {% if subject.avg_score %}
+                                    {% if subject.avg_score >= 70 %}
+                                    <div class="progress" style="height: 22px;">
+                                        <div class="progress-bar bg-success" style="width: {{ subject.avg_score }}%">
+                                            Excellent
+                                        </div>
+                                    </div>
+                                    {% elif subject.avg_score >= 50 %}
+                                    <div class="progress" style="height: 22px;">
+                                        <div class="progress-bar bg-warning" style="width: {{ subject.avg_score }}%">
+                                            Good
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="progress" style="height: 22px;">
+                                        <div class="progress-bar bg-danger" style="width: {{ subject.avg_score }}%">
+                                            Needs Work
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% else %}
+                                <span class="text-muted">No data</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">No subject data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Performers & Recent Activity -->
+<div class="row mb-3 mb-md-4 g-3 g-md-4">
+    <div class="col-12 col-lg-6">
+        <div class="data-table h-100">
+            <div class="table-header">
+                <h5 class="table-title mb-0">
+                    <i class="bi bi-trophy-fill me-2"></i>Top Performers
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 table-mobile-optimized">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap" style="width: 50px;">Rank</th>
+                            <th class="text-nowrap">Student</th>
+                            <th class="text-nowrap text-center" style="width: 80px;">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in top_students %}
+                        <tr>
+                            <td>
+                                {% if forloop.counter == 1 %}
+                                <span class="badge" style="background: linear-gradient(135deg, #FFD700, #FFA500);">
+                                    <i class="bi bi-trophy-fill"></i> 1
+                                </span>
+                                {% elif forloop.counter == 2 %}
+                                <span class="badge" style="background: linear-gradient(135deg, #C0C0C0, #A8A8A8);">
+                                    <i class="bi bi-trophy-fill"></i> 2
+                                </span>
+                                {% elif forloop.counter == 3 %}
+                                <span class="badge" style="background: linear-gradient(135deg, #CD7F32, #B8860B);">
+                                    <i class="bi bi-trophy-fill"></i> 3
+                                </span>
+                                {% else %}
+                                <strong>#{{ forloop.counter }}</strong>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                         style="width: 32px; height: 32px; font-size: 0.75rem; font-weight: 600;">
+                                        {{ student.user.first_name.0 }}{{ student.user.last_name.0 }}
+                                    </div>
+                                    <div class="flex-grow-1 min-width-0">
+                                        <div class="fw-bold text-truncate">{{ student.user.get_full_name }}</div>
+                                        <small class="text-muted d-none d-sm-block">{{ student.registration_number }}</small>
+                                        <small class="badge bg-primary d-inline-block d-sm-none">{{ student.total_exams }} exams</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <strong class="text-success d-block">{{ student.avg_score|floatformat:1 }}%</strong>
+                                <small class="badge bg-primary d-none d-sm-inline-block">{{ student.total_exams }}</small>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center py-4 text-muted">No exam data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="data-table h-100">
+            <div class="table-header">
+                <h5 class="table-title mb-0">
+                    <i class="bi bi-clock-history me-2"></i>Recent Activity
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 table-mobile-optimized">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap">Student</th>
+                            <th class="text-nowrap d-none d-sm-table-cell">Subject</th>
+                            <th class="text-nowrap text-center" style="width: 80px;">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exam in recent_exams %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-truncate">{{ exam.student.username }}</div>
+                                <small class="text-muted d-block d-sm-none">{{ exam.exam_year.subject.name }} {{ exam.exam_year.year }}</small>
+                                <small class="text-muted d-none d-sm-block">{{ exam.submitted_at|date:"M d, h:i A" }}</small>
+                            </td>
+                            <td class="d-none d-sm-table-cell">
+                                <div>{{ exam.exam_year.subject.name }}</div>
+                                <small class="text-muted">{{ exam.exam_year.year }}</small>
+                            </td>
+                            <td class="text-center">
+                                {% if exam.score >= 70 %}
+                                <span class="badge bg-success">{{ exam.score|floatformat:1 }}%</span>
+                                {% elif exam.score >= 50 %}
+                                <span class="badge bg-warning">{{ exam.score|floatformat:1 }}%</span>
+                                {% else %}
+                                <span class="badge bg-danger">{{ exam.score|floatformat:1 }}%</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center py-4 text-muted">No recent activity</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Statistics -->
+<div class="row mb-3 mb-md-4">
+    <div class="col-12">
+        <div class="data-table">
+            <div class="table-header">
+                <h5 class="table-title mb-0">
+                    <i class="bi bi-bar-chart-fill me-2"></i>Summary Statistics
+                </h5>
+            </div>
+            <div class="p-3 p-md-4">
+                <div class="row g-2 g-md-3">
+                    <div class="col-6 col-md-3">
+                        <div class="text-center p-2 p-md-3 border rounded">
+                            <div style="font-size: 1.75rem; color: #667eea;">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <h3 class="mt-2 mb-1 fs-5 fs-md-4">{{ top_students|length }}</h3>
+                            <p class="text-muted mb-0 small">Students</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center p-2 p-md-3 border rounded">
+                            <div style="font-size: 1.75rem; color: #f093fb;">
+                                <i class="bi bi-bookmark-fill"></i>
+                            </div>
+                            <h3 class="mt-2 mb-1 fs-5 fs-md-4">{{ subject_stats|length }}</h3>
+                            <p class="text-muted mb-0 small">Subjects</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center p-2 p-md-3 border rounded">
+                            <div style="font-size: 1.75rem; color: #4facfe;">
+                                <i class="bi bi-clipboard-check-fill"></i>
+                            </div>
+                            <h3 class="mt-2 mb-1 fs-5 fs-md-4">{{ recent_exams|length }}</h3>
+                            <p class="text-muted mb-0 small">Exams</p>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center p-2 p-md-3 border rounded">
+                            <div style="font-size: 1.75rem; color: #43e97b;">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </div>
+                            <h3 class="mt-2 mb-1 fs-5 fs-md-4">100%</h3>
+                            <p class="text-muted mb-0 small">Engagement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tips & Insights -->
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info mb-0">
+            <h6 class="fw-bold mb-2">
+                <i class="bi bi-lightbulb-fill me-2"></i>Insights
+            </h6>
+            <ul class="mb-0 small ps-3">
+                {% if subject_stats %}
+                <li>Data for <strong>{{ subject_stats|length }}</strong> subject(s)</li>
+                {% endif %}
+                {% if top_students %}
+                <li><strong>{{ top_students|length }}</strong> active student(s)</li>
+                {% endif %}
+                <li class="d-none d-md-list-item">Export data regularly for backup</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

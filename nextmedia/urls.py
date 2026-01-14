@@ -10,6 +10,7 @@ urlpatterns = [
     path('', include('news.urls')),
     path('ai-chat/', include('ai_chat.urls')),
     path('events/', include('events.urls')),
+    path('learning/', include('learning.urls')),
 ]
 
 # Custom error handlers

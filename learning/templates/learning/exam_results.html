@@ -1,0 +1,417 @@
+{% extends 'learning/base.html' %}
+
+{% block title %}Exam Results - {{ exam.exam_year }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .score-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+
+    .score-circle {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        font-size: 3rem;
+        font-weight: 700;
+        position: relative;
+    }
+
+    .score-circle.excellent {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .score-circle.good {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+    }
+
+    .score-circle.average {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .score-circle.poor {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .question-review-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .question-review-card.correct {
+        border-left: 5px solid #10b981;
+    }
+
+    .question-review-card.incorrect {
+        border-left: 5px solid #ef4444;
+    }
+
+    .answer-option {
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+        border: 2px solid #e5e7eb;
+        position: relative;
+    }
+
+    /* User's selected answer (wrong) */
+    .answer-option.selected-wrong {
+        background: #fee2e2;
+        border-color: #ef4444;
+    }
+
+    /* Correct answer */
+    .answer-option.is-correct {
+        background: #d1fae5;
+        border-color: #10b981;
+    }
+
+    /* User's selected answer (correct) */
+    .answer-option.selected-correct {
+        background: #d1fae5;
+        border-color: #10b981;
+    }
+
+    .option-label-indicator {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 35px;
+        height: 35px;
+        background: white;
+        border: 2px solid #cbd5e1;
+        border-radius: 50%;
+        font-weight: 700;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .answer-option.is-correct .option-label-indicator {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+    }
+
+    .answer-option.selected-wrong .option-label-indicator {
+        background: #ef4444;
+        color: white;
+        border-color: #ef4444;
+    }
+
+    .explanation-box {
+        background: #f0f9ff;
+        border-left: 4px solid #3b82f6;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+    }
+
+    .grade-label {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .grade-excellent {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .grade-good {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .grade-average {
+        background: #fef3c7;
+        color: #78350f;
+    }
+
+    .grade-poor {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .answer-indicator {
+        margin-left: auto;
+        padding-left: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .indicator-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge-your-answer {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-correct-answer {
+        background: #d1fae5;
+        color: #065f46;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'learning:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'learning:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Exam Results</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Results Header -->
+<div class="results-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="mb-2">
+                <i class="bi bi-trophy me-2"></i>Exam Results
+            </h1>
+            <h5 class="mb-1">{{ exam.exam_year.subject.name }} - {{ exam.exam_year.year }}</h5>
+            <small>
+                {% if exam.mode == 'exam' %}
+                <i class="bi bi-file-earmark-text me-1"></i>Exam Mode
+                {% else %}
+                <i class="bi bi-lightbulb me-1"></i>Test Mode
+                {% endif %}
+                <span class="mx-2">|</span>
+                Completed on {{ exam.submitted_at|date:"F d, Y \a\t h:i A" }}
+            </small>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="{% url 'learning:dashboard' %}" class="btn btn-light btn-lg">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Score Card -->
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="score-card">
+            <div class="score-circle {% if exam.score >= 70 %}excellent{% elif exam.score >= 60 %}good{% elif exam.score >= 50 %}average{% else %}poor{% endif %}">
+                <div>
+                    {{ exam.score|floatformat:1 }}%
+                </div>
+                <small style="font-size: 1rem;">Score</small>
+            </div>
+            <span class="grade-label {% if exam.score >= 70 %}grade-excellent{% elif exam.score >= 60 %}grade-good{% elif exam.score >= 50 %}grade-average{% else %}grade-poor{% endif %}">
+                {% if exam.score >= 70 %}
+                Excellent! 🎉
+                {% elif exam.score >= 60 %}
+                Good Job! 👍
+                {% elif exam.score >= 50 %}
+                Fair 📚
+                {% else %}
+                Needs Improvement 📖
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <div class="col-lg-8 mb-4">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-icon text-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="stat-value text-success">
+                    {{ correct_answers }}
+                </div>
+                <div class="text-muted">Correct</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon text-danger">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+                <div class="stat-value text-danger">
+                    {{ incorrect_answers }}
+                </div>
+                <div class="text-muted">Incorrect</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon text-primary">
+                    <i class="bi bi-question-circle-fill"></i>
+                </div>
+                <div class="stat-value text-primary">
+                    {{ total_questions }}
+                </div>
+                <div class="text-muted">Total Questions</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon text-warning">
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <div class="stat-value text-warning">
+                    {{ exam.total_marks }}
+                </div>
+                <div class="text-muted">Marks Obtained</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Question Review -->
+<div class="row">
+    <div class="col-12">
+        <h3 class="fw-bold mb-3">
+            <i class="bi bi-clipboard-check me-2"></i>Question Review
+        </h3>
+
+        {% for item in questions_data %}
+        <div class="question-review-card {% if item.is_correct %}correct{% else %}incorrect{% endif %}">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h5 class="mb-0">
+                    Question {{ forloop.counter }}
+                    <span class="badge {% if item.is_correct %}bg-success{% else %}bg-danger{% endif %} ms-2">
+                        {% if item.is_correct %}
+                        <i class="bi bi-check-circle me-1"></i>Correct
+                        {% else %}
+                        <i class="bi bi-x-circle me-1"></i>Incorrect
+                        {% endif %}
+                    </span>
+                </h5>
+                <span class="badge bg-primary">{{ item.question.marks }} mark(s)</span>
+            </div>
+
+            <p class="mb-3"><strong>{{ item.question.question_text }}</strong></p>
+
+            <div class="options-review">
+                {% for option in item.all_options %}
+                <div class="answer-option 
+                    {% if option.id == item.selected_option.id and option.is_correct %}selected-correct{% endif %}
+                    {% if option.id == item.selected_option.id and not option.is_correct %}selected-wrong{% endif %}
+                    {% if option.is_correct and option.id != item.selected_option.id %}is-correct{% endif %}">
+                    <div class="d-flex align-items-start">
+                        <span class="option-label-indicator">{{ option.option_label }}</span>
+                        <div class="flex-grow-1">
+                            {{ option.option_text }}
+                        </div>
+                        <div class="answer-indicator">
+                            {% if option.id == item.selected_option.id %}
+                                <span class="indicator-badge badge-your-answer">
+                                    <i class="bi bi-person-fill me-1"></i>Your Answer
+                                </span>
+                            {% endif %}
+                            {% if option.is_correct %}
+                                <span class="indicator-badge badge-correct-answer">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Correct
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if show_explanations and item.explanation %}
+            <div class="explanation-box">
+                <h6 class="fw-bold mb-2">
+                    <i class="bi bi-lightbulb-fill me-2"></i>Explanation
+                </h6>
+                <p class="mb-0">{{ item.explanation.explanation_text }}</p>
+                {% if item.explanation.additional_resources %}
+                <hr>
+                <small class="text-muted">
+                    <strong>Additional Resources:</strong><br>
+                    {{ item.explanation.additional_resources }}
+                </small>
+                {% endif %}
+            </div>
+            {% elif not show_explanations %}
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle me-2"></i>
+                <small>Explanations are only available in Test Mode. Try Test Mode to see detailed explanations!</small>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <a href="{% url 'learning:exam_years_list' exam.exam_year.subject.id %}" class="btn btn-primary btn-lg me-2">
+            <i class="bi bi-arrow-repeat me-2"></i>Take Another Exam
+        </a>
+        <a href="{% url learning:'materials_by_subject' exam.exam_year.subject.id %}" class="btn btn-outline-primary btn-lg me-2">
+            <i class="bi bi-book me-2"></i>Study Materials
+        </a>
+        <a href="{% url 'learning:dashboard' %}" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

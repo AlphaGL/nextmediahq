@@ -1,0 +1,91 @@
+<!-- learning/templates/learning/admin/dashboard.html -->
+{% extends 'learning/admin/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+
+<div class="row g-3 g-md-4">
+    <!-- Quick Actions -->
+    <div class="col-12 col-xl-4">
+        <div class="data-table h-100">
+            <div class="table-header">
+                <h5 class="table-title">Quick Actions</h5>
+            </div>
+            <div class="p-3">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'custom_subject_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Add Subject
+                    </a>
+                    <a href="{% url 'custom_material_create' %}" class="btn btn-info text-white">
+                        <i class="bi bi-file-earmark-plus me-2"></i>Upload Material
+                    </a>
+                    <a href="{% url 'custom_material_list' %}" class="btn btn-info text-white">
+                        <i class="bi bi-pencil me-2"></i>Edit Material
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Materials -->
+{% if popular_materials %}
+<div class="data-table mt-3 mt-md-4">
+    <div class="table-header flex-column flex-sm-row gap-2">
+        <h5 class="table-title">Most Viewed Materials</h5>
+        <a href="{% url 'custom_material_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <table class="table table-hover mb-0" style="min-width: 600px;">
+            <thead>
+                <tr>
+                    <th class="text-nowrap" style="min-width: 150px;">Title</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Subject</th>
+                    <th class="text-nowrap" style="min-width: 120px;">Actions</th>
+                    <th class="text-nowrap" style="min-width: 100px;">Type</th>
+                    <th class="text-nowrap" style="min-width: 80px;">Views</th>
+                    <th class="text-nowrap" style="min-width: 100px;">Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in popular_materials %}
+                <tr>
+                    <td style="min-width: 150px;">
+                        <div class="fw-bold">{{ material.title|truncatewords:8 }}</div>
+                    </td>
+                    <td style="min-width: 120px;">{{ material.subject.name }}</td>
+                    <td style="min-width: 120px;">
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'material_detail' material.id %}" class="btn-action btn-view" target="_blank" title="View">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                            <a href="{% url 'custom_material_edit' material.id %}" class="btn-action btn-edit" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'custom_material_delete' material.id %}" class="btn-action btn-delete" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                    <td style="min-width: 100px;">
+                        <span class="badge bg-secondary">{{ material.get_material_type_display }}</span>
+                    </td>
+                    <td style="min-width: 80px;">
+                        <i class="bi bi-eye text-primary"></i>
+                        <strong>{{ material.views }}</strong>
+                    </td>
+                    <td style="min-width: 100px;">{{ material.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Mobile scroll hint -->
+    <div class="d-md-none text-center py-2">
+        <small class="text-muted"><i class="bi bi-arrow-left-right"></i> Swipe to see more</small>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

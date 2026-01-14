@@ -1,0 +1,240 @@
+{% extends 'learning/base.html' %}
+
+{% block title %}{{ subject.name }} - Past Questions{% endblock %}
+
+{% block extra_css %}
+<style>
+    .subject-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .exam-year-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .exam-year-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.15);
+    }
+
+    .year-badge {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: inline-block;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    .question-count {
+        background: #f0f9ff;
+        color: #0369a1;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .mode-btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .mode-btn.exam-mode {
+        background: #fef3c7;
+        color: #92400e;
+        border: 2px solid #fbbf24;
+    }
+
+    .mode-btn.exam-mode:hover {
+        background: #fbbf24;
+        color: white;
+    }
+
+    .mode-btn.test-mode {
+        background: #dbeafe;
+        color: #1e40af;
+        border: 2px solid #3b82f6;
+    }
+
+    .mode-btn.test-mode:hover {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .mode-info {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'learning:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">{{ subject.name }} - Past Questions</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Subject Header -->
+<div class="subject-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="mb-2">
+                <i class="bi bi-file-earmark-text me-2"></i>{{ subject.name }}
+            </h1>
+            <p class="mb-0">Subject Code: <strong>{{ subject.code }}</strong></p>
+            {% if subject.description %}
+            <p class="mb-0 mt-2">{{ subject.description }}</p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="{% url 'learning:materials_by_subject' subject.id %}" class="btn btn-light btn-lg">
+                <i class="bi bi-book me-2"></i>Study Materials
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Exam Years List -->
+    <div class="col-lg-8 mb-4">
+        <h3 class="fw-bold mb-3">
+            <i class="bi bi-calendar-range me-2"></i>Available Past Questions
+        </h3>
+
+        {% if exam_years %}
+        {% for exam_year in exam_years %}
+        <div class="exam-year-card">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="year-badge">
+                        {{ exam_year.year }}
+                    </div>
+                </div>
+                <div class="col">
+                    <h5 class="mb-2">
+                        {{ exam_year.year }} {% if exam_year.session %}{{ exam_year.session }}{% endif %}
+                    </h5>
+                    {% if exam_year.description %}
+                    <p class="text-muted mb-2">{{ exam_year.description }}</p>
+                    {% endif %}
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="question-count">
+                            <i class="bi bi-question-circle me-1"></i>
+                            {{ exam_year.question_count }} Questions
+                        </span>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'learning:start_exam' exam_year.id 'test' %}" 
+                           class="mode-btn test-mode text-center text-decoration-none">
+                            <i class="bi bi-lightbulb me-1"></i>Practice Mode
+                        </a>
+                        <a href="{% url 'learning:start_exam' exam_year.id 'exam' %}" 
+                           class="mode-btn exam-mode text-center text-decoration-none">
+                            <i class="bi bi-file-earmark-text me-1"></i>Exam Mode
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <h4 class="mt-3">No Past Questions Available</h4>
+                <p class="text-muted">Past questions for {{ subject.name }} haven't been uploaded yet.</p>
+                {% if user.is_staff %}
+                <a href="/admin/learning/examyear/add/" class="btn btn-primary mt-3">
+                    <i class="bi bi-plus-circle me-2"></i>Add Past Questions
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Info Sidebar -->
+    <div class="col-lg-4">
+        <div class="info-card">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-info-circle me-2"></i>Exam Modes
+            </h5>
+
+            <div class="mode-info">
+                <h6 class="fw-bold">
+                    <i class="bi bi-file-earmark-text text-warning me-2"></i>Exam Mode
+                </h6>
+                <ul class="small mb-0">
+                    <li>Simulates real exam conditions</li>
+                    <li>Timed session (60 minutes)</li>
+                    <li>No hints or explanations during exam</li>
+                    <li>View results after submission</li>
+                    <li>Best for final preparation</li>
+                </ul>
+            </div>
+
+            <div class="mode-info">
+                <h6 class="fw-bold">
+                    <i class="bi bi-lightbulb text-primary me-2"></i>Practice Mode
+                </h6>
+                <ul class="small mb-0">
+                    <li>Learning-focused approach</li>
+                    <li>Shorter duration (30 minutes)</li>
+                    <li>Instant feedback on answers</li>
+                    <li>View explanations immediately</li>
+                    <li>Best for practice and learning</li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <h6 class="fw-bold mb-3">
+                <i class="bi bi-lightbulb-fill me-2"></i>Tips for Success
+            </h6>
+            <ul class="small">
+                <li>Start with Practice Mode to learn concepts</li>
+                <li>Review materials before attempting exams</li>
+                <li>Take Exam Mode when fully prepared</li>
+                <li>Read all options carefully</li>
+                <li>Manage your time wisely</li>
+            </ul>
+
+            <a href="{% url 'learning:materials_by_subject' subject.id %}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-book me-2"></i>Study Materials
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+<!-- learning/templates/learning/admin/exam_detail.html -->
+{% extends 'learning/admin/base.html' %}
+{% block title %}Exam Details{% endblock %}
+{% block page_title %}Exam Submission Details{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <a href="{% url 'custom_exam_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Exams
+        </a>
+    </div>
+</div>
+
+<!-- Exam Overview -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="data-table">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="bi bi-clipboard-check me-2"></i>Exam Information
+                </h5>
+            </div>
+            <div class="p-4">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Student</small>
+                        <strong>{{ exam.student.get_full_name }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Subject</small>
+                        <strong>{{ exam.exam_year.subject.name }} ({{ exam.exam_year.subject.code }})</strong>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Exam Year</small>
+                        <strong>{{ exam.exam_year.year }} {{ exam.exam_year.session }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Mode</small>
+                        <span class="badge {% if exam.mode == 'exam' %}bg-primary{% else %}bg-info{% endif %}">
+                            {{ exam.get_mode_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Started At</small>
+                        <strong>{{ exam.started_at|date:"M d, Y h:i A" }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Submitted At</small>
+                        <strong>{{ exam.submitted_at|date:"M d, Y h:i A" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="data-table">
+            <div class="table-header">
+                <h5 class="table-title">
+                    <i class="bi bi-bar-chart-fill me-2"></i>Score Summary
+                </h5>
+            </div>
+            <div class="p-4 text-center">
+                <div class="mb-3">
+                    {% if exam.score >= 70 %}
+                    <div style="font-size: 3rem; color: #10b981;">{{ exam.score|floatformat:1 }}%</div>
+                    <span class="badge bg-success">Excellent</span>
+                    {% elif exam.score >= 50 %}
+                    <div style="font-size: 3rem; color: #f59e0b;">{{ exam.score|floatformat:1 }}%</div>
+                    <span class="badge bg-warning">Good</span>
+                    {% else %}
+                    <div style="font-size: 3rem; color: #ef4444;">{{ exam.score|floatformat:1 }}%</div>
+                    <span class="badge bg-danger">Needs Improvement</span>
+                    {% endif %}
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="stat-card-value">{{ answers|length }}</div>
+                        <div class="stat-card-label">Total Questions</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card-value text-success">
+                            {{ answers|selectattr:'is_correct'|list|length }}
+                        </div>
+                        <div class="stat-card-label">Correct</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Answer Details -->
+<div class="data-table">
+    <div class="table-header">
+        <h5 class="table-title">
+            <i class="bi bi-list-check me-2"></i>Answer Details
+        </h5>
+    </div>
+    <div class="p-4">
+        {% for answer in answers %}
+        <div class="card mb-3 {% if answer.is_correct %}border-success{% else %}border-danger{% endif %}">
+            <div class="card-header {% if answer.is_correct %}bg-success bg-opacity-10{% else %}bg-danger bg-opacity-10{% endif %}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>Question {{ answer.question.question_number }}</strong>
+                    {% if answer.is_correct %}
+                    <span class="badge bg-success">
+                        <i class="bi bi-check-circle"></i> Correct
+                    </span>
+                    {% else %}
+                    <span class="badge bg-danger">
+                        <i class="bi bi-x-circle"></i> Incorrect
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="mb-3"><strong>{{ answer.question.question_text }}</strong></p>
+                
+                <div class="mb-2">
+                    <small class="text-muted">Selected Answer:</small>
+                    <div class="p-2 rounded {% if answer.is_correct %}bg-success bg-opacity-10{% else %}bg-danger bg-opacity-10{% endif %}">
+                        <strong>{{ answer.selected_option.option_label }}:</strong> {{ answer.selected_option.option_text }}
+                    </div>
+                </div>
+                
+                {% if not answer.is_correct %}
+                <div>
+                    <small class="text-muted">Correct Answer:</small>
+                    {% for option in answer.question.options.all %}
+                        {% if option.is_correct %}
+                        <div class="p-2 rounded bg-success bg-opacity-10">
+                            <strong>{{ option.option_label }}:</strong> {{ option.option_text }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted py-4">No answers recorded</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

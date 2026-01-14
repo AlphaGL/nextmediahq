@@ -1,0 +1,535 @@
+{% extends 'learning/base.html' %}
+
+{% block title %}Home - NextMedia Academia{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: 20px;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .hero-content h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .hero-content p {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .hero-btn {
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .hero-btn-primary {
+        background: white;
+        color: #667eea;
+    }
+
+    .hero-btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255,255,255,0.3);
+    }
+
+    .hero-btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .hero-btn-secondary:hover {
+        background: rgba(255,255,255,0.1);
+        transform: translateY(-3px);
+    }
+
+    /* Features Section */
+    .features-section {
+        margin-bottom: 4rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .section-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .feature-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        transition: all 0.4s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px var(--shadow);
+        border-color: var(--accent);
+    }
+
+    .feature-icon {
+        font-size: 3.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+    }
+
+    .feature-card h4 {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    /* Subject Cards */
+    .subjects-section {
+        margin-bottom: 4rem;
+    }
+
+    .subject-card {
+        background: var(--card-bg);
+        border: 2px solid var(--border);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .subject-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(100, 255, 218, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .subject-card:hover::after {
+        left: 100%;
+    }
+
+    .subject-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 35px var(--shadow);
+    }
+
+    .subject-icon {
+        font-size: 3rem;
+        color: var(--accent);
+        margin-bottom: 1rem;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .subject-card:hover .subject-icon {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    .subject-card h5 {
+        color: var(--text-primary);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .subject-code {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .subject-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .subject-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(79, 70, 229, 0.4);
+        color: white;
+    }
+
+    .subject-btn-locked {
+        background: var(--text-secondary);
+        cursor: not-allowed;
+    }
+
+    .subject-btn-locked:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: 20px;
+        margin: 4rem 0;
+        box-shadow: 0 10px 40px rgba(79, 70, 229, 0.3);
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        display: block;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    /* How It Works */
+    .how-it-works {
+        margin: 4rem 0;
+    }
+
+    .step-card {
+        text-align: center;
+        position: relative;
+    }
+
+    .step-number {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 20px rgba(79, 70, 229, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .step-card:hover .step-number {
+        transform: scale(1.1) rotate(360deg);
+    }
+
+    .step-card h5 {
+        color: var(--text-primary);
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .step-card p {
+        color: var(--text-secondary);
+        font-size: 1rem;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2rem;
+        }
+
+        .hero-content p {
+            font-size: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-in {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Welcome to NextMedia Academia</h1>
+        <p>Your Ultimate Learning Companion - Study Materials, Practice Tests, and Past Questions All in One Place</p>
+        <div class="hero-buttons">
+            {% if user.is_authenticated %}
+            <a href="{% url 'learning:dashboard' %}" class="hero-btn hero-btn-primary">
+                <i class="bi bi-speedometer2"></i>
+                Go to Dashboard
+            </a>
+            <a href="{% url 'learning:materials_list' %}" class="hero-btn hero-btn-secondary">
+                <i class="bi bi-book"></i>
+                Browse Materials
+            </a>
+            {% else %}
+            <a href="{% url 'learning:register' %}" class="hero-btn hero-btn-primary">
+                <i class="bi bi-person-plus"></i>
+                Get Started Free
+            </a>
+            <a href="{% url 'learning:login' %}" class="hero-btn hero-btn-secondary">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Login
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <div class="section-header">
+        <h2>Why Choose NextMedia Academia?</h2>
+        <p>Everything you need to excel in your studies</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-book-half"></i>
+                </div>
+                <h4>Comprehensive Materials</h4>
+                <p>Access well-organized study materials uploaded as PDFs or images with text extraction for easy reading and review.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <h4>Past Questions</h4>
+                <p>Practice with real past questions organized by year and subject to prepare effectively for your exams.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+                <h4>CBT Practice</h4>
+                <p>Take exams in Exam Mode or Test Mode with instant feedback and detailed explanations to improve your understanding.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subjects Section -->
+<div class="subjects-section">
+    <div class="section-header">
+        <h2>Available Subjects</h2>
+        <p>Choose a subject to start learning</p>
+    </div>
+    {% if subjects %}
+    <div class="row g-4">
+        {% for subject in subjects %}
+        <div class="col-md-4 col-lg-3">
+            <div class="subject-card">
+                <div class="subject-icon">
+                    <i class="bi bi-journal-text"></i>
+                </div>
+                <h5>{{ subject.name }}</h5>
+                <p class="subject-code">{{ subject.code }}</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'learning:materials_by_subject' subject.id %}" class="subject-btn">
+                    <i class="bi bi-book me-1"></i>View Materials
+                </a>
+                {% else %}
+                <a href="{% url 'learning:login' %}" class="subject-btn subject-btn-locked">
+                    <i class="bi bi-lock me-1"></i>Login to Access
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle me-2"></i>No subjects available yet. Check back soon!
+    </div>
+    {% endif %}
+</div>
+
+<!-- Stats Section (Only for authenticated users) -->
+{% if user.is_authenticated %}
+<div class="stats-section">
+    <div class="row">
+        <div class="col-md-3 col-6 stat-item">
+            <span class="stat-number">{{ subjects|length }}</span>
+            <span class="stat-label">Subjects Available</span>
+        </div>
+        <div class="col-md-3 col-6 stat-item">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Study Materials</span>
+        </div>
+        <div class="col-md-3 col-6 stat-item">
+            <span class="stat-number">1000+</span>
+            <span class="stat-label">Practice Questions</span>
+        </div>
+        <div class="col-md-3 col-6 stat-item">
+            <span class="stat-number">98%</span>
+            <span class="stat-label">Success Rate</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- How It Works Section -->
+<div class="how-it-works">
+    <div class="section-header">
+        <h2>How It Works</h2>
+        <p>Simple steps to start learning</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-3 col-6">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h5>Choose Subject</h5>
+                <p>Select from available subjects</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h5>Study Materials</h5>
+                <p>Read and understand concepts</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h5>Practice Tests</h5>
+                <p>Take practice tests with feedback</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h5>Excel in Exams</h5>
+                <p>Apply knowledge in real exams</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

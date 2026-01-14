@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NextMedia Academia - Learning Platform{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-bg: #0a192f;
+            --secondary-bg: #112240;
+            --card-bg: #1a2847;
+            --text-primary: #e6f1ff;
+            --text-secondary: #8892b0;
+            --accent: #64ffda;
+            --accent-secondary: #00a8ff;
+            --border: rgba(100, 255, 218, 0.1);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --primary-color: #4f46e5;
+            --secondary-color: #06b6d4;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
+        [data-theme="light"] {
+            --primary-bg: #f8fafc;
+            --secondary-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --accent: #0066cc;
+            --accent-secondary: #ff6b35;
+            --border: rgba(0, 0, 0, 0.1);
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--secondary-bg);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 20px var(--shadow);
+        }
+
+        .nav-top {
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-brand img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .nav-brand-text {
+            color: var(--accent-secondary);
+        }
+
+        /* Central Search - Hidden on Learning Platform */
+        .nav-search-center {
+            display: none;
+        }
+
+        /* Right Actions */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: var(--primary-bg);
+            transform: rotate(180deg);
+        }
+
+        /* Scrollable Navigation Menu */
+        .nav-menu-wrapper {
+            background: var(--secondary-bg);
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--secondary-bg);
+        }
+
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+        }
+
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            white-space: nowrap;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.6rem 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            background: rgba(100, 255, 218, 0.15);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 140px;
+            min-height: calc(100vh - 140px);
+            padding: 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Bootstrap Component Overrides */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4338ca, #0891b2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px var(--shadow);
+            transition: all 0.3s;
+            color: var(--text-primary);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px var(--shadow);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .table {
+            color: var(--text-primary);
+        }
+
+        .table-hover tbody tr:hover {
+            background: rgba(100, 255, 218, 0.05);
+        }
+
+        /* Alerts */
+        .alert {
+            border: none;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--success-color);
+            color: var(--text-primary);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--danger-color);
+            color: var(--text-primary);
+        }
+
+        .alert-info {
+            background: rgba(6, 182, 212, 0.1);
+            border-left-color: var(--secondary-color);
+            color: var(--text-primary);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left-color: var(--warning-color);
+            color: var(--text-primary);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .breadcrumb-item a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-secondary);
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 0.75rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: var(--card-bg);
+            border-color: var(--accent);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
+        }
+
+        .form-label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Floating Action Buttons */
+        .floating-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        .back-to-top {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .back-to-top:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 6px 30px rgba(255, 107, 53, 0.6);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border);
+            padding: 2rem 1rem 1rem;
+            margin-top: 4rem;
+            color: var(--text-primary);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .footer-column h4 {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            padding: 0.3rem 0;
+        }
+
+        .footer-column a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-copyright {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-wrap: wrap;
+            }
+
+            .nav-brand {
+                font-size: 1.2rem;
+            }
+
+            .nav-brand img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .nav-menu {
+                padding: 0.6rem 1rem;
+            }
+
+            .nav-link {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.85rem;
+            }
+
+            .main-content {
+                margin-top: 130px;
+            }
+
+            .floating-buttons {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .back-to-top {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-brand {
+                font-size: 1rem;
+            }
+
+            .nav-brand img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .nav-link {
+                font-size: 0.8rem;
+                padding: 0.45rem 0.75rem;
+            }
+
+            .floating-buttons {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .back-to-top {
+                width: 42px;
+                height: 42px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-top">
+            <div class="nav-container">
+                <a href="{% url 'learning:home' %}" class="nav-brand">
+                    <img src="{% static 'img/logo.jpg' %}" alt="NextMedia">
+                    <span>Next<span class="nav-brand-text">Media</span> <small style="font-size: 0.6em;">Academia</small></span>
+                </a>
+                
+                <div class="nav-actions">
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scrollable Menu -->
+        <div class="nav-menu-wrapper">
+            <div class="nav-menu">
+                <a href="{% url 'learning:home' %}" class="nav-link">
+                    <i class="bi bi-house-fill"></i>Home
+                </a>
+                <a href="{% url 'news:home' %}" class="nav-link">
+                    <i class="bi bi-house"></i>Main site
+                </a>
+                <a href="{% url 'events:home' %}" class="nav-link">
+                    <i class="bi bi-book-half"></i>Events
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'learning:dashboard' %}" class="nav-link">
+                    <i class="bi bi-speedometer2"></i>Dashboard
+                </a>
+                <!-- <a href="{% url 'learning:materials_list' %}" class="nav-link">
+                    <i class="bi bi-book-fill"></i>Materials
+                </a> -->
+                {% if user.is_staff %}
+                <a href="{% url 'learning:custom_material_create' %}" class="nav-link">
+                    <i class="bi bi-cloud-upload-fill"></i>Upload
+                </a>
+                <a href="/admin/" class="nav-link">
+                    <i class="bi bi-gear-fill"></i>Admin
+                </a>
+                {% endif %}
+                <a href="{% url 'news:past_questions' %}" class="nav-link">
+                    <i class="bi bi-file-earmark-text"></i>Past Questions
+                </a>
+                <a href="{% url 'learning:logout' %}" class="nav-link">
+                    <i class="bi bi-box-arrow-right"></i>Logout
+                </a>
+                {% else %}
+                <a href="{% url 'learning:login' %}" class="nav-link">
+                    <i class="bi bi-box-arrow-in-right"></i>Login
+                </a>
+                <a href="{% url 'learning:register' %}" class="nav-link">
+                    <i class="bi bi-person-plus-fill"></i>Register
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3" style="margin-top: 150px !important;">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container my-4">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-buttons">
+        <button id="backToTop" class="back-to-top" aria-label="Back to top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="{% static 'img/logo.jpg' %}" alt="NextMedia">
+                    <span>Next<span class="nav-brand-text">Media</span> Academia</span>
+                </div>
+                <p>Your Ultimate Learning Companion - Study Materials, Practice Tests, and Past Questions All in One Place.</p>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="{% url 'learning:home' %}">Home</a></li>
+                    <li><a href="{% url 'learning:materials_list' %}">Study Materials</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'learning:dashboard' %}">Dashboard</a></li>
+                    {% else %}
+                    <li><a href="{% url 'learning:login' %}">Login</a></li>
+                    <li><a href="{% url 'learning:register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Past Questions</a></li>
+                    <li><a href="#">Practice Tests</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Support</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-copyright">
+                <p>&copy; 2024 NextMedia Academia. Built for Excellence in Learning.</p>
+                <p class="mt-2">
+                    <small>Made with <i class="bi bi-heart-fill text-danger"></i> for students</small>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('learning-theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('learning-theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-moon';
+            } else {
+                themeIcon.className = 'fas fa-sun';
+            }
+        }
+
+        // Back to Top Button
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.display = 'flex';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Highlight active nav link
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

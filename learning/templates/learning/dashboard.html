@@ -1,0 +1,641 @@
+{% extends 'learning/base.html' %}
+
+{% block title %}Dashboard - {{ user.username }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Welcome Banner */
+    .welcome-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        margin-bottom: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-banner h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .welcome-banner p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        margin-bottom: 0;
+    }
+
+    .banner-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .banner-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .banner-btn-light {
+        background: white;
+        color: #667eea;
+    }
+
+    .banner-btn-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(255,255,255,0.3);
+        color: #667eea;
+    }
+
+    .banner-btn-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .banner-btn-outline:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--primary-color);
+        transition: width 0.3s ease;
+    }
+
+    .stat-card.success::before {
+        background: var(--success-color);
+    }
+
+    .stat-card.warning::before {
+        background: var(--warning-color);
+    }
+
+    .stat-card.info::before {
+        background: var(--secondary-color);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px var(--shadow);
+    }
+
+    .stat-card:hover::before {
+        width: 100%;
+        opacity: 0.1;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    /* Section Cards */
+    .section-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px var(--shadow);
+        height: 100%;
+    }
+
+    .section-card-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1.25rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-card-body {
+        padding: 1.5rem;
+    }
+
+    /* Recent Exams Table */
+    .exam-table {
+        width: 100%;
+        color: var(--text-primary);
+    }
+
+    .exam-table th {
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        padding: 1rem 0.75rem;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .exam-table td {
+        padding: 1rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    .exam-table tr {
+        transition: all 0.3s ease;
+    }
+
+    .exam-table tr:hover {
+        background: rgba(100, 255, 218, 0.05);
+    }
+
+    .exam-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .badge-exam {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-test {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .score-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .score-excellent {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .score-good {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .score-average {
+        background: #fef3c7;
+        color: #78350f;
+    }
+
+    .score-poor {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: var(--text-secondary);
+        opacity: 0.5;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Progress Cards */
+    .progress-item {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .progress-item:hover {
+        border-color: var(--accent);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px var(--shadow);
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .progress-header strong {
+        color: var(--text-primary);
+        font-size: 1.05rem;
+    }
+
+    .progress-badge {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 0.3rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .progress-bar-container {
+        background: var(--border);
+        height: 10px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        border-radius: 10px;
+        transition: width 0.5s ease;
+    }
+
+    .progress-stats {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    /* Subject Cards */
+    .subject-item {
+        background: var(--card-bg);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-decoration: none;
+        color: var(--text-primary);
+    }
+
+    .subject-item:hover {
+        border-color: var(--accent);
+        transform: translateX(8px);
+        box-shadow: 0 5px 20px var(--shadow);
+        color: var(--text-primary);
+    }
+
+    .subject-icon-box {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .subject-info h6 {
+        margin: 0 0 0.25rem 0;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .subject-info small {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        padding: 0.6rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .welcome-banner h1 {
+            font-size: 1.75rem;
+        }
+
+        .welcome-banner p {
+            font-size: 0.95rem;
+        }
+
+        .banner-actions {
+            flex-direction: column;
+        }
+
+        .banner-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .exam-table {
+            font-size: 0.85rem;
+        }
+
+        .exam-table th,
+        .exam-table td {
+            padding: 0.75rem 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <div class="welcome-content">
+        <div class="row align-items-center">
+            <div class="col-md-7 mb-3 mb-md-0">
+                <h1>Welcome back, {{ user.get_full_name|default:user.username }}! 👋</h1>
+                <p>Ready to continue your learning journey? Let's achieve great things today!</p>
+            </div>
+            <div class="col-md-5">
+                <div class="banner-actions">
+                    <a href="#takeExamSection" class="banner-btn banner-btn-light">
+                        <i class="bi bi-pencil-square"></i>Take Exam
+                    </a>
+                    <a href="{% url 'learning:materials_list' %}" class="banner-btn banner-btn-outline">
+                        <i class="bi bi-book"></i>Study Materials
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <i class="bi bi-clipboard-check stat-icon text-primary"></i>
+            <span class="stat-number">{{ recent_exams.count }}</span>
+            <span class="stat-label">Exams Taken</span>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card success">
+            <i class="bi bi-graph-up stat-icon text-success"></i>
+            <span class="stat-number text-success">
+                {% if progress %}
+                    {% widthratio progress.first.average_score 1 1 %}%
+                {% else %}
+                    0%
+                {% endif %}
+            </span>
+            <span class="stat-label">Average Score</span>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card warning">
+            <i class="bi bi-book-half stat-icon text-warning"></i>
+            <span class="stat-number text-warning">
+                {% if progress %}
+                    {{ progress.first.materials_read.count }}
+                {% else %}
+                    0
+                {% endif %}
+            </span>
+            <span class="stat-label">Materials Read</span>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card info">
+            <i class="bi bi-mortarboard stat-icon text-info"></i>
+            <span class="stat-number text-info">{{ progress.count }}</span>
+            <span class="stat-label">Active Subjects</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Exams -->
+    <div class="col-lg-8 mb-4">
+        <div class="section-card">
+            <div class="section-card-header">
+                <i class="bi bi-clock-history"></i>
+                Recent Exam Activity
+            </div>
+            <div class="section-card-body">
+                {% if recent_exams %}
+                <div class="table-responsive">
+                    <table class="exam-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Year</th>
+                                <th>Mode</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exam in recent_exams %}
+                            <tr>
+                                <td><strong>{{ exam.exam_year.subject.name }}</strong></td>
+                                <td>{{ exam.exam_year.year }}</td>
+                                <td>
+                                    <span class="exam-badge {% if exam.mode == 'exam' %}badge-exam{% else %}badge-test{% endif %}">
+                                        {% if exam.mode == 'exam' %}
+                                        <i class="bi bi-file-earmark-text"></i>Exam
+                                        {% else %}
+                                        <i class="bi bi-lightbulb"></i>Test
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="score-badge {% if exam.score >= 70 %}score-excellent{% elif exam.score >= 60 %}score-good{% elif exam.score >= 50 %}score-average{% else %}score-poor{% endif %}">
+                                        {{ exam.score|floatformat:1 }}%
+                                    </span>
+                                </td>
+                                <td>{{ exam.submitted_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'learning:exam_results' exam.exam_id %}" class="btn btn-sm btn-outline-primary action-btn">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-clipboard-x empty-state-icon"></i>
+                    <p>No exams taken yet. Start practicing now!</p>
+                    <a href="#takeExamSection" class="btn btn-primary action-btn">
+                        <i class="bi bi-play-circle"></i>Start Your First Exam
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Progress -->
+    <div class="col-lg-4 mb-4">
+        <div class="section-card">
+            <div class="section-card-header">
+                <i class="bi bi-graph-up-arrow"></i>
+                Subject Progress
+            </div>
+            <div class="section-card-body">
+                {% if progress %}
+                {% for prog in progress %}
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <strong>{{ prog.subject.name }}</strong>
+                        <span class="progress-badge">{{ prog.total_exams_taken }} exams</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: {{ prog.average_score }}%;"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span>Average: {{ prog.average_score|floatformat:1 }}%</span>
+                        <span>{{ prog.materials_read.count }} materials</span>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-graph-up empty-state-icon"></i>
+                    <p>Start learning to track your progress!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Take Exam Section -->
+<div class="row" id="takeExamSection">
+    <div class="col-12">
+        <div class="section-card">
+            <div class="section-card-header">
+                <i class="bi bi-pencil-square"></i>
+                Take an Exam
+            </div>
+            <div class="section-card-body">
+                <h5 class="mb-4" style="color: var(--text-primary); font-weight: 700;">Select a Subject to Begin</h5>
+                {% if subjects %}
+                <div class="row g-3">
+                    {% for subject in subjects %}
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{% url 'learning:exam_years_list' subject.id %}" class="subject-item">
+                            <div class="subject-icon-box">
+                                <i class="bi bi-journal-text"></i>
+                            </div>
+                            <div class="subject-info">
+                                <h6>{{ subject.name }}</h6>
+                                <small>{{ subject.code }}</small>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox empty-state-icon"></i>
+                    <p>No subjects available yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
