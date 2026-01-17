@@ -28,3 +28,8 @@ feedparser==6.0.11          # For RSS feeds (no API key needed, unlimited)
 django-taggit==6.1.0
 django-ckeditor==6.7.3
 django-js-asset==3.1.2
+
+# PDF and Image Processing (for learning materials)
+PyPDF2==3.0.1
+Pillow==10.2.0              # Updated to latest stable version
+# pytesseract==0.3.10       # REMOVED - Requires system Tesseract binary, not compatible with Vercel
