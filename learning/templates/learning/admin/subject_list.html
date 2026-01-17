@@ -12,7 +12,7 @@
                 <input type="text" name="q" placeholder="Search subjects..." value="{{ query }}" class="w-100">
             </form>
         </div>
-        <a href="{% url 'custom_subject_create' %}" class="btn btn-primary w-100 w-md-auto">
+        <a href="{% url 'learning:custom_subject_create' %}" class="btn btn-primary w-100 w-md-auto">
             <i class="bi bi-plus-circle me-2"></i>Add Subject
         </a>
     </div>
@@ -46,10 +46,10 @@
                     <td class="d-none d-lg-table-cell">{{ subject.created_at|date:"M d, Y" }}</td>
                     <td>
                         <div class="d-flex flex-column flex-sm-row gap-1">
-                            <a href="{% url 'custom_subject_edit' subject.id %}" class="btn-action btn-edit" title="Edit">
+                            <a href="{% url 'learning:custom_subject_edit' subject.id %}" class="btn-action btn-edit" title="Edit">
                                 <i class="bi bi-pencil"></i><span class="d-none d-lg-inline ms-1">Edit</span>
                             </a>
-                            <a href="{% url 'custom_subject_delete' subject.id %}" class="btn-action btn-delete" title="Delete">
+                            <a href="{% url 'learning:custom_subject_delete' subject.id %}" class="btn-action btn-delete" title="Delete">
                                 <i class="bi bi-trash"></i><span class="d-none d-lg-inline ms-1">Delete</span>
                             </a>
                         </div>

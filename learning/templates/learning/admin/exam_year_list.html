@@ -22,7 +22,7 @@
                 </form>
             </div>
         </div>
-        <a href="{% url 'custom_exam_year_create' %}" class="btn btn-primary w-100 w-md-auto">
+        <a href="{% url 'learning:custom_exam_year_create' %}" class="btn btn-primary w-100 w-md-auto">
             <i class="bi bi-plus-circle me-2"></i>Add Exam Year
         </a>
     </div>
@@ -54,10 +54,10 @@
                     </td>
                     <td style="min-width: 120px;">
                         <div class="d-flex gap-1">
-                            <a href="{% url 'custom_exam_year_edit' exam_year.id %}" class="btn-action btn-edit" title="Edit">
+                            <a href="{% url 'learning:custom_exam_year_edit' exam_year.id %}" class="btn-action btn-edit" title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <a href="{% url 'custom_exam_year_delete' exam_year.id %}" class="btn-action btn-delete" title="Delete">
+                            <a href="{% url 'learning:custom_exam_year_delete' exam_year.id %}" class="btn-action btn-delete" title="Delete">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </div>

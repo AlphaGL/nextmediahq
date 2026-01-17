@@ -63,10 +63,10 @@
                     <td style="min-width: 120px;">{{ exam.exam_year.subject.name }}</td>
                                         <td style="min-width: 100px;">
                         <div class="d-flex gap-1">
-                            <a href="{% url 'custom_exam_detail' exam.exam_id %}" class="btn-action btn-view" title="View">
+                            <a href="{% url 'learning:custom_exam_detail' exam.exam_id %}" class="btn-action btn-view" title="View">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <a href="{% url 'custom_exam_delete' exam.exam_id %}" class="btn-action btn-delete" title="Delete">
+                            <a href="{% url 'learning:custom_exam_delete' exam.exam_id %}" class="btn-action btn-delete" title="Delete">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </div>

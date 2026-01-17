@@ -30,7 +30,7 @@
                 </form>
             </div>
         </div>
-        <a href="{% url 'custom_material_create' %}" class="btn btn-primary w-100 w-lg-auto">
+        <a href="{% url 'learning:custom_material_create' %}" class="btn btn-primary w-100 w-lg-auto">
             <i class="bi bi-plus-circle me-2"></i>Add Material
         </a>
     </div>
@@ -65,13 +65,13 @@
                     <td style="min-width: 120px;">{{ material.subject.name }}</td>
                     <td style="min-width: 120px;">
                         <div class="d-flex gap-1">
-                            <a href="{% url 'material_detail' material.id %}" class="btn-action btn-view" target="_blank" title="View">
+                            <a href="{% url 'learning:material_detail' material.id %}" class="btn-action btn-view" target="_blank" title="View">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <a href="{% url 'custom_material_edit' material.id %}" class="btn-action btn-edit" title="Edit">
+                            <a href="{% url 'learning:custom_material_edit' material.id %}" class="btn-action btn-edit" title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <a href="{% url 'custom_material_delete' material.id %}" class="btn-action btn-delete" title="Delete">
+                            <a href="{% url 'learning:custom_material_delete' material.id %}" class="btn-action btn-delete" title="Delete">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </div>

@@ -12,7 +12,7 @@
                 <input type="text" name="q" placeholder="Search students..." value="{{ query }}" class="w-100">
             </form>
         </div>
-        <a href="{% url 'custom_export_data' %}?type=students" class="btn btn-success w-100 w-md-auto">
+        <a href="{% url 'learning:custom_export_data' %}?type=students" class="btn btn-success w-100 w-md-auto">
             <i class="bi bi-download me-2"></i>Export CSV
         </a>
     </div>
@@ -48,7 +48,7 @@
                         <span class="badge bg-secondary">{{ student.registration_number }}</span>
                     </td>
                     <td style="min-width: 100px;">
-                        <a href="{% url 'custom_student_detail' student.id %}" class="btn-action btn-view" title="View Details">
+                        <a href="{% url 'learning:custom_student_detail' student.id %}" class="btn-action btn-view" title="View Details">
                             <i class="bi bi-eye"></i>
                         </a>
                     </td>
