@@ -606,7 +606,7 @@
                 
                 <div class="menu-section">
                     <div class="menu-section-title">Content Management</div>
-                    <a href="{% url learning:'custom_subject_list' %}" class="menu-item {% if 'subject' in request.path %}active{% endif %}">
+                    <a href="{% url 'learning:custom_subject_list' %}" class="menu-item {% if 'subject' in request.path %}active{% endif %}">
                         <i class="bi bi-bookmark-fill"></i>
                         <span>Subjects</span>
                     </a>
