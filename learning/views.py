@@ -1,4 +1,4 @@
-# views.py - Updated with improved exam modes and navigation
+# views.py - Top section with imports
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
@@ -13,15 +13,25 @@ from .models import (
     Option, Explanation, Exam, Answer, StudentProgress
 )
 from .forms import MaterialUploadForm, QuestionForm, StudentRegistrationForm, StudentLoginForm, CustomPasswordResetForm
-import PyPDF2
-from PIL import Image
-import pytesseract
-import io
 from django.views.decorators.http import require_http_methods
 import json
 import cloudinary
 import cloudinary.uploader
 from io import BytesIO
+
+# PDF processing (works on Vercel)
+try:
+    import PyPDF2
+    PDF_SUPPORT = True
+except ImportError:
+    PDF_SUPPORT = False
+
+# Image processing (basic support only - no OCR on Vercel)
+try:
+    from PIL import Image
+    IMAGE_SUPPORT = True
+except ImportError:
+    IMAGE_SUPPORT = False
 
 # Home and Dashboard Views
 def home(request):
