@@ -10,14 +10,16 @@
         padding: 2rem;
         border-radius: 15px;
         margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
     }
 
     .score-card {
-        background: white;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 15px;
         padding: 2rem;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 12px var(--shadow);
         margin-bottom: 2rem;
     }
 
@@ -33,6 +35,7 @@
         font-size: 3rem;
         font-weight: 700;
         position: relative;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
 
     .score-circle.excellent {
@@ -63,11 +66,18 @@
     }
 
     .stat-box {
-        background: white;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         padding: 1.5rem;
         border-radius: 15px;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 12px var(--shadow);
+        transition: all 0.3s;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px var(--shadow);
     }
 
     .stat-icon {
@@ -79,49 +89,55 @@
         font-size: 2rem;
         font-weight: 700;
         margin-bottom: 0.25rem;
+        color: var(--text-primary);
     }
 
     .question-review-card {
-        background: white;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 15px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 12px var(--shadow);
+        transition: all 0.3s;
+    }
+
+    .question-review-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px var(--shadow);
     }
 
     .question-review-card.correct {
-        border-left: 5px solid #10b981;
+        border-left: 5px solid var(--success-color);
     }
 
     .question-review-card.incorrect {
-        border-left: 5px solid #ef4444;
+        border-left: 5px solid var(--danger-color);
     }
 
     .answer-option {
-        background: #f8fafc;
+        background: var(--card-bg);
+        border: 2px solid var(--border);
         padding: 1rem;
         border-radius: 10px;
         margin-bottom: 0.75rem;
-        border: 2px solid #e5e7eb;
         position: relative;
+        transition: all 0.3s;
     }
 
-    /* User's selected answer (wrong) */
     .answer-option.selected-wrong {
-        background: #fee2e2;
-        border-color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+        border-color: var(--danger-color);
     }
 
-    /* Correct answer */
     .answer-option.is-correct {
-        background: #d1fae5;
-        border-color: #10b981;
+        background: rgba(16, 185, 129, 0.1);
+        border-color: var(--success-color);
     }
 
-    /* User's selected answer (correct) */
     .answer-option.selected-correct {
-        background: #d1fae5;
-        border-color: #10b981;
+        background: rgba(16, 185, 129, 0.1);
+        border-color: var(--success-color);
     }
 
     .option-label-indicator {
@@ -130,32 +146,41 @@
         justify-content: center;
         width: 35px;
         height: 35px;
-        background: white;
-        border: 2px solid #cbd5e1;
+        background: var(--card-bg);
+        border: 2px solid var(--border);
         border-radius: 50%;
         font-weight: 700;
         margin-right: 1rem;
         flex-shrink: 0;
+        color: var(--text-primary);
     }
 
     .answer-option.is-correct .option-label-indicator {
-        background: #10b981;
+        background: var(--success-color);
         color: white;
-        border-color: #10b981;
+        border-color: var(--success-color);
     }
 
     .answer-option.selected-wrong .option-label-indicator {
-        background: #ef4444;
+        background: var(--danger-color);
         color: white;
-        border-color: #ef4444;
+        border-color: var(--danger-color);
     }
 
     .explanation-box {
-        background: #f0f9ff;
-        border-left: 4px solid #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+        border-left: 4px solid var(--info-color);
         padding: 1.5rem;
         border-radius: 10px;
         margin-top: 1rem;
+    }
+
+    .explanation-box h6 {
+        color: var(--text-primary);
+    }
+
+    .explanation-box p {
+        color: var(--text-secondary);
     }
 
     .grade-label {
@@ -167,23 +192,23 @@
     }
 
     .grade-excellent {
-        background: #d1fae5;
-        color: #065f46;
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--success-color);
     }
 
     .grade-good {
-        background: #dbeafe;
-        color: #1e40af;
+        background: rgba(59, 130, 246, 0.2);
+        color: var(--info-color);
     }
 
     .grade-average {
-        background: #fef3c7;
-        color: #78350f;
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--warning-color);
     }
 
     .grade-poor {
-        background: #fee2e2;
-        color: #991b1b;
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger-color);
     }
 
     .answer-indicator {
@@ -192,6 +217,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        flex-wrap: wrap;
     }
 
     .indicator-badge {
@@ -203,13 +229,35 @@
     }
 
     .badge-your-answer {
-        background: #dbeafe;
-        color: #1e40af;
+        background: rgba(59, 130, 246, 0.2);
+        color: var(--info-color);
     }
 
     .badge-correct-answer {
-        background: #d1fae5;
-        color: #065f46;
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--success-color);
+    }
+
+    @media (max-width: 768px) {
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            font-size: 2.5rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+        }
+
+        .answer-indicator {
+            margin-left: 0;
+            padding-left: 0;
+            margin-top: 0.5rem;
+        }
     }
 </style>
 {% endblock %}
@@ -227,7 +275,6 @@
     </div>
 </div>
 
-<!-- Results Header -->
 <div class="results-header">
     <div class="row align-items-center">
         <div class="col-md-8">
@@ -239,10 +286,10 @@
                 {% if exam.mode == 'exam' %}
                 <i class="bi bi-file-earmark-text me-1"></i>Exam Mode
                 {% else %}
-                <i class="bi bi-lightbulb me-1"></i>Test Mode
+                <i class="bi bi-lightbulb me-1"></i>Practice Mode
                 {% endif %}
                 <span class="mx-2">|</span>
-                Completed on {{ exam.submitted_at|date:"F d, Y \a\t h:i A" }}
+                <i class="bi bi-calendar me-1"></i>{{ exam.submitted_at|date:"F d, Y \a\t h:i A" }}
             </small>
         </div>
         <div class="col-md-4 text-md-end mt-3 mt-md-0">
@@ -253,7 +300,6 @@
     </div>
 </div>
 
-<!-- Score Card -->
 <div class="row">
     <div class="col-lg-4 mb-4">
         <div class="score-card">
@@ -265,13 +311,13 @@
             </div>
             <span class="grade-label {% if exam.score >= 70 %}grade-excellent{% elif exam.score >= 60 %}grade-good{% elif exam.score >= 50 %}grade-average{% else %}grade-poor{% endif %}">
                 {% if exam.score >= 70 %}
-                Excellent! 🎉
+                <i class="bi bi-trophy-fill me-1"></i>Excellent!
                 {% elif exam.score >= 60 %}
-                Good Job! 👍
+                <i class="bi bi-hand-thumbs-up-fill me-1"></i>Good Job!
                 {% elif exam.score >= 50 %}
-                Fair 📚
+                <i class="bi bi-book-fill me-1"></i>Fair
                 {% else %}
-                Needs Improvement 📖
+                <i class="bi bi-arrow-up-circle-fill me-1"></i>Keep Trying
                 {% endif %}
             </span>
         </div>
@@ -322,7 +368,6 @@
     </div>
 </div>
 
-<!-- Question Review -->
 <div class="row">
     <div class="col-12">
         <h3 class="fw-bold mb-3">
@@ -331,7 +376,7 @@
 
         {% for item in questions_data %}
         <div class="question-review-card {% if item.is_correct %}correct{% else %}incorrect{% endif %}">
-            <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
                 <h5 class="mb-0">
                     Question {{ forloop.counter }}
                     <span class="badge {% if item.is_correct %}bg-success{% else %}bg-danger{% endif %} ms-2">
@@ -345,7 +390,7 @@
                 <span class="badge bg-primary">{{ item.question.marks }} mark(s)</span>
             </div>
 
-            <p class="mb-3"><strong>{{ item.question.question_text }}</strong></p>
+            <p class="mb-3" style="color: var(--text-primary);"><strong>{{ item.question.question_text }}</strong></p>
 
             <div class="options-review">
                 {% for option in item.all_options %}
@@ -353,9 +398,9 @@
                     {% if option.id == item.selected_option.id and option.is_correct %}selected-correct{% endif %}
                     {% if option.id == item.selected_option.id and not option.is_correct %}selected-wrong{% endif %}
                     {% if option.is_correct and option.id != item.selected_option.id %}is-correct{% endif %}">
-                    <div class="d-flex align-items-start">
+                    <div class="d-flex align-items-start flex-wrap">
                         <span class="option-label-indicator">{{ option.option_label }}</span>
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1" style="color: var(--text-primary);">
                             {{ option.option_text }}
                         </div>
                         <div class="answer-indicator">
@@ -392,7 +437,7 @@
             {% elif not show_explanations %}
             <div class="alert alert-info mt-3">
                 <i class="bi bi-info-circle me-2"></i>
-                <small>Explanations are only available in Test Mode. Try Test Mode to see detailed explanations!</small>
+                <small>Explanations are only available in Practice Mode. Try Practice Mode to see detailed explanations!</small>
             </div>
             {% endif %}
         </div>
@@ -400,16 +445,15 @@
     </div>
 </div>
 
-<!-- Action Buttons -->
 <div class="row mt-4">
     <div class="col-12 text-center">
-        <a href="{% url 'learning:exam_years_list' exam.exam_year.subject.id %}" class="btn btn-primary btn-lg me-2">
+        <a href="{% url 'learning:exam_years_list' exam.exam_year.subject.id %}" class="btn btn-primary btn-lg me-2 mb-2">
             <i class="bi bi-arrow-repeat me-2"></i>Take Another Exam
         </a>
-        <a href="{% url learning:'materials_by_subject' exam.exam_year.subject.id %}" class="btn btn-outline-primary btn-lg me-2">
+        <a href="{% url 'learning:materials_by_subject' exam.exam_year.subject.id %}" class="btn btn-outline-primary btn-lg me-2 mb-2">
             <i class="bi bi-book me-2"></i>Study Materials
         </a>
-        <a href="{% url 'learning:dashboard' %}" class="btn btn-outline-secondary btn-lg">
+        <a href="{% url 'learning:dashboard' %}" class="btn btn-outline-secondary btn-lg mb-2">
             <i class="bi bi-speedometer2 me-2"></i>Dashboard
         </a>
     </div>
