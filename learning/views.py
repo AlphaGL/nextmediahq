@@ -1,10 +1,10 @@
-# views.py - Top section with imports
+# views.py - Updated with fixes for exam submission and faster practice mode
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Avg, Count, Q
@@ -274,7 +274,7 @@ def submit_answer(request, exam_id):
             }
         )
         
-        # For test mode, return correct answer and explanation
+        # For test mode, return correct answer and explanation - OPTIMIZED
         response_data = {
             'success': True,
             'is_correct': answer.is_correct,
@@ -283,16 +283,24 @@ def submit_answer(request, exam_id):
         }
         
         if exam.mode == 'test':
-            correct_option = question.options.filter(is_correct=True).first()
-            response_data['correct_option_id'] = correct_option.id if correct_option else None
+            # Get correct option efficiently
+            correct_option = question.options.filter(is_correct=True).values('id').first()
+            response_data['correct_option_id'] = correct_option['id'] if correct_option else None
             
+            # Get explanation efficiently - only fetch what's needed
             try:
-                explanation = question.explanation
-                response_data['explanation'] = {
-                    'text': explanation.explanation_text,
-                    'resources': explanation.additional_resources
-                }
-            except Explanation.DoesNotExist:
+                explanation = Explanation.objects.filter(question=question).values(
+                    'explanation_text', 'additional_resources'
+                ).first()
+                
+                if explanation:
+                    response_data['explanation'] = {
+                        'text': explanation['explanation_text'],
+                        'resources': explanation['additional_resources'] or ''
+                    }
+                else:
+                    response_data['explanation'] = None
+            except Exception:
                 response_data['explanation'] = None
         
         return JsonResponse(response_data)
@@ -309,16 +317,11 @@ def submit_exam(request, exam_id):
         if exam.is_completed:
             return JsonResponse({'error': 'Exam already completed'}, status=400)
         
-        # Check if all questions are answered
+        # Get counts but allow submission regardless
         total_questions = exam.exam_year.questions.count()
         answered_questions = exam.answers.count()
         
-        if answered_questions < total_questions:
-            return JsonResponse({
-                'error': f'You have only answered {answered_questions} out of {total_questions} questions. Please answer all questions before submitting.',
-                'confirm_needed': True
-            }, status=400)
-        
+        # Mark exam as completed
         exam.is_completed = True
         exam.submitted_at = timezone.now()
         exam.calculate_score()
@@ -340,12 +343,17 @@ def submit_exam(request, exam_id):
         progress.average_score = avg_score or 0
         progress.save()
         
+        # Use reverse() to generate proper URL - convert UUID to string
         return JsonResponse({
             'success': True,
-            'redirect_url': f'/exam/results/{exam.exam_id}/'
+            'redirect_url': reverse('learning:exam_results', kwargs={'exam_id': str(exam.exam_id)})
         })
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        # Log the actual error for debugging
+        import traceback
+        print(f"Error in submit_exam: {str(e)}")
+        print(traceback.format_exc())
+        return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
 
 
 @login_required

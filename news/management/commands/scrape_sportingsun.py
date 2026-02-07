@@ -10,7 +10,7 @@ import time
 from urllib.parse import urljoin
 
 class Command(BaseCommand):
-    help = 'Scrape sports news from Sporting Sun'
+    help = 'Scrape sports news from Sporting Sun with automatic category detection'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -26,16 +26,118 @@ class Command(BaseCommand):
             help='Maximum number of pages to scrape (default: 3)'
         )
         parser.add_argument(
-            '--category',
+            '--default-category',
             type=str,
             default='sports',
-            help='Category slug to assign scraped news (default: sports)'
+            help='Default category if none detected (default: sports)'
         )
+
+    def get_or_create_category(self, category_name):
+        """Get or create category, checking if it exists first"""
+        # Normalize category name
+        category_name = category_name.strip().title()
+        category_slug = re.sub(r'[^\w\s-]', '', category_name.lower())
+        category_slug = re.sub(r'[-\s]+', '-', category_slug)
+        
+        # Check if category already exists (by slug or name)
+        category = Category.objects.filter(slug=category_slug).first()
+        
+        if category:
+            return category
+        
+        # Check by name (case-insensitive)
+        category = Category.objects.filter(name__iexact=category_name).first()
+        
+        if category:
+            return category
+        
+        # Create new category
+        category = Category.objects.create(
+            name=category_name,
+            slug=category_slug,
+            is_active=True
+        )
+        self.stdout.write(self.style.SUCCESS(f"      ✨ Created new category: {category.name}"))
+        return category
+
+    def map_wordpress_category(self, category_id, category_name):
+        """Map WordPress category ID/name to our category structure"""
+        # Sporting Sun category mapping based on their WordPress structure
+        category_mapping = {
+            # Football-related
+            4: 'Football',
+            7: 'EPL',  # English Premier League
+            8: 'Transfer News',
+            26: 'La Liga',
+            27: 'Serie A',
+            28: 'Bundesliga',
+            29: 'Champions League',
+            30: 'Europa League',
+            31: 'World Cup',
+            
+            # Other sports
+            5: 'Basketball',
+            6: 'Boxing',
+            9: 'Tennis',
+            10: 'Athletics',
+            11: 'Cricket',
+            12: 'Rugby',
+            13: 'Formula 1',
+            14: 'MMA',
+            15: 'Golf',
+            
+            # General
+            1: 'Sports',  # General sports
+            2: 'News',
+            3: 'Features',
+        }
+        
+        # Try mapping by ID first
+        if category_id in category_mapping:
+            return category_mapping[category_id]
+        
+        # Try to extract from category name
+        if category_name:
+            name_lower = category_name.lower()
+            
+            # Football/Soccer keywords
+            if any(keyword in name_lower for keyword in ['football', 'soccer', 'premier league', 'epl']):
+                if 'premier' in name_lower or 'epl' in name_lower:
+                    return 'EPL'
+                elif 'transfer' in name_lower:
+                    return 'Transfer News'
+                elif 'champions' in name_lower:
+                    return 'Champions League'
+                else:
+                    return 'Football'
+            
+            # Basketball
+            if 'basketball' in name_lower or 'nba' in name_lower:
+                return 'Basketball'
+            
+            # Boxing/MMA
+            if 'boxing' in name_lower:
+                return 'Boxing'
+            if 'mma' in name_lower or 'ufc' in name_lower:
+                return 'MMA'
+            
+            # Tennis
+            if 'tennis' in name_lower:
+                return 'Tennis'
+            
+            # Athletics
+            if 'athletics' in name_lower or 'track' in name_lower:
+                return 'Athletics'
+            
+            # Use the category name as-is if it doesn't match
+            return category_name.title()
+        
+        return 'Sports'  # Default fallback
 
     def handle(self, *args, **options):
         start_page = options['start_page']
         max_pages = options['max_pages']
-        category_slug = options['category']
+        default_category_name = options['default_category']
         
         # Calculate end page
         end_page = start_page + max_pages - 1
@@ -52,23 +154,20 @@ class Command(BaseCommand):
         if created:
             self.stdout.write(self.style.SUCCESS(f"✅ Created scraper user: {scraper_user.username}"))
         
-        # Get or create Sports category
-        category, created = Category.objects.get_or_create(
-            slug=category_slug,
-            defaults={'name': category_slug.replace('-', ' ').title()}
-        )
+        # Get or create default category
+        default_category = self.get_or_create_category(default_category_name)
         
-        if created:
-            self.stdout.write(self.style.SUCCESS(f"✅ Created category: {category.name}"))
-        
-        self.stdout.write(self.style.SUCCESS(f"🚀 Starting Sporting Sun scraper - Category: {category.name}"))
+        self.stdout.write(self.style.SUCCESS(f"🚀 Starting Sporting Sun scraper with auto-category detection"))
         self.stdout.write(self.style.SUCCESS(f"📄 Scraping pages {start_page} to {end_page}"))
+        self.stdout.write(self.style.SUCCESS(f"🏷️  Default category: {default_category.name}"))
         
         base_url = "https://sportingsun.ng"
         api_url = "https://sportingsun.ng/wp-json/wp/v2/posts"
         
         total_scraped = 0
         total_skipped = 0
+        categories_created = set()
+        category_stats = {}
         
         for page in range(start_page, end_page + 1):
             self.stdout.write(f"\n📄 Fetching page {page}...")
@@ -106,6 +205,45 @@ class Command(BaseCommand):
                             self.stdout.write(self.style.WARNING(f"⏭️ Skipped (exists): {title[:50]}..."))
                             total_skipped += 1
                             continue
+                        
+                        self.stdout.write(f"\n   📰 Processing: {title[:60]}...")
+                        
+                        # Get categories for this post
+                        post_categories = post.get('categories', [])
+                        category = None
+                        category_name = None
+                        
+                        # If post has categories, try to map them
+                        if post_categories and '_embedded' in post and 'wp:term' in post['_embedded']:
+                            try:
+                                terms = post['_embedded']['wp:term']
+                                if terms and len(terms) > 0:
+                                    # Get the first category
+                                    first_category = terms[0][0] if isinstance(terms[0], list) and terms[0] else None
+                                    
+                                    if first_category:
+                                        wp_category_id = first_category.get('id')
+                                        wp_category_name = first_category.get('name', '')
+                                        
+                                        self.stdout.write(f"      🏷️  WP Category: {wp_category_name} (ID: {wp_category_id})")
+                                        
+                                        # Map to our category
+                                        category_name = self.map_wordpress_category(wp_category_id, wp_category_name)
+                                        self.stdout.write(f"      🏷️  Mapped to: {category_name}")
+                            except (KeyError, IndexError, TypeError) as e:
+                                self.stdout.write(f"      ⚠️ Category extraction error: {e}")
+                        
+                        # Get or create the category
+                        if category_name:
+                            category = self.get_or_create_category(category_name)
+                            if category.name not in categories_created:
+                                categories_created.add(category.name)
+                        else:
+                            category = default_category
+                            self.stdout.write(f"      🏷️  Using default category: {category.name}")
+                        
+                        # Track category usage
+                        category_stats[category.name] = category_stats.get(category.name, 0) + 1
                         
                         # Get content
                         content_html = post['content']['rendered']
@@ -168,14 +306,12 @@ class Command(BaseCommand):
                             slug = f"{original_slug}-{counter}"
                             counter += 1
                         
-                        # Determine if should be featured (e.g., posts from categories 4, 7, 8)
-                        is_featured = False
-                        post_categories = post.get('categories', [])
-                        featured_cat_ids = [4, 7, 8]  # Football, EPL, Transfer News based on the API
-                        if any(cat_id in featured_cat_ids for cat_id in post_categories):
-                            is_featured = True
+                        # Determine if should be featured
+                        # Feature posts from important categories
+                        featured_categories = ['Football', 'EPL', 'Transfer News', 'Champions League']
+                        is_featured = category.name in featured_categories
                         
-                        # Create news entry
+                        # Create news entry - ENSURE is_published is True
                         news = News.objects.create(
                             title=title,
                             slug=slug,
@@ -185,18 +321,20 @@ class Command(BaseCommand):
                             author=author,
                             published_by=scraper_user,
                             published_date=published_date,
-                            is_published=True,
+                            is_published=True,  # CRITICAL: Set to True
                             is_featured=is_featured,
                             featured_image_url=image_url if image_url else None
                         )
                         
                         # Log image URL
                         if image_url:
-                            self.stdout.write(f"   🖼️ Image URL: {image_url[:60]}...")
+                            self.stdout.write(f"      🖼️ Image URL: {image_url[:60]}...")
                         
                         total_scraped += 1
                         feat_indicator = "⭐" if is_featured else ""
-                        self.stdout.write(self.style.SUCCESS(f"✅ {feat_indicator} Scraped: {title[:60]}..."))
+                        self.stdout.write(self.style.SUCCESS(
+                            f"      ✅ {feat_indicator} Scraped! Category: {category.name}"
+                        ))
                         
                         # Respect rate limiting
                         time.sleep(1)
@@ -229,4 +367,17 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"\n🎉 Scraping complete!"))
         self.stdout.write(self.style.SUCCESS(f"   📊 Total scraped: {total_scraped}"))
         self.stdout.write(self.style.SUCCESS(f"   ⏭️ Total skipped: {total_skipped}"))
-        self.stdout.write(self.style.SUCCESS(f"   ⭐ Featured: {News.objects.filter(category=category, is_featured=True).count()}"))
+        
+        if categories_created:
+            self.stdout.write(self.style.SUCCESS(f"   ✨ New categories created: {', '.join(sorted(categories_created))}"))
+        
+        if category_stats:
+            self.stdout.write(self.style.SUCCESS(f"\n📈 Category Distribution:"))
+            for cat_name, count in sorted(category_stats.items(), key=lambda x: x[1], reverse=True):
+                self.stdout.write(self.style.SUCCESS(f"      {cat_name}: {count} articles"))
+        
+        featured_count = News.objects.filter(
+            published_by=scraper_user,
+            is_featured=True
+        ).count()
+        self.stdout.write(self.style.SUCCESS(f"   ⭐ Featured articles: {featured_count}"))

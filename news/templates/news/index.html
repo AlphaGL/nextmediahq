@@ -5,49 +5,92 @@
 
 {% block content %}
 <style>
-    /* CSS Variables for better theming */
+    /* ============================================
+       CSS CUSTOM PROPERTIES - Design System
+       ============================================ */
     :root {
+        /* Transitions */
+        --transition-fast: 0.2s ease;
         --transition-base: 0.3s ease;
         --transition-smooth: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-        --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+        
+        /* Shadows */
+        --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.06);
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+        --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.15);
+        
+        /* Border Radius */
+        --radius-xs: 4px;
         --radius-sm: 8px;
         --radius-md: 12px;
         --radius-lg: 16px;
+        --radius-xl: 24px;
+        --radius-full: 9999px;
+        
+        /* Spacing */
         --spacing-xs: 0.5rem;
         --spacing-sm: 1rem;
         --spacing-md: 1.5rem;
         --spacing-lg: 2rem;
         --spacing-xl: 3rem;
+        --spacing-2xl: 4rem;
+        
+        /* Brand Colors */
+        --accent-primary: #64FFDA;
+        --accent-secondary: #7C3AED;
+        --accent-tertiary: #F59E0B;
+        --whatsapp: #25D366;
+        --whatsapp-dark: #1ebe5d;
     }
 
-    /* News Ticker - Enhanced */
+    /* ============================================
+       GLOBAL RESETS & BASE STYLES
+       ============================================ */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* ============================================
+       NEWS TICKER - Breaking News Banner
+       ============================================ */
     .news-ticker-wrapper {
-        background: var(--secondary-bg);
-        border-bottom: 1px solid var(--border);
+        background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+        border-bottom: 2px solid var(--border);
         padding: 0.875rem 0;
         overflow: hidden;
         position: relative;
+        box-shadow: var(--shadow-sm);
     }
 
     .news-ticker-wrapper::before {
         content: 'BREAKING';
         position: absolute;
         left: 0;
-        background: var(--accent);
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: white;
-        padding: 0.5rem 1rem;
-        font-weight: 700;
+        padding: 0.6rem 1.2rem;
+        font-weight: 800;
         font-size: 0.75rem;
-        z-index: 1;
-        clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+        z-index: 10;
+        clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
+        letter-spacing: 1px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.85; }
     }
 
     .news-ticker {
         display: flex;
-        animation: scroll 40s linear infinite;
-        padding-left: 120px;
+        animation: scroll 45s linear infinite;
+        padding-left: 140px;
+        gap: 4rem;
     }
 
     .news-ticker:hover {
@@ -55,18 +98,25 @@
     }
 
     .news-ticker-item {
-        padding: 0 3rem;
         white-space: nowrap;
         color: var(--text-secondary);
         font-size: 0.9rem;
-        font-weight: 500;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 
     .news-ticker-item::before {
-        content: '•';
+        content: '●';
         color: var(--accent);
-        margin-right: 1rem;
-        font-weight: 700;
+        font-size: 0.6rem;
+        animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
     }
 
     @keyframes scroll {
@@ -74,16 +124,19 @@
         100% { transform: translateX(-50%); }
     }
 
-    /* Hero Section - Enhanced Gradient */
+    /* ============================================
+       HERO SECTION - Main Banner
+       ============================================ */
     .hero-section {
         background: linear-gradient(135deg, 
             var(--secondary-bg) 0%, 
-            var(--primary-bg) 50%,
+            var(--primary-bg) 40%,
             var(--secondary-bg) 100%
         );
-        padding: clamp(2rem, 5vw, 4rem) var(--spacing-sm);
+        padding: clamp(3rem, 6vw, 5rem) var(--spacing-sm);
         position: relative;
         overflow: hidden;
+        border-bottom: 1px solid var(--border);
     }
 
     .hero-section::before {
@@ -94,32 +147,33 @@
         width: 200%;
         height: 200%;
         background: radial-gradient(
-            circle at center,
-            rgba(100, 255, 218, 0.08) 0%,
-            transparent 70%
+            circle at 30% 40%,
+            rgba(100, 255, 218, 0.1) 0%,
+            transparent 60%
         );
-        animation: heroGlow 8s ease-in-out infinite;
+        animation: heroGlow 12s ease-in-out infinite;
         pointer-events: none;
     }
 
     @keyframes heroGlow {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(5%, 5%) scale(1.1); }
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        33% { transform: translate(5%, 5%) rotate(120deg); }
+        66% { transform: translate(-5%, 10%) rotate(240deg); }
     }
 
     .hero-content {
-        max-width: 1200px;
+        max-width: 1000px;
         margin: 0 auto;
         text-align: center;
         position: relative;
         z-index: 1;
     }
 
-    .hero-content h1 {
-        font-size: clamp(1.75rem, 5vw, 3rem);
-        font-weight: 800;
+    .hero-content h2 {
+        font-size: clamp(1.75rem, 5vw, 3.25rem);
+        font-weight: 900;
         margin-bottom: var(--spacing-md);
-        line-height: 1.2;
+        line-height: 1.15;
         background: linear-gradient(135deg, 
             var(--text-primary) 0%, 
             var(--accent) 50%,
@@ -129,7 +183,8 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        animation: shimmer 3s linear infinite;
+        animation: shimmer 4s linear infinite;
+        letter-spacing: -0.5px;
     }
 
     @keyframes shimmer {
@@ -139,28 +194,54 @@
     .hero-content p {
         font-size: clamp(1rem, 2.5vw, 1.25rem);
         color: var(--text-secondary);
-        margin-bottom: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
         max-width: 700px;
         margin-left: auto;
         margin-right: auto;
-        line-height: 1.6;
+        line-height: 1.7;
+        font-weight: 500;
     }
 
+    /* Enhanced WhatsApp Button */
     .hero-cta {
-        background: linear-gradient(135deg, #25D366 0%, #1ebe5d 100%);
-        color: white;
-        padding: 1rem 2.5rem;
-        border-radius: 50px;
-        text-decoration: none;
-        font-size: 1rem;
-        font-weight: 700;
+        position: relative;
         display: inline-flex;
         align-items: center;
         gap: 0.75rem;
-        transition: all var(--transition-base);
-        box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
-        position: relative;
+        padding: 1rem 2.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+        background: linear-gradient(135deg, var(--whatsapp) 0%, var(--whatsapp-dark) 100%);
+        border-radius: var(--radius-full);
+        border: 2px solid rgba(37, 211, 102, 0.3);
         overflow: hidden;
+        transition: all var(--transition-smooth);
+        box-shadow: 
+            0 8px 24px rgba(37, 211, 102, 0.35),
+            0 0 0 0 rgba(37, 211, 102, 0.5);
+        animation: 
+            pulseGlow 3s ease-in-out infinite,
+            float 3s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% {
+            box-shadow: 
+                0 8px 24px rgba(37, 211, 102, 0.35),
+                0 0 0 0 rgba(37, 211, 102, 0.5);
+        }
+        50% {
+            box-shadow: 
+                0 12px 32px rgba(37, 211, 102, 0.45),
+                0 0 0 8px rgba(37, 211, 102, 0);
+        }
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
     }
 
     .hero-cta::before {
@@ -171,42 +252,60 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.25);
         transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-
-    .hero-cta:hover::before {
-        width: 300px;
-        height: 300px;
+        transition: width 0.6s ease, height 0.6s ease;
     }
 
     .hero-cta:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 12px 32px rgba(37, 211, 102, 0.45);
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 
+            0 15px 40px rgba(37, 211, 102, 0.5),
+            0 0 0 0 rgba(37, 211, 102, 0);
+        border-color: rgba(37, 211, 102, 0.6);
+    }
+
+    .hero-cta:hover::before {
+        width: 400px;
+        height: 400px;
     }
 
     .hero-cta i {
-        font-size: 1.25rem;
+        font-size: 1.35rem;
+        animation: iconBounce 2s ease-in-out infinite;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    @keyframes iconBounce {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        25% { transform: rotate(-10deg) scale(1.1); }
+        75% { transform: rotate(10deg) scale(1.1); }
+    }
+
+    .hero-cta span {
+        position: relative;
         z-index: 1;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        letter-spacing: 0.3px;
     }
 
-    /* Container */
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 var(--spacing-sm);
+    /* ============================================
+       FEATURED SECTION - Top Stories
+       ============================================ */
+    .featured-section {
+        padding: var(--spacing-2xl) 0;
+        background: var(--primary-bg);
     }
 
-    /* Section Title - Improved */
     .section-title {
-        font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-        font-weight: 800;
-        margin-bottom: var(--spacing-lg);
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 900;
+        margin-bottom: var(--spacing-xl);
         color: var(--text-primary);
         position: relative;
-        padding-bottom: 1rem;
+        padding-bottom: var(--spacing-md);
         display: inline-block;
+        letter-spacing: -0.5px;
     }
 
     .section-title::after {
@@ -217,7 +316,7 @@
         width: 100%;
         height: 4px;
         background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
-        border-radius: 2px;
+        border-radius: var(--radius-xs);
     }
 
     .section-title::before {
@@ -225,37 +324,35 @@
         position: absolute;
         bottom: 0;
         left: 0;
-        width: 60px;
+        width: 70px;
         height: 4px;
         background: var(--accent);
-        border-radius: 2px;
+        border-radius: var(--radius-xs);
         animation: titleSlide 3s ease-in-out infinite;
+        box-shadow: 0 0 10px rgba(100, 255, 218, 0.6);
     }
 
     @keyframes titleSlide {
-        0%, 100% { width: 60px; }
-        50% { width: 120px; }
+        0%, 100% { width: 70px; }
+        50% { width: 140px; }
     }
 
-    /* Featured Section - Enhanced Grid Layout */
-    .featured-section {
-        padding: var(--spacing-xl) 0;
-    }
-
+    /* Featured Grid Layout */
     .featured-grid {
         display: grid;
-        gap: var(--spacing-md);
-        grid-template-columns: 1fr;
+        gap: var(--spacing-xs);
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
     }
 
-    /* Mobile: Hero post full width, rest in 2 columns */
+    /* Hero card spans full width on all screen sizes */
+    .featured-card:first-child {
+        grid-column: 1 / -1;
+    }
+
+    /* Tablet: Better spacing */
     @media (min-width: 480px) {
         .featured-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .featured-card:first-child {
-            grid-column: 1 / -1;
+            gap: var(--spacing-sm);
         }
     }
 
@@ -284,9 +381,10 @@
         }
     }
 
+    /* Featured Card */
     .featured-card {
         background: var(--card-bg);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-lg);
         overflow: hidden;
         transition: all var(--transition-smooth);
         border: 1px solid var(--border);
@@ -294,6 +392,7 @@
         flex-direction: column;
         position: relative;
         height: 100%;
+        box-shadow: var(--shadow-sm);
     }
 
     .featured-card::before {
@@ -311,22 +410,21 @@
     }
 
     .featured-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
         border-color: var(--accent);
     }
 
-    /* Hero card gets more dramatic hover effect */
     .featured-card:first-child:hover {
         transform: translateY(-12px);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
     }
 
     .featured-card:hover::before {
-        opacity: 0.05;
+        opacity: 0.06;
     }
 
-    /* Card Image - Improved Aspect Ratios */
+    /* Card Image */
     .card-image {
         position: relative;
         width: 100%;
@@ -335,7 +433,6 @@
         background: var(--secondary-bg);
     }
 
-    /* Hero card (first child) gets special treatment */
     .featured-card:first-child .card-image {
         aspect-ratio: 21 / 9;
     }
@@ -363,49 +460,57 @@
     }
 
     .featured-card:hover .card-image img {
-        transform: scale(1.08);
+        transform: scale(1.1) rotate(1deg);
     }
 
-    .placeholder-image {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-secondary);
-        background: var(--secondary-bg);
+    .card-image .placeholder-image {
+        background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
     }
 
-    /* Card Content - Better Spacing */
+    /* Card Content */
     .card-content {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        gap: var(--spacing-sm);
+        gap: var(--spacing-xs);
         position: relative;
         z-index: 2;
+        min-height: 0; /* Ensures proper flexbox behavior */
     }
 
-    /* Hero card gets extra padding */
     .featured-card:first-child .card-content {
-        padding: var(--spacing-lg);
+        padding: var(--spacing-md);
+        gap: var(--spacing-sm);
+    }
+
+    @media (min-width: 480px) {
+        .card-content {
+            padding: var(--spacing-sm);
+        }
+
+        .featured-card:first-child .card-content {
+            padding: var(--spacing-lg);
+        }
     }
 
     @media (min-width: 768px) {
         .card-content {
-            padding: var(--spacing-lg);
+            padding: var(--spacing-md);
+            gap: var(--spacing-sm);
         }
 
         .featured-card:first-child .card-content {
             padding: var(--spacing-xl);
+            gap: var(--spacing-md);
         }
     }
 
     @media (min-width: 1024px) {
+        .card-content {
+            padding: var(--spacing-md);
+        }
+
         .featured-card:first-child .card-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -416,96 +521,135 @@
         .featured-card:first-child .card-badges {
             grid-column: 1 / -1;
         }
-    }
 
-    @media (min-width: 1200px) {
-        .card-content {
-            gap: var(--spacing-md);
-        }
-
-        .featured-card:first-child .card-content {
-            gap: var(--spacing-xl);
+        .featured-card:first-child .card-title {
+            grid-column: 1 / -1;
         }
     }
 
+    /* Card Badges */
     .card-badges {
         display: flex;
-        gap: var(--spacing-xs);
+        gap: 0.4rem;
         flex-wrap: wrap;
     }
 
-    .card-category, .card-school {
-        padding: 0.4rem 0.9rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
+    .card-category,
+    .card-school {
+        padding: 0.35rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.65rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         transition: all var(--transition-base);
+        border: 2px solid transparent;
+        white-space: nowrap;
     }
 
-    /* Hero card gets larger badges */
+    @media (min-width: 480px) {
+        .card-category,
+        .card-school {
+            font-size: 0.7rem;
+            padding: 0.4rem 0.85rem;
+        }
+    }
+
     .featured-card:first-child .card-category,
     .featured-card:first-child .card-school {
-        padding: 0.5rem 1.2rem;
-        font-size: 0.85rem;
+        padding: 0.5rem 1.1rem;
+        font-size: 0.75rem;
     }
 
     @media (min-width: 768px) {
+        .card-category,
+        .card-school {
+            font-size: 0.72rem;
+            padding: 0.45rem 0.95rem;
+        }
+
         .featured-card:first-child .card-category,
         .featured-card:first-child .card-school {
-            padding: 0.6rem 1.5rem;
+            padding: 0.6rem 1.3rem;
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .featured-card:first-child .card-category,
+        .featured-card:first-child .card-school {
+            padding: 0.65rem 1.4rem;
             font-size: 0.9rem;
         }
     }
 
     .card-category {
         background: var(--accent);
-        color: white;
+        color: var(--primary-bg);
+        box-shadow: 0 4px 12px rgba(100, 255, 218, 0.3);
     }
 
     .card-school {
         background: var(--accent-secondary);
         color: white;
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
     }
 
     .featured-card:hover .card-category,
     .featured-card:hover .card-school {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(100, 255, 218, 0.4);
     }
 
+    .featured-card:hover .card-school {
+        box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+    }
+
+    /* Card Title */
     .card-title {
-        font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+        font-size: clamp(0.85rem, 2vw, 1.1rem);
         font-weight: 700;
-        line-height: 1.35;
-        flex-grow: 1;
+        line-height: 1.4;
         margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 3.6em; /* Ensures consistent height for 3 lines */
     }
 
-    /* Hero card gets larger title */
     .featured-card:first-child .card-title {
-        font-size: clamp(1.35rem, 3.5vw, 2.5rem);
-        line-height: 1.25;
+        font-size: clamp(1.25rem, 3.5vw, 2.25rem);
+        line-height: 1.3;
         font-weight: 800;
+        -webkit-line-clamp: 4;
+        min-height: auto;
+    }
+
+    @media (min-width: 480px) {
+        .card-title {
+            font-size: clamp(0.9rem, 2vw, 1.15rem);
+        }
     }
 
     @media (min-width: 768px) {
         .card-title {
+            font-size: clamp(0.95rem, 2vw, 1.25rem);
             line-height: 1.45;
         }
 
         .featured-card:first-child .card-title {
-            line-height: 1.3;
+            line-height: 1.35;
         }
     }
 
-    @media (min-width: 1200px) {
+    @media (min-width: 1024px) {
         .card-title {
-            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            font-size: clamp(1rem, 1.8vw, 1.3rem);
         }
 
         .featured-card:first-child .card-title {
-            font-size: clamp(1.75rem, 3vw, 2.75rem);
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
         }
     }
 
@@ -520,38 +664,59 @@
         color: var(--accent);
     }
 
+    /* Read More Link */
     .read-more {
         color: var(--accent);
         text-decoration: none;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         font-weight: 700;
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.4rem;
         transition: all var(--transition-base);
         align-self: flex-start;
+        margin-top: auto; /* Pushes to bottom of flex container */
     }
 
-    /* Hero card gets larger read more button */
+    @media (min-width: 480px) {
+        .read-more {
+            font-size: 0.85rem;
+        }
+    }
+
     .featured-card:first-child .read-more {
-        font-size: 0.7rem;
-        padding: 0.65rem 1.0rem;
+        font-size: 0.9rem;
+        padding: 0.7rem 1.5rem;
         background: var(--accent);
-        color: white;
-        border-radius: 50px;
-        gap: 0.75rem;
-    }
-
-    .featured-card:first-child .read-more:hover {
-        background: var(--text-primary);
-        transform: translateX(5px);
+        color: var(--primary-bg);
+        border-radius: var(--radius-full);
+        gap: 0.6rem;
+        box-shadow: 0 4px 16px rgba(100, 255, 218, 0.3);
     }
 
     @media (min-width: 768px) {
-        .featured-card:first-child .read-more {
-            font-size: 1.1rem;
-            padding: 0.875rem 2rem;
+        .read-more {
+            font-size: 0.9rem;
         }
+
+        .featured-card:first-child .read-more {
+            font-size: 1rem;
+            padding: 0.85rem 2rem;
+            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.4);
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .featured-card:first-child .read-more {
+            font-size: 1.05rem;
+            padding: 0.95rem 2.25rem;
+        }
+    }
+
+    .featured-card:first-child .read-more:hover {
+        background: var(--accent-secondary);
+        transform: translateX(5px);
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5);
     }
 
     .read-more::after {
@@ -561,545 +726,45 @@
     }
 
     .read-more:hover {
-        gap: 0.75rem;
+        gap: 0.6rem;
+        color: var(--accent-secondary);
     }
 
     .read-more:hover::after {
         transform: translateX(5px);
     }
 
-    /* Categories Section */
+    /* Featured Card Animation */
+    .featured-card {
+        animation: fadeInUp 0.6s ease backwards;
+    }
+
+    .featured-card:nth-child(1) { animation-delay: 0.1s; }
+    .featured-card:nth-child(2) { animation-delay: 0.2s; }
+    .featured-card:nth-child(3) { animation-delay: 0.3s; }
+    .featured-card:nth-child(4) { animation-delay: 0.4s; }
+    .featured-card:nth-child(5) { animation-delay: 0.5s; }
+    .featured-card:nth-child(6) { animation-delay: 0.6s; }
+
+    /* ============================================
+       CATEGORIES SECTION - News Categories
+       ============================================ */
     .categories-section {
-        padding: var(--spacing-lg) 0 var(--spacing-xl);
+        padding: var(--spacing-2xl) 0;
         background: linear-gradient(180deg, transparent 0%, var(--secondary-bg) 100%);
     }
 
-    .news-grid {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-lg);
-    }
-
-    .news-category {
-        background: var(--card-bg);
-        border-radius: var(--radius-md);
-        padding: var(--spacing-md);
-        border: 1px solid var(--border);
-        transition: all var(--transition-base);
-    }
-
-    @media (min-width: 768px) {
-        .news-category {
-            padding: var(--spacing-lg);
-        }
-    }
-
-    .news-category:hover {
-        box-shadow: var(--shadow-md);
-        border-color: var(--accent);
-    }
-
-    .category-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--spacing-md);
-        padding-bottom: var(--spacing-sm);
-        border-bottom: 2px solid var(--border);
-    }
-
-    .category-header h2 {
-        font-size: clamp(1rem, 2.5vw, 1.25rem);
-        font-weight: 800;
-        color: var(--text-primary);
-        letter-spacing: 1px;
-        position: relative;
-    }
-
-    .view-all {
-        color: var(--accent);
-        text-decoration: none;
-        font-size: 0.875rem;
-        font-weight: 700;
-        transition: all var(--transition-base);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-
-    .view-all::after {
-        content: '→';
-        transition: transform var(--transition-base);
-    }
-
-    .view-all:hover {
-        gap: 0.5rem;
-    }
-
-    .view-all:hover::after {
-        transform: translateX(3px);
-    }
-
-    /* Category News Container - Improved 3-2 Layout */
-    .category-news-container {
-        display: grid;
-        gap: var(--spacing-md);
-        grid-template-columns: 1fr;
-    }
-
-    /* Mobile: Stack vertically */
-    @media (max-width: 767px) {
-        .category-news-container {
-            gap: var(--spacing-sm);
-        }
-    }
-
-    /* Tablet: 2 columns (Main news takes full width, sub news in row) */
-    @media (min-width: 768px) and (max-width: 1023px) {
-        .category-news-container {
-            grid-template-columns: 1fr;
-        }
-
-        .sub-news {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--spacing-sm);
-        }
-    }
-
-    /* Desktop: 3-2 layout (Main news left, 2 columns of sub news right) */
-    @media (min-width: 1024px) {
-        .category-news-container {
-            grid-template-columns: 1.5fr 1fr;
-            gap: var(--spacing-lg);
-        }
-
-        .sub-news {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
-        }
-    }
-
-    .main-news {
-        width: 100%;
-    }
-
-    .sub-news-wrapper {
-        width: 100%;
-    }
-
-    /* News Cards - Enhanced */
-    .news-card {
-        background: var(--secondary-bg);
-        border-radius: var(--radius-sm);
-        overflow: hidden;
-        transition: all var(--transition-smooth);
-        border: 1px solid var(--border);
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .news-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--accent);
-    }
-
-    .news-image {
-        width: 100%;
-        aspect-ratio: 16 / 10;
-        position: relative;
-        overflow: hidden;
-        background: var(--primary-bg);
-    }
-
-    .news-image img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform var(--transition-smooth);
-    }
-
-    .news-card:hover .news-image img {
-        transform: scale(1.06);
-    }
-
-    .news-content {
-        padding: var(--spacing-md);
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        gap: var(--spacing-sm);
-    }
-
-    .news-content h3 {
-        font-size: clamp(1rem, 2vw, 1.15rem);
-        font-weight: 700;
-        line-height: 1.4;
-        flex-grow: 1;
-        margin: 0;
-    }
-
-    .news-content h3 a {
-        color: var(--text-primary);
-        text-decoration: none;
-        transition: color var(--transition-base);
-    }
-
-    .news-content h3 a:hover {
-        color: var(--accent);
-    }
-
-    .news-content p {
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-        line-height: 1.6;
-        margin: 0;
-    }
-
-    .news-meta {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-sm);
-        flex-wrap: wrap;
-        padding-top: var(--spacing-xs);
-        border-top: 1px solid var(--border);
-    }
-
-    .school-badge {
-        background: var(--accent);
-        color: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 15px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .news-date {
-        color: var(--text-secondary);
-        font-size: 0.8rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-
-    .news-date::before {
-        content: '•';
-        color: var(--accent);
-    }
-
-    /* Sub News - Compact Cards */
-    .news-card.sub {
-        padding: var(--spacing-md);
-        background: var(--primary-bg);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .news-card.sub h4 {
-        font-size: 0.95rem;
-        font-weight: 700;
-        line-height: 1.3;
-        margin: 0 0 var(--spacing-xs) 0;
-        flex-grow: 1;
-    }
-
-    .news-card.sub h4 a {
-        color: var(--text-primary);
-        text-decoration: none;
-        transition: color var(--transition-base);
-    }
-
-    .news-card.sub h4 a:hover {
-        color: var(--accent);
-    }
-
-    /* No News State */
-    .no-news {
-        text-align: center;
-        padding: var(--spacing-xl) var(--spacing-sm);
-        color: var(--text-secondary);
-    }
-
-    .no-news i {
-        font-size: 3rem;
-        margin-bottom: var(--spacing-sm);
-        opacity: 0.4;
-    }
-
-    /* Schools Section - Better Grid */
-    .schools-section {
-        margin-top: var(--spacing-md);
-    }
-
-    .schools-grid {
-        display: grid;
-        gap: var(--spacing-md);
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
-
-    @media (max-width: 639px) {
-        .schools-grid {
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: var(--spacing-sm);
-        }
-    }
-
-    .school-card {
-        background: var(--secondary-bg);
-        border-radius: var(--radius-sm);
-        padding: var(--spacing-md);
-        text-align: center;
-        transition: all var(--transition-smooth);
-        border: 1px solid var(--border);
-        text-decoration: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--spacing-xs);
-    }
-
-    .school-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--accent);
-    }
-
-    .school-logo {
-        width: 100%;
-        max-width: 70px;
-        aspect-ratio: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .school-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: var(--radius-sm);
-        transition: transform var(--transition-base);
-    }
-
-    .school-card:hover .school-logo img {
-        transform: scale(1.1);
-    }
-
-    .school-abbr {
-        color: var(--text-primary);
-        font-size: 0.85rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    /* Newsletter Section - Enhanced */
-    .newsletter-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: var(--spacing-xl) var(--spacing-sm);
-        margin: var(--spacing-xl) 0;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .newsletter-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-        animation: newsletterGlow 10s ease-in-out infinite;
-    }
-
-    @keyframes newsletterGlow {
-        0%, 100% { transform: translate(0, 0); }
-        50% { transform: translate(10%, 10%); }
-    }
-
-    .newsletter-content {
-        max-width: 600px;
+    .container {
+        max-width: 1400px;
         margin: 0 auto;
-        text-align: center;
-        position: relative;
-        z-index: 1;
+        padding: 0 var(--spacing-sm);
     }
 
-    .newsletter-text h3 {
-        color: white;
-        font-size: clamp(1.5rem, 4vw, 2rem);
-        font-weight: 800;
-        margin-bottom: var(--spacing-xs);
+    .category-section {
+        margin-bottom: var(--spacing-xl);
+        animation: fadeInUp 0.6s ease backwards;
     }
 
-    .newsletter-text p {
-        color: rgba(255, 255, 255, 0.95);
-        font-size: clamp(0.95rem, 2vw, 1.1rem);
-        margin-bottom: var(--spacing-lg);
-    }
-
-    .newsletter-form {
-        display: flex;
-        gap: var(--spacing-sm);
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .newsletter-form input {
-        flex: 1;
-        min-width: min(100%, 250px);
-        padding: 1rem 1.5rem;
-        border: none;
-        border-radius: 50px;
-        font-size: 1rem;
-        background: white;
-        color: #333;
-        transition: all var(--transition-base);
-    }
-
-    .newsletter-form input:focus {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
-    }
-
-    .newsletter-form button {
-        padding: 1rem 2.5rem;
-        background: linear-gradient(135deg, #ff6b35 0%, #e64a19 100%);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        font-size: 1rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all var(--transition-base);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .newsletter-form button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(255, 107, 53, 0.5);
-    }
-
-    /* CTA Section - Enhanced */
-    .cta-section {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        padding: var(--spacing-xl) var(--spacing-sm);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .cta-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
-        opacity: 0.3;
-    }
-
-    .cta-card {
-        max-width: 500px;
-        width: 100%;
-        background: white;
-        border-radius: var(--radius-lg);
-        padding: var(--spacing-xl);
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        position: relative;
-        z-index: 1;
-        transform: translateY(0);
-        transition: transform var(--transition-smooth);
-    }
-
-    .cta-card:hover {
-        transform: translateY(-8px);
-    }
-
-    .cta-icon {
-        font-size: 3.5rem;
-        color: #ff5722;
-        margin-bottom: var(--spacing-md);
-        animation: bounce 2s ease-in-out infinite;
-    }
-
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-
-    .cta-card h3 {
-        font-size: clamp(1.5rem, 3vw, 1.75rem);
-        font-weight: 800;
-        color: #2c3e50;
-        margin-bottom: var(--spacing-sm);
-    }
-
-    .cta-card p {
-        font-size: clamp(0.95rem, 2vw, 1.05rem);
-        color: #5a6c7d;
-        line-height: 1.7;
-        margin-bottom: var(--spacing-lg);
-    }
-
-    .cta-btn {
-        display: inline-block;
-        background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
-        color: white;
-        padding: 1rem 2.5rem;
-        border-radius: 50px;
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        transition: all var(--transition-smooth);
-        box-shadow: 0 8px 24px rgba(255, 87, 34, 0.4);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .cta-btn::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-
-    .cta-btn:hover::before {
-        width: 300px;
-        height: 300px;
-    }
-
-    .cta-btn:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 12px 32px rgba(255, 87, 34, 0.6);
-    }
-
-    /* Animations */
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -1111,82 +776,488 @@
         }
     }
 
-    .featured-card,
-    .news-category {
-        animation: fadeInUp 0.6s ease backwards;
+    /* Category Header */
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-md);
+        padding-bottom: var(--spacing-sm);
+        border-bottom: 3px solid var(--border);
+        position: relative;
     }
 
-    .featured-card:nth-child(1) { animation-delay: 0.1s; }
-    .featured-card:nth-child(2) { animation-delay: 0.2s; }
-    .featured-card:nth-child(3) { animation-delay: 0.3s; }
-    .featured-card:nth-child(4) { animation-delay: 0.4s; }
-    .featured-card:nth-child(5) { animation-delay: 0.5s; }
+    .category-header::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+        animation: slideWidth 3s ease-in-out infinite;
+    }
 
-    /* Responsive Breakpoints */
-    @media (max-width: 480px) {
-        .hero-section {
-            padding: var(--spacing-lg) var(--spacing-sm);
+    @keyframes slideWidth {
+        0%, 100% { width: 80px; }
+        50% { width: 150px; }
+    }
+
+    .category-header h2 {
+        font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+        font-weight: 900;
+        color: var(--text-primary);
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+    }
+
+    .category-indicator {
+        width: 5px;
+        height: 28px;
+        background: linear-gradient(180deg, var(--accent) 0%, var(--accent-secondary) 100%);
+        border-radius: var(--radius-xs);
+        box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+    }
+
+    .view-all {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 700;
+        transition: all var(--transition-base);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.25rem;
+        border-radius: var(--radius-full);
+        background: rgba(100, 255, 218, 0.08);
+        border: 1px solid rgba(100, 255, 218, 0.2);
+    }
+
+    .view-all:hover {
+        background: var(--accent);
+        color: var(--primary-bg);
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(100, 255, 218, 0.3);
+    }
+
+    .view-all i {
+        transition: transform var(--transition-base);
+    }
+
+    .view-all:hover i {
+        transform: translateX(3px);
+    }
+
+    /* ============================================
+       HORIZONTAL SCROLL CARDS
+       ============================================ */
+    .news-scroll-wrapper {
+        position: relative;
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+
+    .scroll-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: none;
+        background: var(--card-bg);
+        color: var(--accent);
+        font-size: 1.2rem;
+        cursor: pointer;
+        z-index: 10;
+        transition: all var(--transition-base);
+        box-shadow: var(--shadow-md);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--border);
+    }
+
+    @media (min-width: 768px) {
+        .scroll-btn {
+            display: flex;
         }
+    }
 
-        .card-badges {
+    .scroll-btn:hover {
+        background: var(--accent);
+        color: var(--primary-bg);
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .scroll-btn:active {
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    .scroll-left {
+        left: -8px;
+    }
+
+    .scroll-right {
+        right: -8px;
+    }
+
+    .news-horizontal-scroll {
+        display: flex;
+        gap: var(--spacing-md);
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding: var(--spacing-sm) 0;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent) var(--secondary-bg);
+    }
+
+    .news-horizontal-scroll::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .news-horizontal-scroll::-webkit-scrollbar-track {
+        background: var(--secondary-bg);
+        border-radius: var(--radius-sm);
+    }
+
+    .news-horizontal-scroll::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: var(--radius-sm);
+    }
+
+    .news-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-secondary);
+    }
+
+    /* News Card Horizontal */
+    .news-card-horizontal {
+        flex: 0 0 auto;
+        width: 300px;
+        background: var(--card-bg);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: all var(--transition-smooth);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+    }
+
+    @media (min-width: 768px) {
+        .news-card-horizontal {
+            width: 340px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .news-card-horizontal {
+            width: 380px;
+        }
+    }
+
+    .news-card-horizontal:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--accent);
+    }
+
+    .news-card-link {
+        text-decoration: none;
+        display: block;
+        height: 100%;
+    }
+
+    .news-image-horizontal {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        background: var(--secondary-bg);
+    }
+
+    .news-image-horizontal img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--transition-smooth);
+    }
+
+    .news-card-horizontal:hover .news-image-horizontal img {
+        transform: scale(1.1) rotate(1deg);
+    }
+
+    .placeholder-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+        font-size: 3rem;
+        opacity: 0.4;
+    }
+
+    .school-badge-overlay {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: var(--shadow-md);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .news-content-horizontal {
+        padding: var(--spacing-md);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .news-content-horizontal h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        line-height: 1.4;
+        color: var(--text-primary);
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: color var(--transition-base);
+    }
+
+    .news-card-horizontal:hover .news-content-horizontal h3 {
+        color: var(--accent);
+    }
+
+    .news-meta-horizontal {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding-top: var(--spacing-xs);
+        border-top: 1px solid var(--border);
+    }
+
+    .news-meta-horizontal i {
+        color: var(--accent);
+        font-size: 0.75rem;
+    }
+
+    /* ============================================
+       SCHOOL CARDS - Horizontal Scroll
+       ============================================ */
+    .schools-scroll .school-card-horizontal {
+        flex: 0 0 auto;
+        width: 200px;
+        background: var(--card-bg);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        text-align: center;
+        transition: all var(--transition-smooth);
+        border: 2px solid var(--border);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .school-card-horizontal:hover {
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--accent);
+        background: linear-gradient(135deg, var(--card-bg) 0%, var(--secondary-bg) 100%);
+    }
+
+    .school-logo-horizontal {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--secondary-bg);
+        border: 3px solid var(--border);
+        transition: all var(--transition-base);
+    }
+
+    .school-card-horizontal:hover .school-logo-horizontal {
+        border-color: var(--accent);
+        transform: rotate(5deg) scale(1.1);
+    }
+
+    .school-logo-horizontal img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .school-info h4 {
+        color: var(--accent);
+        font-size: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .school-info p {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .school-card-horizontal:hover .school-info h4 {
+        color: var(--text-primary);
+    }
+
+    /* ============================================
+       NO NEWS STATE
+       ============================================ */
+    .no-news {
+        text-align: center;
+        padding: var(--spacing-2xl) var(--spacing-md);
+        color: var(--text-secondary);
+    }
+
+    .no-news i {
+        font-size: 4rem;
+        margin-bottom: var(--spacing-md);
+        opacity: 0.3;
+        color: var(--accent);
+    }
+
+    .no-news p {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* ============================================
+       RESPONSIVE DESIGN
+       ============================================ */
+    
+    /* Extra Small Mobile (320px - 380px) */
+    @media (max-width: 380px) {
+        .featured-grid {
             gap: 0.4rem;
         }
 
-        .card-category, .card-school {
-            font-size: 0.7rem;
-            padding: 0.3rem 0.7rem;
+        .card-content {
+            padding: 0.6rem;
         }
 
-        .news-category {
+        .featured-card:first-child .card-content {
             padding: var(--spacing-sm);
+        }
+
+        .card-category,
+        .card-school {
+            font-size: 0.6rem;
+            padding: 0.3rem 0.65rem;
+        }
+
+        .card-title {
+            font-size: 0.8rem;
+            -webkit-line-clamp: 2;
+            min-height: 2.4em;
+        }
+
+        .read-more {
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 480px) {
+        .hero-section {
+            padding: var(--spacing-xl) var(--spacing-sm);
+        }
+
+        .hero-cta {
+            padding: 0.875rem 2rem;
+            font-size: 0.9rem;
+        }
+
+        .hero-cta i {
+            font-size: 1.2rem;
         }
 
         .category-header h2 {
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
 
-        .school-card {
-            padding: var(--spacing-sm);
+        .view-all {
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
         }
 
-        .school-logo {
-            max-width: 55px;
+        .news-card-horizontal {
+            width: 280px;
         }
 
-        .school-abbr {
-            font-size: 0.75rem;
+        .school-card-horizontal {
+            width: 160px;
         }
 
-        .cta-card {
-            padding: var(--spacing-lg);
-        }
-
-        .newsletter-form {
-            flex-direction: column;
-        }
-
-        .newsletter-form input,
-        .newsletter-form button {
-            width: 100%;
+        .school-logo-horizontal {
+            width: 60px;
+            height: 60px;
         }
     }
 
-    /* Print Styles */
-    @media print {
-        .news-ticker-wrapper,
-        .hero-cta,
-        .newsletter-section,
-        .cta-section {
-            display: none;
+    /* Tablet Adjustments */
+    @media (min-width: 768px) and (max-width: 1023px) {
+        .news-card-horizontal {
+            width: 320px;
         }
 
-        .featured-card,
-        .news-card {
-            break-inside: avoid;
+        .school-card-horizontal {
+            width: 180px;
         }
     }
 
-    /* Accessibility Improvements */
+    /* ============================================
+       ACCESSIBILITY ENHANCEMENTS
+       ============================================ */
+    
+    /* Focus Styles */
+    a:focus-visible,
+    button:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: var(--radius-xs);
+    }
+
+    /* Reduced Motion */
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -1197,40 +1268,34 @@
         }
     }
 
-    /* Focus Styles for Keyboard Navigation */
-    a:focus-visible,
-    button:focus-visible,
-    input:focus-visible {
-        outline: 3px solid var(--accent);
-        outline-offset: 2px;
-    }
-
-    /* High Contrast Mode Support */
+    /* High Contrast Mode */
     @media (prefers-contrast: high) {
-        .card-category,
-        .card-school,
-        .school-badge {
-            border: 2px solid currentColor;
+        .news-card-horizontal,
+        .school-card-horizontal,
+        .hero-cta {
+            border-width: 3px;
         }
 
-        .featured-card,
-        .news-card,
-        .school-card {
-            border-width: 2px;
+        .category-indicator {
+            box-shadow: none;
         }
     }
 
-    /* Dark Mode Enhancements */
+    /* Dark Mode Optimizations */
     [data-theme="dark"] .hero-cta {
-        box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5);
+        box-shadow: 
+            0 8px 24px rgba(37, 211, 102, 0.5),
+            0 0 0 0 rgba(37, 211, 102, 0.7);
     }
 
-    [data-theme="dark"] .featured-card:hover,
-    [data-theme="dark"] .news-card:hover {
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    [data-theme="dark"] .news-card-horizontal:hover,
+    [data-theme="dark"] .school-card-horizontal:hover {
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
     }
 
-    /* Loading Skeleton (Optional - for future use) */
+    /* ============================================
+       LOADING STATES (For Future Enhancement)
+       ============================================ */
     .skeleton {
         background: linear-gradient(
             90deg,
@@ -1240,11 +1305,30 @@
         );
         background-size: 200% 100%;
         animation: loading 1.5s ease-in-out infinite;
+        border-radius: var(--radius-sm);
     }
 
     @keyframes loading {
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
+    }
+
+    /* ============================================
+       PRINT STYLES
+       ============================================ */
+    @media print {
+        .news-ticker-wrapper,
+        .hero-cta,
+        .scroll-btn,
+        .view-all {
+            display: none;
+        }
+
+        .news-card-horizontal,
+        .school-card-horizontal {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
     }
 </style>
 
@@ -1256,239 +1340,128 @@
     <div class="hero-content">
         <h2>NEXT MEDIA - YOUR TRUSTED SOURCE FOR FAST AND CREDIBLE INFORMATION</h2>
         <p>Stay ahead with the latest updates on schools, entertainment, sports and global news - all in one trusted platform</p>
-        <style>
-        @keyframes rainbow-glow {
-            0% {
-                box-shadow: 0 0 15px rgba(37, 211, 102, 0.7),
-                            0 0 30px rgba(37, 211, 102, 0.5),
-                            0 0 45px rgba(37, 211, 102, 0.3);
-                border-color: rgba(37, 211, 102, 0.8);
-            }
-            25% {
-                box-shadow: 0 0 18px rgba(0, 255, 127, 0.7),
-                            0 0 35px rgba(0, 255, 127, 0.5),
-                            0 0 50px rgba(0, 255, 127, 0.3);
-                border-color: rgba(0, 255, 127, 0.8);
-            }
-            50% {
-                box-shadow: 0 0 20px rgba(34, 139, 34, 0.7),
-                            0 0 40px rgba(34, 139, 34, 0.5),
-                            0 0 60px rgba(34, 139, 34, 0.3);
-                border-color: rgba(34, 139, 34, 0.8);
-            }
-            75% {
-                box-shadow: 0 0 18px rgba(144, 238, 144, 0.7),
-                            0 0 35px rgba(144, 238, 144, 0.5),
-                            0 0 50px rgba(144, 238, 144, 0.3);
-                border-color: rgba(144, 238, 144, 0.8);
-            }
-            100% {
-                box-shadow: 0 0 15px rgba(37, 211, 102, 0.7),
-                            0 0 30px rgba(37, 211, 102, 0.5),
-                            0 0 45px rgba(37, 211, 102, 0.3);
-                border-color: rgba(37, 211, 102, 0.8);
-            }
-        }
-
-        @keyframes gradient-shift {
-            0%, 100% {
-                background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
-            }
-            33% {
-                background: linear-gradient(135deg, #00FF7F 0%, #25D366 100%);
-            }
-            66% {
-                background: linear-gradient(135deg, #228B22 0%, #32CD32 100%);
-            }
-        }
-
-        @keyframes icon-bounce {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            25% {
-                transform: translateY(-3px) rotate(-8deg);
-            }
-            75% {
-                transform: translateY(-3px) rotate(8deg);
-            }
-        }
-
-        @keyframes pulse-scale {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .hero-cta {
-            position: relative;
-            animation: rainbow-glow 3s ease-in-out infinite, 
-                    gradient-shift 3s ease-in-out infinite,
-                    pulse-scale 2s ease-in-out infinite;
-            background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
-            border: 2px solid rgba(37, 211, 102, 0.8);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            padding: 0.65rem 1.5rem;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-radius: 25px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .hero-cta::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            background: linear-gradient(45deg, 
-                #25D366, #00FF7F, #228B22, 
-                #90EE90, #32CD32, #25D366);
-            background-size: 300% 300%;
-            border-radius: inherit;
-            z-index: -1;
-            opacity: 0;
-            filter: blur(12px);
-            animation: gradient-shift 3s ease-in-out infinite;
-        }
-
-        .hero-cta:hover::before {
-            opacity: 0.8;
-        }
-
-        .hero-cta::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent,
-                rgba(255, 255, 255, 0.1),
-                transparent
-            );
-            transform: rotate(45deg);
-            animation: shine 3s ease-in-out infinite;
-        }
-
-        @keyframes shine {
-            0% {
-                transform: translateX(-100%) translateY(-100%) rotate(45deg);
-            }
-            50%, 100% {
-                transform: translateX(100%) translateY(100%) rotate(45deg);
-            }
-        }
-
-        .hero-cta:hover {
-            transform: translateY(-3px) scale(1.05);
-            animation: rainbow-glow 1.5s ease-in-out infinite,
-                    gradient-shift 1.5s ease-in-out infinite,
-                    pulse-scale 1s ease-in-out infinite;
-        }
-
-        .hero-cta .fab {
-            animation: icon-bounce 2s ease-in-out infinite;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
-            font-size: 1.1rem;
-        }
-
-        .hero-cta:hover .fab {
-            animation: icon-bounce 1s ease-in-out infinite;
-        }
-
-        .hero-cta span {
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .hero-cta {
-                padding: 0.6rem 1.3rem;
-                font-size: 0.85rem;
-            }
-
-            .hero-cta .fab {
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero-cta {
-                padding: 0.55rem 1.1rem;
-                font-size: 0.8rem;
-            }
-
-            .hero-cta .fab {
-                font-size: 0.95rem;
-            }
-        }
-        </style>
-
-        <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="hero-cta" target="_blank" rel="noopener noreferrer" aria-label="Join our WhatsApp channel">
+        
+        <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" 
+           class="hero-cta" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           aria-label="Join our WhatsApp channel for instant news updates">
             <i class="fab fa-whatsapp" aria-hidden="true"></i>
             <span>Join Our WhatsApp Channel</span>
         </a>
     </div>
 </section>
 
+<!-- Featured Section -->
+<section class="featured-section">
+    <div class="container">
+        <h2 class="section-title">Featured Stories</h2>
+        
+        {% if featured_news %}
+        <div class="featured-grid">
+            {% for news in featured_news %}
+            <article class="featured-card">
+                <div class="card-image">
+                    {% if news.featured_image %}
+                    <img src="{{ news.featured_image.url }}" 
+                         alt="{{ news.title }}" 
+                         loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                    {% elif news.featured_image_url %}
+                    <img src="{{ news.featured_image_url }}" 
+                         alt="{{ news.title }}" 
+                         loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                    {% else %}
+                    <div class="placeholder-image">
+                        <i class="fas fa-newspaper" aria-hidden="true"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-content">
+                    <div class="card-badges">
+                        <span class="card-category">{{ news.category.name }}</span>
+                        {% if news.school %}
+                        <span class="card-school">{{ news.school.abbreviation|default:news.school.name }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <h3 class="card-title">
+                        <a href="{{ news.get_absolute_url }}">{{ news.title }}</a>
+                    </h3>
+                    
+                    <a href="{{ news.get_absolute_url }}" 
+                       class="read-more" 
+                       aria-label="Read full article: {{ news.title }}">
+                        <span>Read Article</span>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-news" role="status">
+            <i class="fas fa-star" aria-hidden="true"></i>
+            <p>No featured stories available at the moment</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
 
-<!-- News Categories Grid - Horizontal Scrolling per Category -->
+<!-- News Categories Grid -->
 <section class="categories-section">
     <div class="container">
         {% for category_data in categories_with_news %}
         <div class="category-section">
             <div class="category-header">
                 <h2>
-                    <span class="category-indicator"></span>
+                    <span class="category-indicator" aria-hidden="true"></span>
                     {{ category_data.category.name|upper }}
                 </h2>
-                <a href="{% url 'news:category_news' category_data.category.slug %}" class="view-all" aria-label="View all {{ category_data.category.name }} news">
+                <a href="{% url 'news:category_news' category_data.category.slug %}" 
+                   class="view-all" 
+                   aria-label="View all {{ category_data.category.name }} news">
                     <span>View More</span>
-                    <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
                 </a>
             </div>
             
             {% if category_data.news %}
             <div class="news-scroll-wrapper">
-                <button class="scroll-btn scroll-left" aria-label="Scroll left">
-                    <i class="fas fa-chevron-left"></i>
+                <button class="scroll-btn scroll-left" 
+                        aria-label="Scroll left to view previous {{ category_data.category.name }} news">
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
                 </button>
                 
-                <div class="news-horizontal-scroll">
+                <div class="news-horizontal-scroll" role="list">
                     {% for news in category_data.news %}
-                    <article class="news-card-horizontal">
+                    <article class="news-card-horizontal" role="listitem">
                         <a href="{{ news.get_absolute_url }}" class="news-card-link">
                             <div class="news-image-horizontal">
                                 {% if news.featured_image %}
-                                <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
+                                <img src="{{ news.featured_image.url }}" 
+                                     alt="{{ news.title }}" 
+                                     loading="lazy">
                                 {% elif news.featured_image_url %}
-                                <img src="{{ news.featured_image_url }}" alt="{{ news.title }}" loading="lazy">
+                                <img src="{{ news.featured_image_url }}" 
+                                     alt="{{ news.title }}" 
+                                     loading="lazy">
                                 {% else %}
                                 <div class="placeholder-image">
-                                    <i class="fas fa-newspaper"></i>
+                                    <i class="fas fa-newspaper" aria-hidden="true"></i>
                                 </div>
                                 {% endif %}
                                 {% if news.school %}
-                                <span class="school-badge-overlay">{{ news.school.abbreviation|default:news.school.name }}</span>
+                                <span class="school-badge-overlay">
+                                    {{ news.school.abbreviation|default:news.school.name }}
+                                </span>
                                 {% endif %}
                             </div>
                             
                             <div class="news-content-horizontal">
                                 <h3>{{ news.title }}</h3>
                                 <div class="news-meta-horizontal">
+                                    <i class="fas fa-clock" aria-hidden="true"></i>
                                     <time datetime="{{ news.created_at|date:'Y-m-d' }}">
-                                        <i class="fas fa-clock"></i>
                                         {{ news.created_at|date:"M j, Y" }}
                                     </time>
                                 </div>
@@ -1498,19 +1471,20 @@
                     {% endfor %}
                 </div>
                 
-                <button class="scroll-btn scroll-right" aria-label="Scroll right">
-                    <i class="fas fa-chevron-right"></i>
+                <button class="scroll-btn scroll-right" 
+                        aria-label="Scroll right to view more {{ category_data.category.name }} news">
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
                 </button>
             </div>
             {% else %}
-            <div class="no-news">
+            <div class="no-news" role="status">
                 <i class="fas fa-newspaper" aria-hidden="true"></i>
-                <p>No {{ category_data.category.name|lower }} available</p>
+                <p>No {{ category_data.category.name|lower }} news available at the moment</p>
             </div>
             {% endif %}
         </div>
         {% empty %}
-        <div class="no-news">
+        <div class="no-news" role="status">
             <i class="fas fa-newspaper" aria-hidden="true"></i>
             <p>No news categories available</p>
         </div>
@@ -1521,29 +1495,37 @@
         <div class="category-section schools-section">
             <div class="category-header">
                 <h2>
-                    <span class="category-indicator"></span>
+                    <span class="category-indicator" aria-hidden="true"></span>
                     FEATURED SCHOOLS
                 </h2>
-                <a href="{% url 'news:school_list' %}" class="view-all" aria-label="View all schools">
+                <a href="{% url 'news:school_list' %}" 
+                   class="view-all" 
+                   aria-label="View all featured schools">
                     <span>View More</span>
-                    <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
                 </a>
             </div>
             
             <div class="news-scroll-wrapper">
-                <button class="scroll-btn scroll-left" aria-label="Scroll left">
-                    <i class="fas fa-chevron-left"></i>
+                <button class="scroll-btn scroll-left" 
+                        aria-label="Scroll left to view previous schools">
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
                 </button>
                 
-                <div class="news-horizontal-scroll schools-scroll">
+                <div class="news-horizontal-scroll schools-scroll" role="list">
                     {% for school in schools %}
-                    <a href="{% url 'news:school_news' school.slug %}" class="school-card-horizontal" aria-label="{{ school.name }}">
+                    <a href="{% url 'news:school_news' school.slug %}" 
+                       class="school-card-horizontal" 
+                       aria-label="View news for {{ school.name }}"
+                       role="listitem">
                         <div class="school-logo-horizontal">
                             {% if school.logo %}
-                            <img src="{{ school.logo.url }}" alt="{{ school.name }} logo" loading="lazy">
+                            <img src="{{ school.logo.url }}" 
+                                 alt="{{ school.name }} logo" 
+                                 loading="lazy">
                             {% else %}
                             <div class="placeholder-image">
-                                <i class="fas fa-university"></i>
+                                <i class="fas fa-university" aria-hidden="true"></i>
                             </div>
                             {% endif %}
                         </div>
@@ -1557,8 +1539,9 @@
                     {% endfor %}
                 </div>
                 
-                <button class="scroll-btn scroll-right" aria-label="Scroll right">
-                    <i class="fas fa-chevron-right"></i>
+                <button class="scroll-btn scroll-right" 
+                        aria-label="Scroll right to view more schools">
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -1566,434 +1549,10 @@
     </div>
 </section>
 
-<style>
-/* Categories Section - Punch Style */
-.categories-section {
-    padding: var(--spacing-xl) 0;
-    background: var(--primary-bg);
-}
-
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-sm);
-}
-
-.category-section {
-    margin-bottom: var(--spacing-xl);
-}
-
-.category-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-md);
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 3px solid var(--border);
-}
-
-.category-header h2 {
-    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-    font-weight: 800;
-    color: var(--text-primary);
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.category-indicator {
-    width: 6px;
-    height: 24px;
-    background: var(--accent);
-    border-radius: 3px;
-}
-
-.view-all {
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    background: rgba(100, 255, 218, 0.1);
-}
-
-.view-all:hover {
-    background: var(--accent);
-    color: white;
-    transform: translateX(3px);
-}
-
-/* Horizontal Scroll Wrapper */
-.news-scroll-wrapper {
-    position: relative;
-    padding: 0 40px;
-}
-
-.news-horizontal-scroll {
-    display: flex;
-    gap: var(--spacing-md);
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) transparent;
-    padding-bottom: var(--spacing-sm);
-}
-
-/* Hide scrollbar for cleaner look */
-.news-horizontal-scroll::-webkit-scrollbar {
-    height: 6px;
-}
-
-.news-horizontal-scroll::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.news-horizontal-scroll::-webkit-scrollbar-thumb {
-    background: var(--accent);
-    border-radius: 10px;
-}
-
-.news-horizontal-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-secondary);
-}
-
-/* Scroll Buttons */
-.scroll-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--card-bg);
-    border: 2px solid var(--border);
-    color: var(--text-primary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 10;
-    box-shadow: 0 4px 12px var(--shadow);
-}
-
-.scroll-btn:hover {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-    transform: translateY(-50%) scale(1.1);
-}
-
-.scroll-left {
-    left: 0;
-}
-
-.scroll-right {
-    right: 0;
-}
-
-/* News Card Horizontal */
-.news-card-horizontal {
-    flex: 0 0 auto;
-    width: clamp(280px, 32vw, 340px);
-    background: var(--card-bg);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    transition: all 0.3s ease;
-    border: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-}
-
-.news-card-horizontal:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px var(--shadow);
-    border-color: var(--accent);
-}
-
-.news-card-link {
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.news-image-horizontal {
-    position: relative;
-    width: 100%;
-    padding-top: 62.5%; /* 16:10 aspect ratio */
-    overflow: hidden;
-    background: var(--secondary-bg);
-    flex-shrink: 0;
-}
-
-.news-image-horizontal img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transition: transform 0.4s ease;
-}
-
-.news-card-horizontal:hover .news-image-horizontal img {
-    transform: scale(1.1);
-}
-
-.placeholder-image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    background: var(--secondary-bg);
-    font-size: 2rem;
-}
-
-.school-badge-overlay {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: var(--accent);
-    color: white;
-    padding: 0.35rem 0.85rem;
-    border-radius: 15px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.news-content-horizontal {
-    padding: var(--spacing-md);
-}
-
-.news-content-horizontal h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.4;
-    color: var(--text-primary);
-    margin: 0 0 var(--spacing-sm) 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    transition: color 0.3s ease;
-}
-
-.news-card-horizontal:hover .news-content-horizontal h3 {
-    color: var(--accent);
-}
-
-.news-meta-horizontal {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-}
-
-.news-meta-horizontal i {
-    font-size: 0.75rem;
-}
-
-/* Schools Horizontal Cards */
-.schools-scroll {
-    gap: var(--spacing-sm);
-}
-
-.school-card-horizontal {
-    flex: 0 0 auto;
-    width: clamp(140px, 20vw, 180px);
-    background: var(--card-bg);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    transition: all 0.3s ease;
-    border: 1px solid var(--border);
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: var(--spacing-md);
-    text-align: center;
-}
-
-.school-card-horizontal:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 30px var(--shadow);
-    border-color: var(--accent);
-}
-
-.school-logo-horizontal {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: var(--spacing-sm);
-    border: 3px solid var(--border);
-    transition: all 0.3s ease;
-}
-
-.school-card-horizontal:hover .school-logo-horizontal {
-    border-color: var(--accent);
-    transform: scale(1.1);
-}
-
-.school-logo-horizontal img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.school-info h4 {
-    font-size: 0.95rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    margin: 0 0 0.25rem 0;
-    text-transform: uppercase;
-}
-
-.school-info p {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.3;
-}
-
-/* No News State */
-.no-news {
-    text-align: center;
-    padding: var(--spacing-xl) var(--spacing-sm);
-    color: var(--text-secondary);
-}
-
-.no-news i {
-    font-size: 3rem;
-    margin-bottom: var(--spacing-sm);
-    opacity: 0.4;
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .news-scroll-wrapper {
-        padding: 0 35px;
-    }
-
-    .scroll-btn {
-        width: 35px;
-        height: 35px;
-    }
-
-    .news-card-horizontal {
-        width: clamp(240px, 70vw, 280px);
-    }
-
-    .school-card-horizontal {
-        width: clamp(120px, 40vw, 150px);
-        padding: var(--spacing-sm);
-    }
-
-    .school-logo-horizontal {
-        width: 60px;
-        height: 60px;
-    }
-
-    .category-header h2 {
-        font-size: 1rem;
-    }
-
-    .view-all {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .category-section {
-        margin-bottom: var(--spacing-lg);
-    }
-
-    .news-scroll-wrapper {
-        padding: 0 30px;
-    }
-
-    .scroll-btn {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
-    }
-
-    .news-card-horizontal {
-        width: clamp(220px, 75vw, 260px);
-    }
-
-    .news-content-horizontal {
-        padding: var(--spacing-sm);
-    }
-
-    .news-content-horizontal h3 {
-        font-size: 0.9rem;
-    }
-
-    .school-card-horizontal {
-        width: clamp(100px, 45vw, 130px);
-    }
-
-    .school-logo-horizontal {
-        width: 50px;
-        height: 50px;
-    }
-
-    .school-info h4 {
-        font-size: 0.8rem;
-    }
-
-    .school-info p {
-        font-size: 0.7rem;
-    }
-
-    .category-indicator {
-        width: 4px;
-        height: 20px;
-    }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .news-horizontal-scroll {
-        scroll-behavior: auto;
-    }
-
-    .news-card-horizontal,
-    .school-card-horizontal,
-    .scroll-btn {
-        transition: none;
-    }
-}
-
-/* Focus Styles */
-.news-card-link:focus-visible,
-.school-card-horizontal:focus-visible,
-.scroll-btn:focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-}
-</style>
-
 <script>
-// Horizontal Scroll Functionality
+// ============================================
+// HORIZONTAL SCROLL FUNCTIONALITY
+// ============================================
 document.addEventListener('DOMContentLoaded', function() {
     const scrollWrappers = document.querySelectorAll('.news-scroll-wrapper');
     
@@ -2004,624 +1563,54 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!scrollContainer) return;
         
-        const scrollAmount = 320; // Width of one card plus gap
+        // Scroll amount (one card width + gap)
+        const scrollAmount = 400;
         
-        // Update button visibility
-        function updateButtons() {
-            const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
-            
-            leftBtn.style.opacity = scrollLeft > 0 ? '1' : '0.3';
-            leftBtn.style.pointerEvents = scrollLeft > 0 ? 'auto' : 'none';
-            
-            rightBtn.style.opacity = scrollLeft < scrollWidth - clientWidth - 10 ? '1' : '0.3';
-            rightBtn.style.pointerEvents = scrollLeft < scrollWidth - clientWidth - 10 ? 'auto' : 'none';
+        // Left button click
+        if (leftBtn) {
+            leftBtn.addEventListener('click', () => {
+                scrollContainer.scrollBy({
+                    left: -scrollAmount,
+                    behavior: 'smooth'
+                });
+            });
         }
         
-        // Scroll left
-        leftBtn.addEventListener('click', () => {
-            scrollContainer.scrollBy({
-                left: -scrollAmount,
-                behavior: 'smooth'
+        // Right button click
+        if (rightBtn) {
+            rightBtn.addEventListener('click', () => {
+                scrollContainer.scrollBy({
+                    left: scrollAmount,
+                    behavior: 'smooth'
+                });
             });
-        });
+        }
         
-        // Scroll right
-        rightBtn.addEventListener('click', () => {
-            scrollContainer.scrollBy({
-                left: scrollAmount,
-                behavior: 'smooth'
-            });
-        });
-        
-        // Update buttons on scroll
-        scrollContainer.addEventListener('scroll', updateButtons);
+        // Update button visibility based on scroll position
+        function updateButtons() {
+            if (!leftBtn || !rightBtn) return;
+            
+            const isAtStart = scrollContainer.scrollLeft <= 10;
+            const isAtEnd = scrollContainer.scrollLeft >= 
+                (scrollContainer.scrollWidth - scrollContainer.clientWidth - 10);
+            
+            leftBtn.style.opacity = isAtStart ? '0.3' : '1';
+            leftBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+            
+            rightBtn.style.opacity = isAtEnd ? '0.3' : '1';
+            rightBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+        }
         
         // Initial button state
         updateButtons();
         
-        // Update on window resize
+        // Update on scroll
+        scrollContainer.addEventListener('scroll', updateButtons);
+        
+        // Update on resize
         window.addEventListener('resize', updateButtons);
     });
 });
 </script>
-
-<!-- Featured News Section -->
-{% if featured_news %}
-<section class="featured-section">
-    <div class="container">
-        <div class="featured-grid">
-            {% for news in featured_news %}
-            <article class="featured-card {% if forloop.counter <= 2 %}featured-card-large{% endif %}">
-                <div class="card-image">
-                    <a href="{{ news.get_absolute_url }}">
-                        {% if news.featured_image %}
-                        <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
-                        {% elif news.featured_image_url %}
-                        <img src="{{ news.featured_image_url }}" alt="{{ news.title }}" loading="lazy">
-                        {% else %}
-                        <div class="placeholder-image">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
-                        {% endif %}
-                    </a>
-                </div>
-                
-                <div class="card-content">
-                    <div class="card-meta">
-                        <span class="card-category">{{ news.category.name }}</span>
-                        {% if news.school %}
-                        <span class="card-school">{{ news.school.abbreviation|default:news.school.name }}</span>
-                        {% endif %}
-                    </div>
-                    
-                    <h3 class="card-title">
-                        <a href="{{ news.get_absolute_url }}">{{ news.title }}</a>
-                    </h3>
-                    
-                    {% if news.excerpt %}
-                    <p class="card-excerpt">{{ news.excerpt|truncatewords:20 }}</p>
-                    {% endif %}
-                    
-                    <div class="card-footer">
-                        <span class="card-date">{{ news.created_at|date:"M d, Y" }}</span>
-                    </div>
-                </div>
-            </article>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
-<style>
-/* Featured Section - Uses theme variables from base.html */
-.featured-section {
-    background: var(--primary-bg);
-    padding: 4rem 0;
-    min-height: 100vh;
-}
-
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
-
-.featured-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1.5rem;
-    grid-auto-rows: minmax(260px, auto);
-}
-
-/* First two cards - Large cards side by side */
-.featured-card:nth-child(1) {
-    grid-column: span 3;
-    grid-row: span 2;
-}
-
-.featured-card:nth-child(2) {
-    grid-column: span 3;
-    grid-row: span 2;
-}
-
-/* Remaining cards - 3 columns */
-.featured-card:nth-child(n+3) {
-    grid-column: span 2;
-    grid-row: span 1;
-}
-
-.featured-card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--border);
-}
-
-.featured-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px var(--shadow);
-    border-color: var(--accent);
-}
-
-.card-image a {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.card-image {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    background: var(--secondary-bg);
-}
-
-/* Large cards have taller images */
-.featured-card-large .card-image {
-    height: 240px;
-}
-
-.featured-card:not(.featured-card-large) .card-image {
-    height: 160px;
-}
-
-.card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-}
-
-.featured-card:hover .card-image img {
-    transform: scale(1.08);
-}
-
-.placeholder-image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    background: var(--secondary-bg);
-}
-
-.placeholder-image i {
-    font-size: 4rem;
-}
-
-.featured-card-large .placeholder-image i {
-    font-size: 5rem;
-}
-
-.card-content {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    flex: 1;
-}
-
-.featured-card-large .card-content {
-    padding: 2rem;
-}
-
-.card-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.card-category,
-.card-school {
-    padding: 0.3rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-}
-
-.card-category {
-    background: var(--accent);
-    color: white;
-}
-
-.card-school {
-    background: var(--accent-secondary);
-    color: white;
-}
-
-/* Light mode adjustments for badges */
-[data-theme="light"] .card-category {
-    background: var(--accent);
-    color: white;
-}
-
-[data-theme="light"] .card-school {
-    background: var(--accent-secondary);
-    color: white;
-}
-
-.card-title {
-    color: var(--text-primary);
-    font-size: 0.95rem;
-    font-weight: 700;
-    line-height: 1.4;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.card-title a {
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.card-title a:hover {
-    color: var(--accent);
-}
-
-.featured-card-large .card-title {
-    font-size: 1.25rem;
-    -webkit-line-clamp: 3;
-    line-height: 1.3;
-}
-
-.card-excerpt {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.featured-card-large .card-excerpt {
-    -webkit-line-clamp: 3;
-    font-size: 1rem;
-}
-
-.card-footer {
-    margin-top: auto;
-    padding-top: 0.5rem;
-}
-
-.card-date {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-/* Tablet view */
-@media (max-width: 1024px) {
-    .featured-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 1.25rem;
-    }
-    
-    .featured-card:nth-child(1),
-    .featured-card:nth-child(2) {
-        grid-column: span 3;
-        grid-row: span 2;
-    }
-    
-    .featured-card:nth-child(n+3) {
-        grid-column: span 2;
-    }
-    
-    .featured-card-large .card-image {
-        height: 220px;
-    }
-}
-
-/* Mobile view - Keep same layout as desktop */
-@media (max-width: 768px) {
-    .container {
-        padding: 0 1rem;
-    }
-    
-    .featured-section {
-        padding: 2.5rem 0;
-    }
-    
-    .featured-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 1rem;
-        grid-auto-rows: minmax(200px, auto);
-    }
-    
-    /* Keep first two large */
-    .featured-card:nth-child(1),
-    .featured-card:nth-child(2) {
-        grid-column: span 3;
-        grid-row: span 2;
-    }
-    
-    /* Rest in 3 columns (2 grid columns each) */
-    .featured-card:nth-child(n+3) {
-        grid-column: span 2;
-    }
-    
-    .featured-card-large .card-image {
-        height: 200px;
-    }
-    
-    .featured-card:not(.featured-card-large) .card-image {
-        height: 130px;
-    }
-    
-    .card-content {
-        padding: 1rem;
-        gap: 0.7rem;
-    }
-    
-    .featured-card-large .card-content {
-        padding: 1.25rem;
-    }
-    
-    .card-title {
-        font-size: 0.9rem;
-        -webkit-line-clamp: 2;
-    }
-    
-    .featured-card-large .card-title {
-        font-size: 1.1rem;
-        -webkit-line-clamp: 3;
-    }
-    
-    .card-excerpt {
-        font-size: 0.85rem;
-        -webkit-line-clamp: 2;
-    }
-    
-    .featured-card-large .card-excerpt {
-        font-size: 0.9rem;
-        -webkit-line-clamp: 2;
-    }
-    
-    .card-category,
-    .card-school {
-        font-size: 0.6rem;
-        padding: 0.3rem 0.65rem;
-    }
-    
-    .card-date {
-        font-size: 0.8rem;
-    }
-    
-    .placeholder-image i {
-        font-size: 2.5rem;
-    }
-    
-    .featured-card-large .placeholder-image i {
-        font-size: 3.5rem;
-    }
-}
-
-/* Small mobile - Keep same layout */
-@media (max-width: 480px) {
-    .featured-section {
-        padding: 2rem 0;
-    }
-    
-    .container {
-        padding: 0 0.75rem;
-    }
-    
-    .featured-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 0.75rem;
-        grid-auto-rows: minmax(150px, auto);
-    }
-    
-    /* First two still large */
-    .featured-card:nth-child(1),
-    .featured-card:nth-child(2) {
-        grid-column: span 3;
-        grid-row: span 2;
-    }
-    
-    /* Rest in 3 columns */
-    .featured-card:nth-child(n+3) {
-        grid-column: span 2;
-    }
-    
-    .featured-card-large .card-image {
-        height: 150px;
-    }
-    
-    .featured-card:not(.featured-card-large) .card-image {
-        height: 95px;
-    }
-    
-    .card-content {
-        padding: 0.75rem;
-        gap: 0.6rem;
-    }
-    
-    .featured-card-large .card-content {
-        padding: 1rem;
-    }
-    
-    .card-title {
-        font-size: 0.8rem;
-        -webkit-line-clamp: 2;
-    }
-    
-    .featured-card-large .card-title {
-        font-size: 0.95rem;
-        -webkit-line-clamp: 2;
-    }
-    
-    .card-excerpt {
-        font-size: 0.75rem;
-        -webkit-line-clamp: 2;
-    }
-    
-    .card-category,
-    .card-school {
-        font-size: 0.58rem;
-        padding: 0.28rem 0.6rem;
-    }
-    
-    .card-date {
-        font-size: 0.75rem;
-    }
-    
-    .placeholder-image i {
-        font-size: 2rem;
-    }
-    
-    .featured-card-large .placeholder-image i {
-        font-size: 2.75rem;
-    }
-}
-
-/* Extra small devices */
-@media (max-width: 360px) {
-    .featured-section {
-        padding: 1.75rem 0;
-    }
-    
-    .container {
-        padding: 0 0.6rem;
-    }
-    
-    .featured-grid {
-        gap: 0.6rem;
-    }
-    
-    .featured-card-large .card-image {
-        height: 130px;
-    }
-    
-    .featured-card:not(.featured-card-large) .card-image {
-        height: 85px;
-    }
-    
-    .card-content {
-        padding: 0.65rem;
-        gap: 0.5rem;
-    }
-    
-    .featured-card-large .card-content {
-        padding: 0.85rem;
-    }
-    
-    .card-title {
-        font-size: 0.75rem;
-    }
-    
-    .featured-card-large .card-title {
-        font-size: 0.9rem;
-    }
-    
-    .card-excerpt {
-        font-size: 0.7rem;
-    }
-    
-    .card-category,
-    .card-school {
-        font-size: 0.55rem;
-        padding: 0.25rem 0.55rem;
-    }
-    
-    .card-date {
-        font-size: 0.7rem;
-    }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .featured-card,
-    .card-image img {
-        transition: none;
-    }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-    .featured-card {
-        border-width: 2px;
-    }
-    
-    .card-category,
-    .card-school {
-        border: 2px solid currentColor;
-    }
-}
-
-/* Light Mode Specific Enhancements */
-[data-theme="light"] .featured-section {
-    background: var(--primary-bg);
-}
-
-[data-theme="light"] .featured-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .featured-card:hover {
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="light"] .card-image {
-    background: var(--secondary-bg);
-}
-
-[data-theme="light"] .placeholder-image {
-    background: var(--secondary-bg);
-}
-
-/* Dark Mode Specific Enhancements */
-[data-theme="dark"] .featured-card:hover {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-}
-</style>
-{% endif %}
-
-<!-- Newsletter Section -->
-<!-- <section class="newsletter-section" style="background: rgba(26, 26, 46, 0.5); padding: 2rem 0; margin: 3rem 0; border-top: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-    <div class="newsletter-content" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 0 20px;">
-        <div class="newsletter-text" style="margin-bottom: 1.5rem;">
-            <h3 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 700;">Stay Updated</h3>
-            <p style="color: #ffffff; font-size: 0.95rem;">Get the latest news delivered to your inbox</p>
-        </div>
-        <form class="newsletter-form" action="#" method="POST" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-            {% csrf_token %}
-            <input type="email" name="email" placeholder="Enter your email" required aria-label="Email address" style="flex: 1; min-width: 250px; padding: 0.75rem 1rem; border: 1px solid #fff; border-radius: 8px; background: rgba(255, 255, 255, 0.08); color: #ffffff; font-size: 0.95rem;">
-            <button type="submit" aria-label="Subscribe to newsletter" style="padding: 0.75rem 2rem; background: #ff6b35; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem;">Subscribe</button>
-        </form>
-    </div>
-</section> -->
-
-<!-- Past Questions CTA -->
-{% if not hide_cta %}
-<section class="cta-section" style="background: rgba(26, 26, 46, 0.5); padding: 2rem 0; margin: 3rem 0; border-top: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-    <div class="cta-card" style="max-width: 600px; margin: 0 auto; padding: 0 20px; text-align: center;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: nowrap;">
-            <div class="cta-icon" style="background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%); width: 80px; height: 80px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2); flex-shrink: 0;">
-                <i class="fas fa-download" aria-hidden="true" style="font-size: 2rem; color: #fff;"></i>
-            </div>
-            <div style="flex: 1; text-align: left;">
-                <h3 style="color: #ffffff; font-size: 1.2rem; margin-bottom: 0.3rem; font-weight: 700;">Download Past Questions</h3>
-                <p style="color: #0c0b0b; font-size: 0.85rem; line-height: 1.4; margin-bottom: 0.8rem;">Access past questions for exam preparation. Download PDFs to study.</p>
-                <a href="{% url 'news:past_questions' %}" class="cta-btn" aria-label="View past questions" style="display: inline-block; padding: 0.6rem 1.5rem; background: #ff6b35; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.2); text-transform: uppercase;">VIEW PAST QUESTIONS</a>
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
 
 {% endblock %}

@@ -446,6 +446,23 @@
 
 {% block extra_js %}
 <script>
+    // CSRF Token function
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
     const examId = '{{ exam.exam_id }}';
     const examDuration = {{ exam.duration_minutes }} * 60;
     const examMode = '{{ exam.mode }}';
@@ -490,21 +507,22 @@
             window.removeEventListener('beforeunload', handleBeforeUnload);
             
             // Redirect back to exam list or dashboard
-            window.location.href = '/exam/';
+            window.location.href = '{% url "learning:dashboard" %}';
         }
     }
 
     function selectOption(questionId, optionId, element) {
-        element.closest('.options-container').querySelectorAll('.option-item').forEach(opt => {
+        const container = element.closest('.options-container');
+        container.querySelectorAll('.option-item').forEach(opt => {
             opt.classList.remove('selected');
         });
         element.classList.add('selected');
 
-        fetch(`/exam/submit-answer/${examId}/`, {
+        fetch('{% url "learning:submit_answer" exam.exam_id %}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
+                'X-CSRFToken': csrftoken
             },
             body: JSON.stringify({
                 question_id: questionId,
@@ -512,14 +530,28 @@
                 time_taken: examDuration - timeRemaining
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 if (!answeredQuestions.includes(questionId)) {
                     answeredQuestions.push(questionId);
                     updateQuestionNav();
                 }
+            } else {
+                alert(data.error || 'An error occurred');
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            container.querySelectorAll('.option-item').forEach(opt => {
+                opt.classList.remove('selected');
+            });
         });
     }
 
@@ -530,17 +562,25 @@
             return;
         }
 
+        // Immediately disable all options for faster visual feedback
         container.querySelectorAll('.option-item').forEach(opt => {
             opt.classList.remove('selected');
             opt.classList.add('disabled');
         });
         element.classList.add('selected');
 
-        fetch(`/exam/submit-answer/${examId}/`, {
+        // Show loading state
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'text-center my-2';
+        loadingIndicator.innerHTML = '<small class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Checking answer...</small>';
+        loadingIndicator.id = 'loading-' + questionId;
+        container.appendChild(loadingIndicator);
+
+        fetch('{% url "learning:submit_answer" exam.exam_id %}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
+                'X-CSRFToken': csrftoken
             },
             body: JSON.stringify({
                 question_id: questionId,
@@ -548,8 +588,17 @@
                 time_taken: examDuration - timeRemaining
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
+            // Remove loading indicator
+            const loader = document.getElementById('loading-' + questionId);
+            if (loader) loader.remove();
+
             if (data.success) {
                 container.dataset.answered = 'true';
 
@@ -558,6 +607,7 @@
                     updateQuestionNav();
                 }
 
+                // Quick visual update - all at once for speed
                 container.querySelectorAll('.option-item').forEach(opt => {
                     const optId = parseInt(opt.dataset.optionId);
                     
@@ -571,15 +621,28 @@
                     }
                 });
 
+                // Show explanation immediately
                 const explanationBox = document.getElementById(`explanation-${questionId}`);
-                if (explanationBox) {
+                if (explanationBox && data.explanation) {
                     explanationBox.classList.add('show');
                 }
+            } else {
+                alert(data.error || 'An error occurred');
+                container.querySelectorAll('.option-item').forEach(opt => {
+                    opt.classList.remove('selected', 'disabled');
+                });
             }
         })
         .catch(error => {
+            // Remove loading indicator
+            const loader = document.getElementById('loading-' + questionId);
+            if (loader) loader.remove();
+            
             console.error('Error:', error);
             alert('An error occurred. Please try again.');
+            container.querySelectorAll('.option-item').forEach(opt => {
+                opt.classList.remove('selected', 'disabled');
+            });
         });
     }
 
@@ -639,44 +702,60 @@
         const totalQuestions = {{ questions|length }};
         const answeredCount = answeredQuestions.length;
 
+        // Only show warning if not all questions answered, but allow submission anyway
         if (!autoSubmit && answeredCount < totalQuestions) {
             const unanswered = totalQuestions - answeredCount;
-            if (!confirm(`You have ${unanswered} unanswered question(s). Are you sure you want to submit?`)) {
+            const confirmMsg = `You have ${unanswered} unanswered question(s).\n\nUnanswered questions will be marked as incorrect.\n\nAre you sure you want to submit?`;
+            
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+        } else if (!autoSubmit) {
+            if (!confirm('Are you sure you want to submit your exam? You cannot change your answers after submission.')) {
                 return;
             }
         }
 
-        if (!autoSubmit && !confirm('Are you sure you want to submit your exam? You cannot change your answers after submission.')) {
-            return;
-        }
-
         const submitBtn = document.querySelector('.btn-success');
+        const submitBtnText = submitBtn.innerHTML;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Submitting...';
 
-        fetch(`/exam/submit/${examId}/`, {
+        fetch('{% url "learning:submit_exam" exam.exam_id %}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                force_submit: true
+            })
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Submission failed');
+                });
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data);
             if (data.success) {
                 clearInterval(timerInterval);
+                window.removeEventListener('beforeunload', handleBeforeUnload);
+                console.log('Redirecting to:', data.redirect_url);
                 window.location.href = data.redirect_url;
-            } else if (data.error) {
-                alert(data.error);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Submit Exam';
+            } else {
+                throw new Error(data.error || 'Unknown error occurred');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while submitting. Please try again.');
+            console.error('Submit error:', error);
+            alert(`Error: ${error.message}\n\nPlease try again or contact support if the problem persists.`);
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Submit Exam';
+            submitBtn.innerHTML = submitBtnText;
         });
     }
 
@@ -687,6 +766,7 @@
 
     window.addEventListener('beforeunload', handleBeforeUnload);
 
+    // Initialize
     startTimer();
     updateQuestionNav();
     updateNavigationButtons();
