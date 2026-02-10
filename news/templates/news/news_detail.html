@@ -422,10 +422,10 @@
                 {% if news.school %}
                 <span class="meta-badge school-badge">{{ news.school.name }}</span>
                 {% endif %}
-                <span class="meta-badge author-badge">
+                <!-- <span class="meta-badge author-badge">
                     <i class="fas fa-user"></i>
                     {% if news.author %}{{ news.author }}{% else %}{{ news.published_by.get_full_name|default:news.published_by.username }}{% endif %}
-                </span>
+                </span> -->
                 <time class="publish-date">
                     <i class="fas fa-clock"></i>
                     {{ news.created_at|date:"F j, Y" }}

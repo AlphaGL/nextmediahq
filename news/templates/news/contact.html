@@ -1,0 +1,494 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - NextMedia{% endblock %}
+{% block description %}Get in touch with NextMedia. We'd love to hear from you!{% endblock %}
+
+{% block content %}
+<style>
+    .contact-hero {
+        background: var(--gradient-1);
+        padding: 3rem 1rem;
+        text-align: center;
+        margin-top: 80px;
+        border-radius: 15px;
+    }
+
+    .contact-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    .contact-hero p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+    }
+
+    .contact-section {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .contact-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 20px var(--shadow);
+        transition: transform 0.3s ease;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .contact-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--gradient-2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+    }
+
+    .contact-card h3 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .contact-card p {
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+    }
+
+    .contact-card a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .contact-card a:hover {
+        color: var(--accent-secondary);
+    }
+
+    .contact-form-section {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px var(--shadow);
+        margin-bottom: 3rem;
+    }
+
+    .contact-form-section h2 {
+        color: var(--accent);
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .form-control {
+        width: 100%;
+        background: var(--secondary-bg);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .submit-btn {
+        background: var(--gradient-2);
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(245, 87, 108, 0.3);
+    }
+
+    .faq-section {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px var(--shadow);
+    }
+
+    .faq-section h2 {
+        color: var(--accent);
+        margin-bottom: 2rem;
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .faq-item {
+        background: var(--secondary-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .faq-question {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .faq-answer {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .social-link {
+        width: 45px;
+        height: 45px;
+        background: var(--secondary-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .social-link:hover {
+        background: var(--accent);
+        color: var(--primary-bg);
+        transform: translateY(-3px);
+    }
+
+    .success-message {
+        background: rgba(100, 255, 218, 0.1);
+        border-left: 4px solid var(--accent);
+        padding: 1rem;
+        border-radius: 8px;
+        color: var(--accent);
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+
+    .error-message {
+        background: rgba(255, 107, 53, 0.1);
+        border-left: 4px solid var(--accent-secondary);
+        padding: 1rem;
+        border-radius: 8px;
+        color: var(--accent-secondary);
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+</style>
+
+<div class="contact-hero">
+    <h1>Get In Touch</h1>
+    <p>We'd love to hear from you! Reach out to us anytime.</p>
+</div>
+
+<div class="contact-section">
+    <!-- Contact Information Cards -->
+    <div class="contact-grid">
+        <div class="contact-card">
+            <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <h3>Email Us</h3>
+            <p>General Inquiries</p>
+            <a href="mailto:contact@nextmedia.ng">contact@nextmedia.ng</a>
+            <p style="margin-top: 1rem;">Support</p>
+            <a href="mailto:support@nextmedia.ng">support@nextmedia.ng</a>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon">
+                <i class="fas fa-phone"></i>
+            </div>
+            <h3>Call Us</h3>
+            <p>Customer Support</p>
+            <a href="tel:+234XXXXXXXXXX">+234 XXX XXX XXXX</a>
+            <p style="margin-top: 1rem;">Available Mon-Fri, 9am-5pm WAT</p>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h3>Visit Us</h3>
+            <p>Nigeria</p>
+            <p style="margin-top: 1rem;">
+                <small>We operate primarily online to serve you better 24/7</small>
+            </p>
+        </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form-section">
+        <h2><i class="fas fa-paper-plane"></i> Send Us a Message</h2>
+        
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i> Your message has been sent successfully! We'll get back to you soon.
+        </div>
+        
+        <div id="errorMessage" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> <span id="errorText">Something went wrong. Please try again.</span>
+        </div>
+
+        <form id="contactForm" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Your Name *</label>
+                <input type="text" id="name" name="name" class="form-control" required 
+                       placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Your Email *</label>
+                <input type="email" id="email" name="email" class="form-control" required 
+                       placeholder="your@email.com">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number (Optional)</label>
+                <input type="tel" id="phone" name="phone" class="form-control" 
+                       placeholder="+234 XXX XXX XXXX">
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject *</label>
+                <select id="subject" name="subject" class="form-control" required>
+                    <option value="">Select a subject</option>
+                    <option value="general">General Inquiry</option>
+                    <option value="support">Technical Support</option>
+                    <option value="partnership">Partnership/Advertising</option>
+                    <option value="feedback">Feedback</option>
+                    <option value="report">Report an Issue</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Your Message *</label>
+                <textarea id="message" name="message" class="form-control" required 
+                          placeholder="Tell us how we can help you..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Send Message
+            </button>
+        </form>
+
+        <!-- Social Media Links -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Or connect with us on social media</p>
+            <div class="social-links">
+                <a href="#" class="social-link" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-link" title="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="social-link" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="social-link" title="LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="social-link" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-chevron-right" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                How can I submit news to NextMedia?
+            </div>
+            <div class="faq-answer">
+                You can submit news tips by emailing us at contact@nextmedia.ng with the subject line "News Submission". 
+                Please include all relevant details, sources, and any supporting media.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-chevron-right" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                How do I advertise on NextMedia?
+            </div>
+            <div class="faq-answer">
+                For advertising inquiries, please contact us at contact@nextmedia.ng with "Advertising" in the subject 
+                line. Our team will provide you with our media kit and pricing information.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-chevron-right" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                How can I report an error or issue on the website?
+            </div>
+            <div class="faq-answer">
+                We appreciate your help in maintaining quality! Please use the contact form above with the subject 
+                "Report an Issue" and describe the problem in detail. Include the page URL if applicable.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-chevron-right" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                Can my school partner with NextMedia?
+            </div>
+            <div class="faq-answer">
+                Absolutely! We welcome partnerships with educational institutions. Contact us with "Partnership" in 
+                the subject line, and let's discuss how we can collaborate to bring quality news coverage to your community.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-chevron-right" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                How long does it take to get a response?
+            </div>
+            <div class="faq-answer">
+                We typically respond to all inquiries within 24-48 hours during business days. For urgent matters, 
+                please indicate "URGENT" in your subject line.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-chevron-right" style="color: var(--accent); margin-right: 0.5rem;"></i>
+                How can I delete my account or data?
+            </div>
+            <div class="faq-answer">
+                To delete your account or request data deletion, please email us at privacy@nextmedia.ng. We'll 
+                process your request in accordance with our Privacy Policy.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle form submission
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = this.querySelector('.submit-btn');
+        const originalText = submitBtn.innerHTML;
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        // Hide any previous messages
+        document.getElementById('successMessage').style.display = 'none';
+        document.getElementById('errorMessage').style.display = 'none';
+        
+        // Get form data
+        const formData = new FormData(this);
+        
+        // Simulate form submission (replace with actual AJAX call to your backend)
+        setTimeout(() => {
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Reset form
+            this.reset();
+            
+            // Restore button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            
+            // Scroll to success message
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            /* 
+            // Example of actual AJAX submission:
+            fetch('{% url "news:contact_submit" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('successMessage').style.display = 'block';
+                    this.reset();
+                } else {
+                    document.getElementById('errorText').textContent = data.message || 'Something went wrong.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                document.getElementById('errorText').textContent = 'Network error. Please try again.';
+                document.getElementById('errorMessage').style.display = 'block';
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            });
+            */
+        }, 1500);
+    });
+</script>
+{% endblock %}

@@ -223,7 +223,16 @@ def take_exam(request, exam_id):
         return redirect('learning:exam_results', exam_id=exam.exam_id)
     
     questions = exam.exam_year.questions.prefetch_related('options').order_by('question_number')
-    answered = exam.answers.values_list('question_id', flat=True)
+    
+    # Get all answered questions with their selected options
+    answered_dict = {}
+    for answer in exam.answers.select_related('selected_option'):
+        answered_dict[answer.question_id] = {
+            'option_id': answer.selected_option_id,
+            'is_correct': answer.is_correct
+        }
+    
+    answered_question_ids = list(answered_dict.keys())
     
     # For test mode, get explanations
     questions_with_explanations = []
@@ -233,15 +242,23 @@ def take_exam(request, exam_id):
                 explanation = question.explanation
             except Explanation.DoesNotExist:
                 explanation = None
+            
+            # Include answer info if question was already answered
+            answer_info = answered_dict.get(question.id)
+            
             questions_with_explanations.append({
                 'question': question,
-                'explanation': explanation
+                'explanation': explanation,
+                'answered': answer_info is not None,
+                'selected_option_id': answer_info['option_id'] if answer_info else None,
+                'is_correct': answer_info['is_correct'] if answer_info else None
             })
     
     context = {
         'exam': exam,
         'questions': questions,
-        'answered': list(answered),
+        'answered': answered_question_ids,
+        'answered_dict_json': json.dumps(answered_dict),  # Convert to JSON string
         'questions_with_explanations': questions_with_explanations if exam.mode == 'test' else None,
     }
     return render(request, 'learning/take_exam.html', context)

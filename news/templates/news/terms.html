@@ -1,0 +1,424 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}Terms of Service - NextMedia{% endblock %}
+{% block description %}Read NextMedia's terms of service to understand the rules and guidelines for using our platform.{% endblock %}
+
+{% block content %}
+<style>
+    .terms-hero {
+        background: var(--gradient-3);
+        padding: 3rem 1rem;
+        text-align: center;
+        margin-top: 80px;
+        border-radius: 15px;
+    }
+
+    .terms-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    .terms-hero p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+    }
+
+    .terms-content {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+    }
+
+    .terms-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px var(--shadow);
+    }
+
+    .terms-card h2 {
+        color: var(--accent);
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0.5rem;
+    }
+
+    .terms-card h3 {
+        color: var(--text-primary);
+        margin: 1.5rem 0 1rem;
+        font-size: 1.3rem;
+    }
+
+    .terms-card p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+    }
+
+    .terms-card ul, .terms-card ol {
+        color: var(--text-secondary);
+        line-height: 2;
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+
+    .terms-card li {
+        margin-bottom: 0.5rem;
+    }
+
+    .warning-box {
+        background: rgba(255, 107, 53, 0.1);
+        border-left: 4px solid var(--accent-secondary);
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border-radius: 8px;
+    }
+
+    .info-box {
+        background: var(--secondary-bg);
+        border-left: 4px solid var(--accent);
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border-radius: 8px;
+    }
+
+    .last-updated {
+        text-align: center;
+        color: var(--text-secondary);
+        font-style: italic;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="terms-hero">
+    <h1>Terms of Service</h1>
+    <p>Please read these terms carefully before using our services</p>
+</div>
+
+<div class="terms-content">
+    <div class="last-updated">
+        <p><strong>Last Updated:</strong> {{ current_date|default:"January 2025" }}</p>
+    </div>
+
+    <div class="terms-card">
+        <h2>1. Acceptance of Terms</h2>
+        <p>
+            Welcome to NextMedia. By accessing or using our website (www.nextmedia.ng), mobile application, 
+            or any of our services (collectively, the "Services"), you agree to be bound by these Terms of 
+            Service ("Terms"). If you do not agree to these Terms, please do not use our Services.
+        </p>
+        <div class="warning-box">
+            <p><strong>Important:</strong> These Terms constitute a legally binding agreement between you and 
+            NextMedia. Please read them carefully.</p>
+        </div>
+    </div>
+
+    <div class="terms-card">
+        <h2>2. Use of Services</h2>
+        
+        <h3>2.1 Eligibility</h3>
+        <p>You must be at least 13 years old to use our Services. By using our Services, you represent and 
+        warrant that you meet this age requirement.</p>
+
+        <h3>2.2 Account Registration</h3>
+        <p>To access certain features, you may need to create an account. You agree to:</p>
+        <ul>
+            <li>Provide accurate, current, and complete information</li>
+            <li>Maintain and update your information</li>
+            <li>Keep your password secure and confidential</li>
+            <li>Notify us immediately of any unauthorized use of your account</li>
+            <li>Accept responsibility for all activities under your account</li>
+        </ul>
+
+        <h3>2.3 Acceptable Use</h3>
+        <p>You agree to use our Services only for lawful purposes. You must not:</p>
+        <ul>
+            <li>Violate any applicable laws or regulations</li>
+            <li>Infringe on intellectual property rights</li>
+            <li>Post false, misleading, or defamatory content</li>
+            <li>Harass, abuse, or harm other users</li>
+            <li>Distribute spam, malware, or viruses</li>
+            <li>Attempt to gain unauthorized access to our systems</li>
+            <li>Scrape or harvest user data without permission</li>
+            <li>Use our Services for commercial purposes without authorization</li>
+        </ul>
+    </div>
+
+    <div class="terms-card">
+        <h2>3. User Content</h2>
+        
+        <h3>3.1 Your Content</h3>
+        <p>
+            You retain ownership of any content you submit to our Services ("User Content"). By posting 
+            User Content, you grant NextMedia a worldwide, non-exclusive, royalty-free license to use, 
+            reproduce, modify, publish, and distribute your content in connection with our Services.
+        </p>
+
+        <h3>3.2 Content Standards</h3>
+        <p>All User Content must:</p>
+        <ul>
+            <li>Be accurate and truthful</li>
+            <li>Comply with applicable laws</li>
+            <li>Not contain offensive, obscene, or harmful material</li>
+            <li>Not violate anyone's rights (privacy, copyright, etc.)</li>
+            <li>Not promote illegal activities</li>
+        </ul>
+
+        <h3>3.3 Content Moderation</h3>
+        <p>
+            We reserve the right to review, edit, or remove any User Content that violates these Terms or 
+            that we deem inappropriate, without prior notice.
+        </p>
+    </div>
+
+    <div class="terms-card">
+        <h2>4. Intellectual Property Rights</h2>
+        
+        <h3>4.1 Our Content</h3>
+        <p>
+            All content on our Services, including text, graphics, logos, images, videos, and software 
+            (the "NextMedia Content"), is owned by or licensed to NextMedia and is protected by copyright, 
+            trademark, and other intellectual property laws.
+        </p>
+
+        <h3>4.2 Limited License</h3>
+        <p>
+            We grant you a limited, non-exclusive, non-transferable license to access and use our Services 
+            for personal, non-commercial purposes. You may not:
+        </p>
+        <ul>
+            <li>Copy, modify, or create derivative works</li>
+            <li>Sell, rent, or sublicense our content</li>
+            <li>Reverse engineer or decompile our software</li>
+            <li>Remove copyright or proprietary notices</li>
+        </ul>
+
+        <h3>4.3 Trademarks</h3>
+        <p>
+            "NextMedia" and our logos are trademarks of NextMedia. You may not use our trademarks without 
+            our prior written permission.
+        </p>
+    </div>
+
+    <div class="terms-card">
+        <h2>5. Payment and Subscriptions</h2>
+        
+        <h3>5.1 Paid Services</h3>
+        <p>
+            Certain features may require payment. By purchasing paid services, you agree to pay all fees 
+            and charges as described at the time of purchase.
+        </p>
+
+        <h3>5.2 Payment Processing</h3>
+        <p>
+            Payments are processed securely through our third-party payment provider, Paystack. By making 
+            a payment, you agree to Paystack's terms and conditions.
+        </p>
+
+        <h3>5.3 Refunds</h3>
+        <p>
+            All sales are final unless otherwise stated. Refunds, if applicable, will be processed in 
+            accordance with our refund policy.
+        </p>
+
+        <h3>5.4 Event Voting Payments</h3>
+        <p>
+            Payments for event voting are non-refundable once processed. Votes are final and cannot be 
+            transferred or reversed.
+        </p>
+    </div>
+
+    <div class="terms-card">
+        <h2>6. Third-Party Services and Links</h2>
+        <p>
+            Our Services may contain links to third-party websites or integrate with third-party services. 
+            We are not responsible for:
+        </p>
+        <ul>
+            <li>The content or practices of third-party sites</li>
+            <li>Any damages resulting from your use of third-party services</li>
+            <li>The availability or accuracy of third-party content</li>
+        </ul>
+        <p>
+            Your use of third-party services is governed by their respective terms and privacy policies.
+        </p>
+    </div>
+
+    <div class="terms-card">
+        <h2>7. Disclaimers and Limitations of Liability</h2>
+        
+        <h3>7.1 "As Is" Basis</h3>
+        <p>
+            Our Services are provided on an "as is" and "as available" basis without warranties of any kind, 
+            either express or implied, including but not limited to warranties of merchantability, fitness 
+            for a particular purpose, or non-infringement.
+        </p>
+
+        <h3>7.2 No Guarantee of Accuracy</h3>
+        <p>
+            While we strive for accuracy, we do not warrant that:
+        </p>
+        <ul>
+            <li>Our content is accurate, complete, or up-to-date</li>
+            <li>Our Services will be uninterrupted or error-free</li>
+            <li>Defects will be corrected</li>
+            <li>Our servers are free of viruses or harmful components</li>
+        </ul>
+
+        <h3>7.3 Limitation of Liability</h3>
+        <div class="warning-box">
+            <p>
+                <strong>To the fullest extent permitted by law, NextMedia shall not be liable for any 
+                indirect, incidental, special, consequential, or punitive damages, including but not 
+                limited to loss of profits, data, or goodwill, arising from:</strong>
+            </p>
+            <ul>
+                <li>Your use or inability to use our Services</li>
+                <li>Unauthorized access to your data</li>
+                <li>Errors or omissions in content</li>
+                <li>Actions of other users</li>
+            </ul>
+            <p>
+                Our total liability to you for any claims arising from your use of our Services shall not 
+                exceed the amount you paid us in the past 12 months, or ₦10,000, whichever is less.
+            </p>
+        </div>
+    </div>
+
+    <div class="terms-card">
+        <h2>8. Indemnification</h2>
+        <p>
+            You agree to indemnify, defend, and hold harmless NextMedia, its officers, directors, employees, 
+            and agents from any claims, liabilities, damages, losses, costs, or expenses (including 
+            attorney's fees) arising from:
+        </p>
+        <ul>
+            <li>Your use of our Services</li>
+            <li>Your violation of these Terms</li>
+            <li>Your violation of any third-party rights</li>
+            <li>Your User Content</li>
+        </ul>
+    </div>
+
+    <div class="terms-card">
+        <h2>9. Termination</h2>
+        
+        <h3>9.1 By You</h3>
+        <p>
+            You may stop using our Services at any time. You may also request account deletion by 
+            contacting us at contact@nextmedia.ng.
+        </p>
+
+        <h3>9.2 By Us</h3>
+        <p>
+            We reserve the right to suspend or terminate your access to our Services at any time, 
+            with or without notice, for any reason, including:
+        </p>
+        <ul>
+            <li>Violation of these Terms</li>
+            <li>Suspected fraud or illegal activity</li>
+            <li>Extended period of inactivity</li>
+            <li>To comply with legal requirements</li>
+        </ul>
+
+        <h3>9.3 Effect of Termination</h3>
+        <p>
+            Upon termination, your right to use our Services will immediately cease. Sections of these 
+            Terms that by their nature should survive termination will survive.
+        </p>
+    </div>
+
+    <div class="terms-card">
+        <h2>10. Privacy</h2>
+        <p>
+            Your privacy is important to us. Our <a href="{% url 'news:privacy' %}" style="color: var(--accent); text-decoration: none;">Privacy Policy</a> 
+            explains how we collect, use, and protect your personal information. By using our Services, you 
+            consent to our Privacy Policy.
+        </p>
+    </div>
+
+    <div class="terms-card">
+        <h2>11. Changes to Terms</h2>
+        <p>
+            We reserve the right to modify these Terms at any time. We will notify you of material changes 
+            by posting the updated Terms on this page and updating the "Last Updated" date.
+        </p>
+        <p>
+            Your continued use of our Services after changes are posted constitutes your acceptance of the 
+            revised Terms.
+        </p>
+    </div>
+
+    <div class="terms-card">
+        <h2>12. Governing Law and Dispute Resolution</h2>
+        
+        <h3>12.1 Governing Law</h3>
+        <p>
+            These Terms shall be governed by and construed in accordance with the laws of the Federal 
+            Republic of Nigeria, without regard to its conflict of law provisions.
+        </p>
+
+        <h3>12.2 Dispute Resolution</h3>
+        <p>
+            Any disputes arising from these Terms or your use of our Services shall be resolved through:
+        </p>
+        <ol>
+            <li>Good faith negotiations between the parties</li>
+            <li>Mediation, if negotiations fail</li>
+            <li>The courts of Nigeria, as a last resort</li>
+        </ol>
+    </div>
+
+    <div class="terms-card">
+        <h2>13. Miscellaneous</h2>
+        
+        <h3>13.1 Entire Agreement</h3>
+        <p>
+            These Terms, together with our Privacy Policy, constitute the entire agreement between you and 
+            NextMedia regarding your use of our Services.
+        </p>
+
+        <h3>13.2 Severability</h3>
+        <p>
+            If any provision of these Terms is found to be unenforceable, the remaining provisions will 
+            remain in full force and effect.
+        </p>
+
+        <h3>13.3 Waiver</h3>
+        <p>
+            Our failure to enforce any right or provision of these Terms will not be considered a waiver 
+            of those rights.
+        </p>
+
+        <h3>13.4 Assignment</h3>
+        <p>
+            You may not assign or transfer your rights under these Terms without our written consent. We 
+            may assign our rights to any affiliate or successor.
+        </p>
+    </div>
+
+    <div class="terms-card">
+        <h2>14. Contact Information</h2>
+        <p>
+            If you have any questions about these Terms, please contact us:
+        </p>
+        <div style="margin-top: 1rem; padding: 1rem; background: var(--secondary-bg); border-radius: 8px;">
+            <p><strong>NextMedia Legal Team</strong></p>
+            <p><i class="fas fa-envelope"></i> Email: legal@nextmedia.ng</p>
+            <p><i class="fas fa-envelope"></i> General Inquiries: contact@nextmedia.ng</p>
+            <p><i class="fas fa-map-marker-alt"></i> Address: Nigeria</p>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <p style="margin-bottom: 0;">
+            <strong>By using our Services, you acknowledge that you have read, understood, and agree to be 
+            bound by these Terms of Service.</strong>
+        </p>
+    </div>
+</div>
+{% endblock %}

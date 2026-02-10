@@ -469,7 +469,62 @@
     let currentQuestionIndex = 0;
     let timeRemaining = examDuration;
     let answeredQuestions = {{ answered|safe }};
+    let answeredDict = {{ answered_dict_json|safe }};
     let timerInterval;
+
+    // Restore previously answered questions on page load
+    function restorePreviousAnswers() {
+        const questions = document.querySelectorAll('.question-item');
+        
+        questions.forEach(questionDiv => {
+            const questionId = parseInt(questionDiv.dataset.questionId);
+            const answerInfo = answeredDict[questionId];
+            
+            if (answerInfo) {
+                const container = questionDiv.querySelector('.options-container');
+                const options = container.querySelectorAll('.option-item');
+                
+                options.forEach(optionDiv => {
+                    const optionId = parseInt(optionDiv.dataset.optionId);
+                    
+                    // Restore selected state
+                    if (optionId === answerInfo.option_id) {
+                        optionDiv.classList.add('selected');
+                        
+                        // For test mode, show correct/wrong and explanation
+                        if (examMode === 'test') {
+                            container.dataset.answered = 'true';
+                            
+                            // Mark all options as disabled
+                            options.forEach(opt => opt.classList.add('disabled'));
+                            
+                            // Check if this was the correct answer
+                            const isCorrect = optionDiv.dataset.isCorrect === 'True';
+                            
+                            // Mark correct answer in green
+                            options.forEach(opt => {
+                                if (opt.dataset.isCorrect === 'True') {
+                                    opt.classList.add('correct');
+                                    opt.classList.remove('selected');
+                                }
+                            });
+                            
+                            // Mark selected wrong answer in red
+                            if (!isCorrect) {
+                                optionDiv.classList.add('wrong');
+                            }
+                            
+                            // Show explanation
+                            const explanationBox = document.getElementById(`explanation-${questionId}`);
+                            if (explanationBox) {
+                                explanationBox.classList.add('show');
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     function startTimer() {
         timerInterval = setInterval(() => {
@@ -767,6 +822,7 @@
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     // Initialize
+    restorePreviousAnswers();  // Restore any previously answered questions
     startTimer();
     updateQuestionNav();
     updateNavigationButtons();

@@ -1,0 +1,258 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}About Us - NextMedia{% endblock %}
+{% block description %}Learn about NextMedia, your trusted source for fast and credible information from schools and around the world.{% endblock %}
+
+{% block content %}
+<style>
+    .about-hero {
+        background: var(--gradient-1);
+        padding: 4rem 1rem;
+        text-align: center;
+        margin-top: 80px;
+        border-radius: 15px;
+    }
+
+    .about-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: white;
+    }
+
+    .about-hero p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .about-section {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+    }
+
+    .about-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px var(--shadow);
+    }
+
+    .about-card h2 {
+        color: var(--accent);
+        margin-bottom: 1rem;
+        font-size: 1.8rem;
+    }
+
+    .about-card p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .value-card {
+        background: var(--secondary-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .value-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .value-icon {
+        font-size: 2.5rem;
+        color: var(--accent);
+        margin-bottom: 1rem;
+    }
+
+    .value-card h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .value-card p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .team-section {
+        margin-top: 3rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .stat-box {
+        background: var(--gradient-3);
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        color: white;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+</style>
+
+<div class="about-hero">
+    <h1>About NextMedia</h1>
+    <p>Your Trusted Source for Fast and Credible Information</p>
+</div>
+
+<div class="about-section">
+    <div class="about-card">
+        <h2><i class="fas fa-newspaper"></i> Who We Are</h2>
+        <p>
+            NextMedia is a leading digital news platform dedicated to delivering fast, accurate, and credible information 
+            to students, educators, and news enthusiasts across Nigeria and beyond. Founded with a mission to bridge the 
+            information gap in educational institutions, we have grown to become a trusted source for campus news, 
+            national updates, and global events.
+        </p>
+        <p>
+            Our platform serves as a comprehensive hub for school-specific news, academic resources, event coverage, 
+            and engaging content that matters to our vibrant community of readers. We believe in the power of 
+            information to transform lives and empower communities.
+        </p>
+    </div>
+
+    <div class="about-card">
+        <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+        <p>
+            To provide timely, accurate, and engaging news coverage that keeps our community informed, educated, 
+            and connected. We strive to be the go-to platform for students and educators seeking reliable information 
+            about their schools, academic opportunities, events, and trending topics.
+        </p>
+    </div>
+
+    <div class="about-card">
+        <h2><i class="fas fa-eye"></i> Our Vision</h2>
+        <p>
+            To become Africa's leading focused news platform, fostering informed communities through quality 
+            journalism, innovative technology, and meaningful engagement. We envision a future where every student 
+            has access to the information they need to succeed academically and professionally.
+        </p>
+    </div>
+
+    <div class="about-card">
+        <h2><i class="fas fa-heart"></i> Our Core Values</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon"><i class="fas fa-check-circle"></i></div>
+                <h3>Accuracy</h3>
+                <p>We verify every story to ensure our readers get only credible and factual information.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Speed</h3>
+                <p>Breaking news delivered fast, keeping you ahead of events as they unfold.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Integrity</h3>
+                <p>Honest, unbiased reporting that serves the public interest above all else.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon"><i class="fas fa-users"></i></div>
+                <h3>Community</h3>
+                <p>Building connections and fostering engagement within our diverse audience.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon"><i class="fas fa-lightbulb"></i></div>
+                <h3>Innovation</h3>
+                <p>Leveraging technology to enhance how you discover and consume news.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon"><i class="fas fa-graduation-cap"></i></div>
+                <h3>Education</h3>
+                <p>Empowering students with information, resources, and opportunities for growth.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-card">
+        <h2><i class="fas fa-chart-line"></i> Our Impact</h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Schools Covered</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">News Published</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">News Coverage</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Verified Stories</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-card">
+        <h2><i class="fas fa-cogs"></i> What We Offer</h2>
+        <ul style="color: var(--text-secondary); line-height: 2; padding-left: 1.5rem;">
+            <li><strong>School News:</strong> Comprehensive coverage of events, announcements, and updates from various educational institutions</li>
+            <li><strong>Event Coverage:</strong> Live updates and highlights from campus events, competitions, and celebrations</li>
+            <li><strong>Academic Resources:</strong> Past questions, study materials, and educational content to support learning</li>
+            <li><strong>National & Global News:</strong> Curated news from Nigeria and around the world that matters to students</li>
+            <li><strong>AI-Powered Chat:</strong> Interactive AI assistant for instant answers and personalized news recommendations</li>
+            <li><strong>Mobile App:</strong> Progressive Web App for seamless access on any device, online or offline</li>
+        </ul>
+    </div>
+
+    <div class="about-card">
+        <h2><i class="fas fa-handshake"></i> Partner With Us</h2>
+        <p>
+            We're always looking to collaborate with schools, organizations, and brands that share our commitment 
+            to education and information. Whether you're looking to advertise, contribute content, or explore 
+            partnership opportunities, we'd love to hear from you.
+        </p>
+        <p>
+            <a href="{% url 'news:contact' %}" style="color: var(--accent); text-decoration: none; font-weight: 600;">
+                <i class="fas fa-envelope"></i> Contact Us for Partnerships
+            </a>
+        </p>
+    </div>
+
+    <div class="about-card">
+        <h2><i class="fas fa-envelope-open-text"></i> Get In Touch</h2>
+        <p>
+            Have a story tip, feedback, or inquiry? We'd love to hear from you! Our team is committed to 
+            responding to your messages promptly.
+        </p>
+        <div style="margin-top: 1.5rem;">
+            <p><i class="fas fa-envelope" style="color: var(--accent); margin-right: 0.5rem;"></i> Email: contact@nextmedia.ng</p>
+            <p><i class="fas fa-phone" style="color: var(--accent); margin-right: 0.5rem;"></i> Phone: +234 XXX XXX XXXX</p>
+            <p><i class="fas fa-map-marker-alt" style="color: var(--accent); margin-right: 0.5rem;"></i> Location: Nigeria</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
