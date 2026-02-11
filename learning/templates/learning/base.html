@@ -812,6 +812,11 @@
     </style>
     
     {% block extra_css %}{% endblock %}
+
+
+    <!-- Adsense code -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8114107298397897"
+     crossorigin="anonymous"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -881,8 +886,8 @@
                 <a href="{% url 'news:school_list' %}" class="nav-link">
                     <i class="bi bi-building me-1"></i>School News
                 </a>
-                <a href="{% url 'news:category_news' 'global' %}" class="nav-link">
-                    <i class="bi bi-globe me-1"></i>Global News
+                <a href="{% url 'news:category_news' 'sports' %}" class="nav-link">
+                    <i class="bi bi-globe me-1"></i>Sports News
                 </a>
                 <a href="{% url 'news:category_news' 'national' %}" class="nav-link">
                     <i class="bi bi-flag me-1"></i>National News

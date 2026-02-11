@@ -8,7 +8,23 @@ from django.conf import settings
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
 from .models import News, School, Category, PastQuestion
+from django.views.generic import TemplateView
 
+
+class AboutUsViews(TemplateView):
+    template_name = 'news/about.html'
+
+class PrivacyViews(TemplateView):
+    template_name = 'news/privacy.html'
+
+class TermsViews(TemplateView):
+    template_name = 'news/terms.html'
+
+class DisclaimerViews(TemplateView):
+    template_name = 'news/disclaimer.html'
+
+class ContactViews(TemplateView):
+    template_name = 'news/contact.html'
 
 def ping_view(request):
     return JsonResponse({"status": "OK"})

@@ -793,7 +793,7 @@
     <!-- Adsense code -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8114107298397897"
      crossorigin="anonymous"></script>
-     
+
 </head>
 <body>
     <!-- Navigation -->
@@ -834,7 +834,7 @@
                 <a href="{% url 'news:category_news' 'sports' %}" class="nav-link">Sports</a>
                 <a href="{% url 'news:category_news' 'ethicsandlifestyle' %}" class="nav-link">Ethics and Lifestyle</a>
                 <a href="{% url 'news:past_questions' %}" class="nav-link">Past Questions</a>
-                <a href="#contact" class="nav-link">Contact</a>
+                <a href="{% url 'news:contact' %}" class="nav-link">Contact</a>
             </div>
         </div>
     </nav>
@@ -868,73 +868,150 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <div class="footer-logo">
-                    <img src="{% static 'img/logo.jpg' %}" alt="NextMedia">
-                    <span>Next<span class="nav-brand-text">Media</span></span>
-                </div>
-                <p>Your trusted source for the latest news from schools and around the world.</p>
-            </div>
-            
-            <div class="footer-links">
-                <div class="footer-column">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="{% url 'news:home' %}">Home</a></li>
-                        <li><a href="{% url 'news:school_list' %}">School News</a></li>
-                        <li><a href="{% url 'news:category_news' 'global' %}">Global News</a></li>
-                        <li><a href="{% url 'news:past_questions' %}">Past Questions</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h4>Categories</h4>
-                    <ul>
-                        <li><a href="{% url 'news:category_news' 'sports' %}">Sports</a></li>
-                        <li><a href="{% url 'news:category_news' 'education' %}">Education</a></li>
-                        <li><a href="{% url 'news:category_news' 'technology' %}">Technology</a></li>
-                        <li><a href="{% url 'news:category_news' 'politics' %}">Politics</a></li>
-                    </ul>
+<!-- Updated Footer Section - Add this to your base.html -->
+<!-- Replace your existing footer with this code -->
+
+<footer style="background: var(--secondary-bg); padding: 3rem 1rem 1.5rem; margin-top: 4rem; border-top: 1px solid var(--border);">
+    <div style="max-width: 1400px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <!-- About Section -->
+            <div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.2rem;">
+                    <i class="fas fa-newspaper"></i> NextMedia
+                </h3>
+                <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+                    Your trusted source for fast and credible information from schools and around the world.
+                </p>
+                <div style="display: flex; gap: 0.75rem;">
+                    <a href="#" style="width: 35px; height: 35px; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-primary); text-decoration: none; transition: all 0.3s ease;" title="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" style="width: 35px; height: 35px; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-primary); text-decoration: none; transition: all 0.3s ease;" title="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" style="width: 35px; height: 35px; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-primary); text-decoration: none; transition: all 0.3s ease;" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" style="width: 35px; height: 35px; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-primary); text-decoration: none; transition: all 0.3s ease;" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
                 </div>
             </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <div class="social-links">
-                <a href="https://x.com/NEXTMEDIA_NG?t=PDjKpbv6cQogdaoAuPU95w&s=09" class="social-link" aria-label="X">
-                    <i class="fab fa-x"></i>
-                </a>
-                <a href="https://www.facebook.com/profile.php?id=61580041737517" class="social-link" aria-label="Facebook">
-                    <i class="fab fa-facebook"></i>
-                </a>
-                <a href="https://www.instagram.com/nextmedia_ng?utm_source=qr&igsh=MWlubzVoaDBiYzhjbg==" class="social-link" aria-label="Instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="https://www.tiktok.com/@next_media_ng?_t=ZS-8zHv5vPL263&_r=1" class="social-link" aria-label="TikTok">
-                    <i class="fab fa-tiktok"></i>
-                </a>
-                <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="social-link" aria-label="WhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                </a>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.2rem;">
+                    <i class="fas fa-link"></i> Quick Links
+                </h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'news:home' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Home
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'news:school_list' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Schools
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'events:home' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Events
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'learning:home' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Learning Portal
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'news:past_questions' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Past Questions
+                        </a>
+                    </li>
+                </ul>
             </div>
-            
-            <a href="https://whatsapp.com/channel/0029VbB6jGxHgZWeHuJaW50M" class="whatsapp-btn">
-                <i class="fab fa-whatsapp"></i>
-                JOIN WHATSAPP CHANNEL
-            </a>
-            
-            <div class="footer-contact" id="contact">
-                <p>Contact: <a href="mailto:nextmedia143@gmail.com">NextMedia Team</a></p>
+
+            <!-- Company -->
+            <div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.2rem;">
+                    <i class="fas fa-building"></i> Company
+                </h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'news:about' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> About Us
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'news:contact' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Contact Us
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="mailto:nextmedia143@gmail.com" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Advertise
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="mailto:nextmedia143@gmail.com" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Partnership
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Legal -->
+            <div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.2rem;">
+                    <i class="fas fa-gavel"></i> Legal
+                </h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'news:privacy' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Privacy Policy
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'news:terms' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Terms of Service
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{% url 'news:disclaimer' %}" style="color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease;">
+                            <i class="fas fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.5rem;"></i> Disclaimer
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-        
-        <div class="footer-copyright">
-            <p>&copy; NextMedia. All rights reserved.</p>
+
+        <!-- Copyright -->
+        <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; text-align: center;">
+            <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                © 2025 NextMedia. All rights reserved. | 
+                <a href="{% url 'news:privacy' %}" style="color: var(--accent); text-decoration: none;">Privacy</a> | 
+                <a href="{% url 'news:terms' %}" style="color: var(--accent); text-decoration: none;">Terms</a> | 
+                <a href="{% url 'news:contact' %}" style="color: var(--accent); text-decoration: none;">Contact</a>
+            </p>
         </div>
-    </footer>
+    </div>
+</footer>
+
+<style>
+    /* Footer link hover effects */
+    footer a:hover {
+        color: var(--accent) !important;
+    }
+    
+    footer .fab, footer .fas {
+        transition: all 0.3s ease;
+    }
+    
+    footer a:hover .fab, footer a:hover .fas {
+        transform: scale(1.1);
+    }
+</style>
 
     <!-- JavaScript -->
     <script>
