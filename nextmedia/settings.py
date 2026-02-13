@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'ai_chat',
     'events',
     'learning',
+    'tickets',
     'cloudinary',
     'cloudinary_storage',
 ]

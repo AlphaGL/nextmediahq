@@ -100,185 +100,128 @@
         }
     }
 
-    .hero-badge {
-        display: inline-block;
-        padding: 0.6rem 1.5rem;
-        background: rgba(100, 255, 218, 0.1);
-        border: 2px solid var(--accent);
-        border-radius: 30px;
-        color: var(--accent);
-        font-weight: 700;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 2rem;
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% {
-            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
-        }
-        50% {
-            box-shadow: 0 0 40px rgba(100, 255, 218, 0.5);
-        }
-    }
-
     .hero-content h1 {
-        font-size: clamp(2.5rem, 6vw, 4.5rem);
-        font-weight: 800;
-        color: var(--text-primary);
+        font-size: 4rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin-bottom: 1.5rem;
-        line-height: 1.1;
+        letter-spacing: -2px;
     }
 
     .hero-content p {
-        font-size: clamp(1.1rem, 2vw, 1.3rem);
+        font-size: 1.4rem;
         color: var(--text-secondary);
-        margin-bottom: 3rem;
-        line-height: 1.7;
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
     }
 
     .hero-cta {
-        display: inline-flex;
+        display: flex;
         gap: 1.5rem;
-        flex-wrap: wrap;
         justify-content: center;
+        flex-wrap: wrap;
     }
 
-    .cta-btn {
-        padding: 1rem 2.5rem;
-        font-size: 1rem;
-        font-weight: 700;
+    .btn-primary-hero {
+        padding: 1.2rem 3rem;
+        background: var(--accent);
+        color: var(--primary-bg);
+        border: none;
         border-radius: 50px;
-        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
         transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
     }
 
-    .cta-primary {
-        background: var(--gradient-1);
-        color: white;
-        box-shadow: 0 10px 30px rgba(100, 255, 218, 0.3);
-    }
-
-    .cta-primary:hover {
+    .btn-primary-hero:hover {
+        background: var(--accent-secondary);
         transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(100, 255, 218, 0.5);
+        box-shadow: 0 15px 40px rgba(100, 255, 218, 0.4);
     }
 
-    .cta-secondary {
+    .btn-secondary-hero {
+        padding: 1.2rem 3rem;
         background: transparent;
-        color: var(--accent);
-        border: 2px solid var(--accent);
+        color: var(--text-primary);
+        border: 2px solid var(--border);
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
     }
 
-    .cta-secondary:hover {
+    .btn-secondary-hero:hover {
+        border-color: var(--accent);
         background: var(--accent);
         color: var(--primary-bg);
         transform: translateY(-3px);
     }
 
-    /* Stats */
-    .hero-stats {
-        display: flex;
-        justify-content: center;
-        gap: 4rem;
-        margin-top: 4rem;
-        flex-wrap: wrap;
+    /* Ticket Link Badge */
+    .ticket-link-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
 
-    .stat-item {
-        text-align: center;
-        position: relative;
+    .ticket-link-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
     }
 
-    .stat-item::before {
-        content: '';
-        position: absolute;
-        top: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: var(--accent);
-    }
-
-    .stat-number {
-        font-size: 3rem;
-        font-weight: 900;
-        color: var(--accent);
-        display: block;
-    }
-
-    .stat-label {
-        font-size: 0.95rem;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-top: 0.5rem;
-    }
-
-    /* Container */
-    .events-container {
+    /* Rest of your existing styles... */
+    .container {
         max-width: 1400px;
         margin: 0 auto;
-        padding: 4rem 1.5rem;
+        padding: 4rem 2rem;
     }
 
-    /* Section Headers */
     .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 3rem;
-        position: relative;
+        text-align: center;
+        margin-bottom: 4rem;
     }
 
     .section-title {
-        font-size: clamp(1.8rem, 3vw, 2.5rem);
+        font-size: 2.8rem;
         font-weight: 800;
         color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
+        margin-bottom: 1rem;
+        letter-spacing: -1px;
     }
 
-    .section-title::before {
-        content: '';
-        width: 6px;
-        height: 50px;
-        background: var(--gradient-1);
-        border-radius: 10px;
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
     }
 
-    .section-link {
-        padding: 0.8rem 2rem;
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        color: var(--text-primary);
-        text-decoration: none;
-        border-radius: 30px;
-        font-weight: 700;
-        transition: all 0.3s ease;
-        font-size: 0.9rem;
-    }
-
-    .section-link:hover {
-        background: var(--accent);
-        color: var(--primary-bg);
-        border-color: var(--accent);
-        transform: translateX(5px);
-    }
-
-    /* Featured Events Grid */
-    .featured-grid {
+    .events-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 2.5rem;
         margin-bottom: 4rem;
     }
 
@@ -286,124 +229,99 @@
         background: var(--card-bg);
         border-radius: 20px;
         overflow: hidden;
-        border: 1px solid var(--border);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 40px var(--shadow);
         position: relative;
-    }
-
-    .event-card::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 20px;
-        padding: 2px;
-        background: var(--gradient-1);
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        opacity: 0;
-        transition: opacity 0.4s;
-    }
-
-    .event-card:hover::before {
-        opacity: 1;
     }
 
     .event-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 20px 40px var(--shadow);
+        box-shadow: 0 20px 60px rgba(100, 255, 218, 0.2);
+    }
+
+    .event-image-wrapper {
+        position: relative;
+        height: 240px;
+        overflow: hidden;
     }
 
     .event-image {
-        position: relative;
-        width: 100%;
-        padding-top: 60%;
-        overflow: hidden;
-        background: var(--secondary-bg);
-    }
-
-    .event-image img {
-        position: absolute;
-        top: 0;
-        left: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
+        transition: transform 0.6s ease;
     }
 
-    .event-card:hover .event-image img {
+    .event-card:hover .event-image {
         transform: scale(1.1);
     }
 
-    .event-badge {
+    .event-overlay {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        background: var(--gradient-1);
-        color: white;
-        padding: 0.4rem 1rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        z-index: 2;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
     }
 
-    .event-date-badge {
+    .event-badges {
         position: absolute;
-        bottom: 15px;
-        left: 15px;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(10px);
-        color: white;
-        padding: 0.6rem 1rem;
-        border-radius: 12px;
+        top: 1rem;
+        left: 1rem;
+        right: 1rem;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-width: 65px;
-        border: 2px solid var(--accent);
+        gap: 0.5rem;
+        flex-wrap: wrap;
         z-index: 2;
     }
 
-    .event-day {
-        font-size: 1.8rem;
-        font-weight: 900;
-        line-height: 1;
-        color: var(--accent);
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        backdrop-filter: blur(10px);
     }
 
-    .event-month {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-top: 0.2rem;
+    .badge-featured {
+        background: rgba(241, 90, 90, 0.9);
+        color: white;
+    }
+
+    .badge-trending {
+        background: rgba(255, 193, 7, 0.9);
+        color: var(--primary-bg);
     }
 
     .event-content {
-        padding: 1.5rem;
+        padding: 1.8rem;
     }
 
-    .event-category {
-        display: inline-block;
-        background: rgba(100, 255, 218, 0.1);
+    .event-meta {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .meta-item i {
         color: var(--accent);
-        padding: 0.3rem 0.75rem;
-        border-radius: 15px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        margin-bottom: 0.75rem;
-        border: 1px solid var(--accent);
     }
 
     .event-title {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: var(--text-primary);
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
         line-height: 1.3;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -411,462 +329,342 @@
         overflow: hidden;
     }
 
-    .event-title a {
-        color: var(--text-primary);
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-
-    .event-title a:hover {
-        color: var(--accent);
-    }
-
-    .event-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-        margin: 1rem 0;
-        padding: 1rem 0;
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-    }
-
-    .event-meta-item {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
+    .event-description {
+        font-size: 0.95rem;
         color: var(--text-secondary);
-        font-size: 0.85rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .event-meta-item i {
-        color: var(--accent);
-        width: 16px;
-    }
-
-    .event-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.7rem 1.5rem;
-        background: var(--gradient-1);
-        color: white;
-        text-decoration: none;
-        border-radius: 25px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        transition: all 0.3s ease;
-    }
-
-    .event-btn:hover {
-        transform: translateX(5px);
-        box-shadow: 0 5px 20px rgba(100, 255, 218, 0.3);
-    }
-
-    /* Horizontal Scroll Section */
-    .scroll-section {
-        margin: 4rem 0;
-    }
-
-    .scroll-wrapper {
-        position: relative;
-    }
-
-    .scroll-controls {
-        position: absolute;
-        top: -70px;
-        right: 0;
+    .event-footer {
         display: flex;
-        gap: 0.5rem;
-        z-index: 10;
-    }
-
-    .scroll-btn {
-        width: 45px;
-        height: 45px;
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 50%;
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        font-size: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        gap: 1rem;
+        flex-wrap: wrap;
     }
 
-    .scroll-btn:hover:not(:disabled) {
+    .btn-view-event {
+        padding: 0.8rem 1.8rem;
         background: var(--accent);
         color: var(--primary-bg);
-        border-color: var(--accent);
-        transform: scale(1.1);
-    }
-
-    .scroll-btn:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
-    }
-
-    .horizontal-scroll {
-        display: flex;
-        gap: 2rem;
-        overflow-x: auto;
-        scroll-behavior: smooth;
-        padding: 1rem 0 2rem;
-        scrollbar-width: thin;
-        scrollbar-color: var(--accent) var(--secondary-bg);
-    }
-
-    .horizontal-scroll::-webkit-scrollbar {
-        height: 6px;
-    }
-
-    .horizontal-scroll::-webkit-scrollbar-track {
-        background: var(--secondary-bg);
-    }
-
-    .horizontal-scroll::-webkit-scrollbar-thumb {
-        background: var(--accent);
+        border: none;
         border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
     }
 
-    .event-card-compact {
-        min-width: 320px;
-        flex-shrink: 0;
+    .btn-view-event:hover {
+        background: var(--accent-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+    }
+
+    .category-section {
+        margin-bottom: 5rem;
+    }
+
+    .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .category-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .view-all-link {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .view-all-link:hover {
+        gap: 1rem;
     }
 
     @media (max-width: 768px) {
-        .events-hero {
-            min-height: 60vh;
-            margin-top: 100px;
-        }
-
-        .hero-stats {
-            gap: 2rem;
-        }
-
-        .stat-number {
+        .hero-content h1 {
             font-size: 2.5rem;
         }
 
-        .featured-grid {
+        .events-grid {
             grid-template-columns: 1fr;
         }
 
-        .scroll-controls {
-            position: static;
-            justify-content: center;
-            margin-bottom: 1.5rem;
+        .hero-cta {
+            flex-direction: column;
         }
 
-        .event-card-compact {
-            min-width: 280px;
+        .btn-primary-hero,
+        .btn-secondary-hero {
+            width: 100%;
+            justify-content: center;
         }
     }
 </style>
 
 <!-- Hero Section -->
 <section class="events-hero">
+    <!-- Animated background -->
     <div class="hero-orb hero-orb-1"></div>
     <div class="hero-orb hero-orb-2"></div>
-    <div class="particles" id="particles"></div>
+    
+    <!-- Floating particles -->
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 2.5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 4.5s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 1.5s;"></div>
+    </div>
 
     <div class="hero-content">
-        <div class="hero-badge">
-            ✨ Campus Events Hub
-        </div>
-        
-        <h1>Discover Amazing Campus Events</h1>
-        
-        <p>
-            Experience the vibrant pulse of student life. Find concerts, parties, workshops,
-            competitions and more happening at universities nationwide.
-        </p>
-
+        <h1>Discover Amazing Events</h1>
+        <p>From concerts to conferences, parties to workshops - find and join the best events happening around you</p>
         <div class="hero-cta">
-            <a href="{% url 'events:search' %}" class="cta-btn cta-secondary">
-                <i class="fas fa-search"></i> Search Events
+            <a href="#featured-events" class="btn-primary-hero">
+                <i class="fas fa-calendar-alt"></i>
+                Explore Events
+            </a>
+            <a href="/tickets/" class="btn-secondary-hero">
+                <i class="fas fa-ticket-alt"></i>
+                Buy Tickets
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container">
+    
+    <!-- Featured Events -->
+    {% if featured_events %}
+    <section id="featured-events" class="category-section">
+        <div class="section-header">
+            <h2 class="section-title">⭐ Featured Events</h2>
+            <p class="section-subtitle">Don't miss out on these handpicked amazing experiences</p>
+        </div>
+
+        <div class="events-grid">
+            {% for event in featured_events %}
+            <div class="event-card" onclick="window.location.href='{% url 'events:event_detail' event.slug %}'">
+                <div class="event-image-wrapper">
+                    {% if event.banner_image %}
+                    <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" class="event-image">
+                    {% else %}
+                    <div class="event-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    {% endif %}
+                    <div class="event-overlay"></div>
+                    
+                    <div class="event-badges">
+                        <span class="badge badge-featured">Featured</span>
+                        {% if event.is_trending %}
+                        <span class="badge badge-trending">Trending</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="event-content">
+                    <div class="event-meta">
+                        <span class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            {{ event.start_date|date:"M d, Y" }}
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            {{ event.start_date|date:"g:i A" }}
+                        </span>
+                    </div>
+
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    
+                    <p class="event-description">{{ event.short_description|default:event.description|truncatewords:20 }}</p>
+
+                    <div class="event-footer">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ event.venue }}
+                        </div>
+                        <a href="{% url 'events:event_detail' event.slug %}" class="btn-view-event" onclick="event.stopPropagation()">
+                            View Details
+                        </a>
+                    </div>
+                    
+                    <!-- ADD: Link to check tickets -->
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                        <a href="/tickets/" class="ticket-link-badge" onclick="event.stopPropagation()">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Check Ticket Availability</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Trending Events -->
+    {% if trending_events %}
+    <section class="category-section">
+        <div class="category-header">
+            <h2 class="category-title">
+                <i class="fas fa-fire" style="color: #ff9500;"></i>
+                Trending Now
+            </h2>
+            <a href="{% url 'events:search' %}" class="view-all-link">
+                View All <i class="fas fa-arrow-right"></i>
             </a>
         </div>
 
-        <div class="hero-stats">
-            <div class="stat-item">
-                <!-- <span class="stat-number">250+</span> -->
-                <span class="stat-label">Live Events</span>
-            </div>
-            <div class="stat-item">
-                <!-- <span class="stat-number">50K+</span> -->
-                <span class="stat-label">Attendees</span>
-            </div>
-            <div class="stat-item">
-                <!-- <span class="stat-number">30+</span> -->
-                <span class="stat-label">Universities</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Featured Events -->
-{% if featured_events %}
-<section id="featured" class="events-container">
-    <div class="section-header">
-        <h2 class="section-title">Featured Events</h2>
-    </div>
-    
-    <div class="featured-grid">
-        {% for event in featured_events %}
-        <article class="event-card">
-            <div class="event-image">
-                <a href="{{ event.get_absolute_url }}">
-                    {% if event.banner_image %}
-                    <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" loading="lazy">
-                    {% else %}
-                    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: var(--text-secondary); opacity: 0.3;">
-                        <i class="fas fa-calendar-star"></i>
-                    </div>
-                    {% endif %}
-                </a>
-                <span class="event-badge">
-                    <i class="fas fa-star"></i> Featured
-                </span>
-                <div class="event-date-badge">
-                    <span class="event-day">{{ event.start_date|date:"d" }}</span>
-                    <span class="event-month">{{ event.start_date|date:"M" }}</span>
-                </div>
-            </div>
-            
-            <div class="event-content">
-                <span class="event-category">{{ event.category.name }}</span>
-                
-                <h3 class="event-title">
-                    <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
-                </h3>
-                
-                <div class="event-meta">
-                    <div class="event-meta-item">
-                        <i class="fas fa-university"></i>
-                        <span>{{ event.school.name }}</span>
-                    </div>
-                    <div class="event-meta-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>{{ event.venue }}</span>
-                    </div>
-                    <div class="event-meta-item">
-                        <i class="fas fa-clock"></i>
-                        <span>{{ event.start_date|date:"M d, Y - h:i A" }}</span>
-                    </div>
-                </div>
-                
-                <a href="{{ event.get_absolute_url }}" class="event-btn">
-                    View Details <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </article>
-        {% endfor %}
-    </div>
-</section>
-{% endif %}
-
-<!-- Trending Events -->
-{% if trending_events %}
-<section class="events-container scroll-section">
-    <div class="section-header">
-        <h2 class="section-title">🔥 Trending Now</h2>
-    </div>
-    
-    <div class="scroll-wrapper">
-        <div class="scroll-controls">
-            <button class="scroll-btn scroll-left-trending" aria-label="Scroll left">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="scroll-btn scroll-right-trending" aria-label="Scroll right">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-        
-        <div class="horizontal-scroll" id="trendingScroll">
+        <div class="events-grid">
             {% for event in trending_events %}
-            <article class="event-card event-card-compact">
-                <div class="event-image">
-                    <a href="{{ event.get_absolute_url }}">
-                        {% if event.banner_image %}
-                        <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" loading="lazy">
-                        {% else %}
-                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--text-secondary); opacity: 0.3;">
-                            <i class="fas fa-fire"></i>
-                        </div>
-                        {% endif %}
-                    </a>
-                    <div class="event-date-badge">
-                        <span class="event-day">{{ event.start_date|date:"d" }}</span>
-                        <span class="event-month">{{ event.start_date|date:"M" }}</span>
+            <div class="event-card" onclick="window.location.href='{% url 'events:event_detail' event.slug %}'">
+                <div class="event-image-wrapper">
+                    {% if event.banner_image %}
+                    <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" class="event-image">
+                    {% else %}
+                    <div class="event-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                    {% endif %}
+                    <div class="event-overlay"></div>
+                    
+                    <div class="event-badges">
+                        <span class="badge badge-trending">Trending</span>
                     </div>
                 </div>
-                
-                <div class="event-content">
-                    <span class="event-category">{{ event.category.name }}</span>
-                    
-                    <h3 class="event-title">
-                        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
-                    </h3>
-                    
-                    <div class="event-meta">
-                        <div class="event-meta-item">
-                            <i class="fas fa-university"></i>
-                            <span>{{ event.school.name|truncatewords:3 }}</span>
-                        </div>
-                        <div class="event-meta-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>{{ event.venue|truncatewords:3 }}</span>
-                        </div>
-                    </div>
-                    
-                    <a href="{{ event.get_absolute_url }}" class="event-btn">
-                        View Event <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </article>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
 
-<!-- Events by Category -->
-{% if categories_with_events %}
-{% for category_data in categories_with_events %}
-<section class="events-container scroll-section">
-    <div class="section-header">
-        <h2 class="section-title">{{ category_data.category.name }} Events</h2>
-        <a href="{% url 'events:category_events' category_data.category.slug %}" class="section-link">
-            View All <i class="fas fa-arrow-right"></i>
-        </a>
-    </div>
-    
-    <div class="scroll-wrapper">
-        <div class="scroll-controls">
-            <button class="scroll-btn scroll-left-{{ forloop.counter }}" aria-label="Scroll left">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="scroll-btn scroll-right-{{ forloop.counter }}" aria-label="Scroll right">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-        
-        <div class="horizontal-scroll" id="categoryScroll{{ forloop.counter }}">
-            {% for event in category_data.events %}
-            <article class="event-card event-card-compact">
-                <div class="event-image">
-                    <a href="{{ event.get_absolute_url }}">
-                        {% if event.banner_image %}
-                        <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" loading="lazy">
-                        {% else %}
-                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--text-secondary); opacity: 0.3;">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        {% endif %}
-                    </a>
-                    <div class="event-date-badge">
-                        <span class="event-day">{{ event.start_date|date:"d" }}</span>
-                        <span class="event-month">{{ event.start_date|date:"M" }}</span>
-                    </div>
-                </div>
-                
                 <div class="event-content">
-                    <h3 class="event-title">
-                        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
-                    </h3>
-                    
                     <div class="event-meta">
-                        <div class="event-meta-item">
-                            <i class="fas fa-university"></i>
-                            <span>{{ event.school.name|truncatewords:3 }}</span>
-                        </div>
-                        <div class="event-meta-item">
+                        <span class="meta-item">
                             <i class="fas fa-calendar"></i>
-                            <span>{{ event.start_date|date:"M d" }}</span>
+                            {{ event.start_date|date:"M d, Y" }}
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-users"></i>
+                            {{ event.views_count }} interested
+                        </span>
+                    </div>
+
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    
+                    <p class="event-description">{{ event.short_description|default:event.description|truncatewords:20 }}</p>
+
+                    <div class="event-footer">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ event.venue }}
                         </div>
+                        <a href="{% url 'events:event_detail' event.slug %}" class="btn-view-event" onclick="event.stopPropagation()">
+                            View Details
+                        </a>
                     </div>
                     
-                    <a href="{{ event.get_absolute_url }}" class="event-btn">
-                        View Event <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <!-- ADD: Link to check tickets -->
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                        <a href="/tickets/" class="ticket-link-badge" onclick="event.stopPropagation()">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Check Ticket Availability</span>
+                        </a>
+                    </div>
                 </div>
-            </article>
+            </div>
             {% endfor %}
         </div>
-    </div>
-</section>
-{% endfor %}
-{% endif %}
+    </section>
+    {% endif %}
 
-<script>
-// Generate particles
-function createParticles() {
-    const particles = document.getElementById('particles');
-    if (!particles) return;
-    
-    for (let i = 0; i < 40; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 15 + 's';
-        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-        particles.appendChild(particle);
-    }
-}
-
-// Horizontal scroll functionality
-function setupScrollControls(scrollContainer, leftBtn, rightBtn) {
-    if (!scrollContainer || !leftBtn || !rightBtn) return;
-    
-    const scrollAmount = 360;
-    
-    function updateButtons() {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
-        leftBtn.disabled = scrollLeft <= 0;
-        rightBtn.disabled = scrollLeft >= scrollWidth - clientWidth - 10;
-    }
-    
-    leftBtn.addEventListener('click', () => {
-        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-    
-    rightBtn.addEventListener('click', () => {
-        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-    
-    scrollContainer.addEventListener('scroll', updateButtons);
-    window.addEventListener('resize', updateButtons);
-    updateButtons();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    createParticles();
-    
-    // Trending scroll
-    const trendingScroll = document.getElementById('trendingScroll');
-    if (trendingScroll) {
-        setupScrollControls(
-            trendingScroll,
-            document.querySelector('.scroll-left-trending'),
-            document.querySelector('.scroll-right-trending')
-        );
-    }
-    
-    // Category scrolls
+    <!-- Events by Category -->
     {% for category_data in categories_with_events %}
-    const categoryScroll{{ forloop.counter }} = document.getElementById('categoryScroll{{ forloop.counter }}');
-    if (categoryScroll{{ forloop.counter }}) {
-        setupScrollControls(
-            categoryScroll{{ forloop.counter }},
-            document.querySelector('.scroll-left-{{ forloop.counter }}'),
-            document.querySelector('.scroll-right-{{ forloop.counter }}')
-        );
-    }
+    <section class="category-section">
+        <div class="category-header">
+            <h2 class="category-title">
+                {% if category_data.category.icon %}
+                <i class="{{ category_data.category.icon }}"></i>
+                {% endif %}
+                {{ category_data.category.name }}
+            </h2>
+            <a href="{% url 'events:category_events' category_data.category.slug %}" class="view-all-link">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="events-grid">
+            {% for event in category_data.events %}
+            <div class="event-card" onclick="window.location.href='{% url 'events:event_detail' event.slug %}'">
+                <div class="event-image-wrapper">
+                    {% if event.banner_image %}
+                    <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" class="event-image">
+                    {% else %}
+                    <div class="event-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                    {% endif %}
+                    <div class="event-overlay"></div>
+                </div>
+
+                <div class="event-content">
+                    <div class="event-meta">
+                        <span class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            {{ event.start_date|date:"M d, Y" }}
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            {{ event.school.name }}
+                        </span>
+                    </div>
+
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    
+                    <p class="event-description">{{ event.short_description|default:event.description|truncatewords:20 }}</p>
+
+                    <div class="event-footer">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ event.venue }}
+                        </div>
+                        <a href="{% url 'events:event_detail' event.slug %}" class="btn-view-event" onclick="event.stopPropagation()">
+                            View Details
+                        </a>
+                    </div>
+                    
+                    <!-- ADD: Link to check tickets -->
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                        <a href="/tickets/" class="ticket-link-badge" onclick="event.stopPropagation()">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Check Ticket Availability</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
     {% endfor %}
-});
-</script>
+
+</div>
 
 {% endblock %}

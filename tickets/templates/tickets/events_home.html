@@ -1,0 +1,323 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}Events & Tickets - NextMedia{% endblock %}
+
+{% block content %}
+<style>
+    .events-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 80px 20px;
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+    }
+    
+    .events-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        font-weight: 800;
+    }
+    
+    .events-hero p {
+        font-size: 1.3rem;
+        opacity: 0.95;
+    }
+    
+    .events-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        margin: 40px 0 20px 0;
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+    
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+    
+    .event-card {
+        background: var(--card-bg);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px var(--shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(100, 255, 218, 0.2);
+    }
+    
+    .event-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .event-content {
+        padding: 20px;
+    }
+    
+    .event-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .badge-featured {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+    
+    .badge-early-bird {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+    
+    .event-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .event-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 15px 0;
+    }
+    
+    .event-info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+    
+    .event-info-item i {
+        color: var(--accent);
+        width: 20px;
+    }
+    
+    .event-price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 15px;
+        border-top: 1px solid var(--border);
+        margin-top: 15px;
+    }
+    
+    .price-tag {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+    
+    .price-old {
+        text-decoration: line-through;
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin-left: 10px;
+    }
+    
+    .btn-get-ticket {
+        padding: 10px 25px;
+        background: var(--accent);
+        color: var(--primary-bg);
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-get-ticket:hover {
+        background: var(--accent-secondary);
+        transform: scale(1.05);
+    }
+    
+    .sold-out-badge {
+        background: #f5576c;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+    
+    .tickets-remaining {
+        color: #ff9500;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .no-events {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-secondary);
+    }
+    
+    .no-events i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        color: var(--accent);
+    }
+    
+    @media (max-width: 768px) {
+        .events-hero h1 {
+            font-size: 2rem;
+        }
+        
+        .events-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="events-hero">
+    <h1>🎉 NextMedia Events</h1>
+    <p>Get your tickets for the hottest events in town!</p>
+</div>
+
+<div class="events-container">
+    {% if featured_events %}
+    <h2 class="section-title">⭐ Featured Events</h2>
+    <div class="events-grid">
+        {% for event in featured_events %}
+        <div class="event-card" onclick="window.location.href='{% url 'tickets:event_detail' event.slug %}'">
+            <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" class="event-image" onerror="this.src='{% static 'img/default-event.jpg' %}'">
+            <div class="event-content">
+                <div>
+                    <span class="event-badge badge-featured">Featured</span>
+                    {% if event.is_early_bird_active %}
+                    <span class="event-badge badge-early-bird">Early Bird</span>
+                    {% endif %}
+                </div>
+                
+                <h3 class="event-title">{{ event.title }}</h3>
+                
+                <div class="event-info">
+                    <div class="event-info-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ event.event_date|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="event-info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ event.event_start|time:"g:i A" }}</span>
+                    </div>
+                    <div class="event-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ event.venue }}</span>
+                    </div>
+                </div>
+                
+                <div class="event-price">
+                    <div>
+                        <span class="price-tag">₦{{ event.current_price|floatformat:0 }}</span>
+                        {% if event.is_early_bird_active %}
+                        <span class="price-old">₦{{ event.ticket_price|floatformat:0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if event.is_sold_out %}
+                    <span class="sold-out-badge">Sold Out</span>
+                    {% else %}
+                    <button class="btn-get-ticket">Get Ticket</button>
+                    {% endif %}
+                </div>
+                
+                {% if not event.is_sold_out and event.tickets_remaining < 50 %}
+                <div style="margin-top: 10px;">
+                    <span class="tickets-remaining">⚡ Only {{ event.tickets_remaining }} tickets left!</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if upcoming_events %}
+    <h2 class="section-title">📅 Upcoming Events</h2>
+    <div class="events-grid">
+        {% for event in upcoming_events %}
+        <div class="event-card" onclick="window.location.href='{% url 'tickets:event_detail' event.slug %}'">
+            <img src="{{ event.banner_image.url }}" alt="{{ event.title }}" class="event-image" onerror="this.src='{% static 'img/default-event.jpg' %}'">
+            <div class="event-content">
+                {% if event.is_early_bird_active %}
+                <span class="event-badge badge-early-bird">Early Bird</span>
+                {% endif %}
+                
+                <h3 class="event-title">{{ event.title }}</h3>
+                
+                <div class="event-info">
+                    <div class="event-info-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ event.event_date|date:"F d, Y" }}</span>
+                    </div>
+                    <div class="event-info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ event.event_start|time:"g:i A" }}</span>
+                    </div>
+                    <div class="event-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ event.venue }}</span>
+                    </div>
+                </div>
+                
+                <div class="event-price">
+                    <div>
+                        <span class="price-tag">₦{{ event.current_price|floatformat:0 }}</span>
+                        {% if event.is_early_bird_active %}
+                        <span class="price-old">₦{{ event.ticket_price|floatformat:0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if event.is_sold_out %}
+                    <span class="sold-out-badge">Sold Out</span>
+                    {% else %}
+                    <button class="btn-get-ticket">Get Ticket</button>
+                    {% endif %}
+                </div>
+                
+                {% if not event.is_sold_out and event.tickets_remaining < 50 %}
+                <div style="margin-top: 10px;">
+                    <span class="tickets-remaining">⚡ Only {{ event.tickets_remaining }} tickets left!</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if not featured_events and not upcoming_events %}
+    <div class="no-events">
+        <i class="fas fa-calendar-times"></i>
+        <h2>No Events Available</h2>
+        <p>Check back soon for exciting upcoming events!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

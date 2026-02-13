@@ -689,6 +689,115 @@
     </div>
 </section>
 
+
+<!-- TICKET AVAILABILITY WIDGET -->
+<!-- Add this snippet to your events/event_detail.html template -->
+<!-- Place it in the sidebar or after the event description -->
+
+{% if tickets_enabled and ticket_event %}
+<div class="ticket-availability-widget" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 30px; margin: 30px 0; color: white; box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);">
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+        <i class="fas fa-ticket-alt" style="font-size: 2.5rem;"></i>
+        <div>
+            <h3 style="margin: 0; font-size: 1.5rem; font-weight: 800;">Tickets Available!</h3>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">Get your tickets now</p>
+        </div>
+    </div>
+    
+    <div style="background: rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+            <div>
+                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 5px;">Price</div>
+                <div style="font-size: 1.8rem; font-weight: 800;">
+                    ₦{{ ticket_event.current_price|floatformat:0 }}
+                </div>
+                {% if ticket_event.is_early_bird_active %}
+                <div style="text-decoration: line-through; opacity: 0.7; font-size: 0.9rem;">
+                    ₦{{ ticket_event.ticket_price|floatformat:0 }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div>
+                <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 5px;">Available</div>
+                <div style="font-size: 1.8rem; font-weight: 800;">
+                    {{ ticket_event.tickets_remaining }}
+                </div>
+                <div style="font-size: 0.9rem; opacity: 0.8;">
+                    of {{ ticket_event.total_tickets }}
+                </div>
+            </div>
+        </div>
+        
+        {% if ticket_event.is_early_bird_active %}
+        <div style="background: rgba(255, 193, 7, 0.2); padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; font-weight: 600;">
+            ⚡ Early Bird Active - Save ₦{{ ticket_event.ticket_price|add:"-"|add:ticket_event.early_bird_price|floatformat:0 }}!
+        </div>
+        {% endif %}
+        
+        {% if ticket_event.tickets_remaining < 50 and ticket_event.tickets_remaining > 0 %}
+        <div style="background: rgba(255, 87, 34, 0.3); padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; font-weight: 600; margin-top: 10px;">
+            🔥 Only {{ ticket_event.tickets_remaining }} tickets left!
+        </div>
+        {% endif %}
+    </div>
+    
+    <div style="display: grid; gap: 10px;">
+        {% if not ticket_event.is_sold_out %}
+        <a href="{% url 'tickets:event_detail' ticket_event.slug %}" 
+           style="display: block; padding: 15px; background: white; color: #667eea; text-align: center; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 1.1rem; transition: all 0.3s ease;">
+            <i class="fas fa-shopping-cart"></i> Buy Tickets Now
+        </a>
+        {% else %}
+        <div style="padding: 15px; background: rgba(255, 255, 255, 0.2); text-align: center; border-radius: 12px; font-weight: 700;">
+            <i class="fas fa-times-circle"></i> Sold Out
+        </div>
+        {% endif %}
+        
+        <a href="{% url 'tickets:events_home' %}" 
+           style="display: block; padding: 12px; background: rgba(255, 255, 255, 0.2); color: white; text-align: center; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease;">
+            <i class="fas fa-calendar"></i> View All Events
+        </a>
+    </div>
+    
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2); font-size: 0.85rem; opacity: 0.9;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <i class="fas fa-check-circle"></i>
+            <span>Instant ticket delivery via email</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <i class="fas fa-qrcode"></i>
+            <span>Unique QR code for verification</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-shield-alt"></i>
+            <span>Secure Paystack payment</span>
+        </div>
+    </div>
+</div>
+
+{% elif tickets_enabled %}
+<!-- No tickets available for this event -->
+<div style="background: var(--secondary-bg); border: 2px solid var(--border); border-radius: 15px; padding: 25px; margin: 30px 0; text-align: center;">
+    <i class="fas fa-info-circle" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 15px;"></i>
+    <h4 style="color: var(--text-primary); margin-bottom: 10px;">Tickets Coming Soon</h4>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+        Tickets for this event will be available soon. Check back later!
+    </p>
+    <a href="{% url 'tickets:events_home' %}" 
+       style="display: inline-block; padding: 12px 25px; background: var(--accent); color: var(--primary-bg); text-decoration: none; border-radius: 10px; font-weight: 700;">
+        <i class="fas fa-calendar"></i> Browse Other Events
+    </a>
+</div>
+{% endif %}
+
+<style>
+    .ticket-availability-widget a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+    }
+</style>
+
 <!-- Main Content -->
 <div class="container">
     <div class="event-grid">

@@ -19,6 +19,13 @@ from .models import (
 )
 from news.models import School
 
+# Import ticket models to check for ticket availability
+try:
+    from tickets.models import Event as TicketEvent
+    TICKETS_APP_ENABLED = True
+except ImportError:
+    TICKETS_APP_ENABLED = False
+
 
 def events_home(request):
     """Events homepage with featured, trending, and categorized events"""
@@ -66,7 +73,7 @@ def events_home(request):
 
 
 def event_detail(request, slug):
-    """Detailed event page with voting"""
+    """Detailed event page with voting and ticket availability check"""
     event = get_object_or_404(Event, slug=slug)
     
     # Increment view count
@@ -83,6 +90,26 @@ def event_detail(request, slug):
         else:
             voting_active = event.status == 'upcoming' or event.is_live
     
+    # Check if there's a matching ticket event
+    ticket_event = None
+    has_tickets = False
+    
+    if TICKETS_APP_ENABLED:
+        try:
+            # Try to find a matching ticket event by slug or similar title and date
+            ticket_event = TicketEvent.objects.filter(
+                Q(slug=event.slug) |
+                Q(title__icontains=event.title[:30]) |
+                Q(event_date__date=event.start_date.date(), venue__icontains=event.venue[:20]),
+                is_active=True,
+                status='upcoming'
+            ).first()
+            
+            if ticket_event:
+                has_tickets = not ticket_event.is_sold_out
+        except Exception as e:
+            print(f"Error checking tickets: {e}")
+    
     # Get related events
     related_events = Event.objects.filter(
         category=event.category,
@@ -94,6 +121,9 @@ def event_detail(request, slug):
         'contestants': contestants,
         'voting_active': voting_active,
         'related_events': related_events,
+        'ticket_event': ticket_event,
+        'has_tickets': has_tickets,
+        'tickets_enabled': TICKETS_APP_ENABLED,
         'paystack_public_key': settings.PAYSTACK_PUBLIC_KEY,
     }
     return render(request, 'events/event_detail.html', context)

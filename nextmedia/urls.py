@@ -11,6 +11,7 @@ urlpatterns = [
     path('ai-chat/', include('ai_chat.urls')),
     path('events/', include('events.urls')),
     path('learning/', include('learning.urls')),
+    path('tickets/', include('tickets.urls')),
 ]
 
 # Custom error handlers

@@ -1,0 +1,522 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}Verify Ticket - NextMedia{% endblock %}
+
+{% block content %}
+<style>
+    .verify-container {
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 20px;
+    }
+    
+    .verify-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .verify-header h1 {
+        font-size: 2.5rem;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+    }
+    
+    .verify-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+    
+    .verify-box {
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 15px 50px var(--shadow);
+    }
+    
+    .verify-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 18px;
+        background: var(--secondary-bg);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1.2rem;
+        text-align: center;
+        font-family: 'Courier New', monospace;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+    
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+    
+    .btn-verify {
+        padding: 18px;
+        background: var(--accent);
+        color: var(--primary-bg);
+        border: none;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-verify:hover {
+        background: var(--accent-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(100, 255, 218, 0.3);
+    }
+    
+    .result-box {
+        margin-top: 30px;
+        padding: 30px;
+        border-radius: 15px;
+        animation: slideIn 0.5s ease;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .result-valid {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: white;
+    }
+    
+    .result-invalid {
+        background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+        color: white;
+    }
+    
+    .result-warning {
+        background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
+        color: white;
+        border: 3px solid #fff;
+        box-shadow: 0 0 30px rgba(255, 87, 34, 0.6);
+    }
+    
+    .result-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        text-align: center;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    .result-message {
+        font-size: 1.5rem;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    /* Duplicate Alert Styling */
+    .duplicate-alert {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px dashed rgba(255, 255, 255, 0.5);
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+    }
+    
+    .duplicate-alert h3 {
+        color: #fff;
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .duplicate-info {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+    }
+    
+    .duplicate-info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .duplicate-info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .duplicate-label {
+        font-weight: 600;
+        opacity: 0.9;
+    }
+    
+    .duplicate-value {
+        font-weight: 700;
+        text-align: right;
+    }
+    
+    .ticket-details {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 25px;
+        border-radius: 12px;
+        margin-top: 20px;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        opacity: 0.9;
+    }
+    
+    .detail-value {
+        font-weight: 700;
+        text-align: right;
+    }
+    
+    .btn-mark-used {
+        width: 100%;
+        padding: 15px;
+        background: white;
+        color: #4CAF50;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-mark-used:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: scale(1.02);
+    }
+    
+    .btn-verify-another {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 15px;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+    
+    .btn-verify-another:hover {
+        background: white;
+        color: var(--primary-bg);
+    }
+    
+    .scanner-hint {
+        text-align: center;
+        margin-top: 30px;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+    
+    .scanner-hint i {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 15px;
+        color: var(--accent);
+    }
+    
+    .alert-blink {
+        animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+        0%, 50%, 100% { opacity: 1; }
+        25%, 75% { opacity: 0.7; }
+    }
+    
+    @media (max-width: 768px) {
+        .verify-box {
+            padding: 25px;
+        }
+        
+        .detail-row, .duplicate-info-row {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .detail-value, .duplicate-value {
+            text-align: left;
+        }
+    }
+</style>
+
+<div class="verify-container">
+    <div class="verify-header">
+        <h1>🔍 Verify Ticket</h1>
+        <p>Scan or enter ticket code to verify authenticity</p>
+    </div>
+    
+    <div class="verify-box">
+        <form method="POST" class="verify-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <input 
+                    type="text" 
+                    name="ticket_code" 
+                    placeholder="Enter Ticket Code"
+                    pattern="[A-Za-z0-9]{12}"
+                    maxlength="12"
+                    required
+                    autofocus
+                >
+            </div>
+            
+            <button type="submit" class="btn-verify">
+                <i class="fas fa-check-circle"></i> Verify Ticket
+            </button>
+        </form>
+        
+        {% if ticket %}
+        <div class="result-box {% if valid and not warning %}result-valid{% elif warning %}result-warning{% else %}result-invalid{% endif %}">
+            <div class="result-icon {% if duplicate_attempt %}alert-blink{% endif %}">
+                {% if valid and not warning %}
+                    <i class="fas fa-check-circle"></i>
+                {% elif warning %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                    <i class="fas fa-times-circle"></i>
+                {% endif %}
+            </div>
+            
+            <div class="result-message">
+                {{ message }}
+            </div>
+            
+            {% if duplicate_attempt %}
+            <!-- DUPLICATE ATTEMPT ALERT -->
+            <div class="duplicate-alert">
+                <h3>
+                    <i class="fas fa-user-shield"></i>
+                    FRAUD ALERT: Someone Else Already Used This Ticket
+                </h3>
+                
+                <p style="margin: 15px 0; font-size: 1.1rem; font-weight: 600;">
+                    ⚠️ This ticket was already admitted. Check the details below:
+                </p>
+                
+                <div class="duplicate-info">
+                    <div class="duplicate-info-row">
+                        <span class="duplicate-label">🕐 Used On:</span>
+                        <span class="duplicate-value">{{ used_info.used_at|date:"F d, Y - g:i A" }}</span>
+                    </div>
+                    <div class="duplicate-info-row">
+                        <span class="duplicate-label">👤 Admitted By:</span>
+                        <span class="duplicate-value">{{ used_info.scanned_by }}</span>
+                    </div>
+                    <div class="duplicate-info-row">
+                        <span class="duplicate-label">📝 Original Buyer:</span>
+                        <span class="duplicate-value">{{ used_info.buyer_name }}</span>
+                    </div>
+                    <div class="duplicate-info-row">
+                        <span class="duplicate-label">📧 Buyer Email:</span>
+                        <span class="duplicate-value">{{ used_info.buyer_email }}</span>
+                    </div>
+                    <div class="duplicate-info-row">
+                        <span class="duplicate-label">📞 Buyer Phone:</span>
+                        <span class="duplicate-value">{{ used_info.buyer_phone }}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.2); border-radius: 8px; font-weight: 600;">
+                    <i class="fas fa-shield-alt"></i> 
+                    ACTION REQUIRED: Please verify this person's identity against the buyer information above.
+                    If they are not {{ used_info.buyer_name }}, this may be a fraud attempt!
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if valid %}
+            <div class="ticket-details">
+                <div class="detail-row">
+                    <span class="detail-label">Ticket Code</span>
+                    <span class="detail-value">{{ ticket.ticket_code }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Event</span>
+                    <span class="detail-value">{{ ticket.event.title }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value">{{ ticket.event.event_date|date:"F d, Y" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Venue</span>
+                    <span class="detail-value">{{ ticket.event.venue }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Ticket Holder</span>
+                    <span class="detail-value">{{ ticket.buyer_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value">
+                        {% if ticket.is_used %}
+                            ❌ USED - {{ ticket.used_at|date:"M d, Y g:i A" }}
+                        {% else %}
+                            ✅ ACTIVE - Not Used
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            {% if not ticket.is_used %}
+            <button onclick="markTicketUsed('{{ ticket.ticket_code }}')" class="btn-mark-used" id="markUsedBtn">
+                <i class="fas fa-check"></i> Admit & Mark as Used
+            </button>
+            {% endif %}
+            
+            <a href="{% url 'tickets:verify_ticket' %}" class="btn-verify-another">
+                <i class="fas fa-redo"></i> Verify Another Ticket
+            </a>
+            {% endif %}
+        </div>
+        {% elif ticket_code %}
+        <div class="result-box result-invalid">
+            <div class="result-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="result-message">
+                {{ message }}
+            </div>
+            <div style="padding: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; margin-top: 20px;">
+                <p><strong>⚠️ Possible Issues:</strong></p>
+                <ul style="text-align: left; margin: 10px 0 0 20px;">
+                    <li>Ticket code entered incorrectly</li>
+                    <li>Fake or counterfeit ticket</li>
+                    <li>Ticket from a different event</li>
+                </ul>
+            </div>
+            <a href="{% url 'tickets:verify_ticket' %}" class="btn-verify-another">
+                <i class="fas fa-redo"></i> Try Again
+            </a>
+        </div>
+        {% endif %}
+        
+        <!-- <div class="scanner-hint">
+            <i class="fas fa-qrcode"></i>
+            <p><strong>Pro Tip:</strong> Use a QR code scanner app to quickly verify tickets</p>
+        </div> -->
+    </div>
+</div>
+
+<script>
+async function markTicketUsed(ticketCode) {
+    const btn = document.getElementById('markUsedBtn');
+    const originalText = btn.innerHTML;
+    
+    const staffName = prompt('Enter your name (Staff/Scanner):');
+    if (!staffName) {
+        alert('Staff name is required to admit ticket');
+        return;
+    }
+    
+    if (!confirm(`Confirm: Admit this ticket?\n\nScanned by: ${staffName}`)) {
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    
+    try {
+        const formData = new FormData();
+        formData.append('scanned_by', staffName);
+        
+        const response = await fetch(`/tickets/verify/${ticketCode}/mark-used/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            btn.innerHTML = '<i class="fas fa-check"></i> ✅ ADMITTED SUCCESSFULLY!';
+            btn.style.background = '#4CAF50';
+            btn.style.color = 'white';
+            
+            // Show success message
+            alert(`✅ ADMITTED: ${data.admitted}\nScanned by: ${staffName}\nTime: ${new Date().toLocaleString()}`);
+            
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            if (data.already_used) {
+                alert(`⚠️ DUPLICATE ATTEMPT!\n\nThis ticket was already used:\n` +
+                      `- Used on: ${data.message}\n` +
+                      `- Admitted by: ${data.used_by}\n` +
+                      `- Original buyer: ${data.original_buyer}\n\n` +
+                      `⚠️ DO NOT ADMIT - Possible fraud!`);
+            } else {
+                alert('❌ Error: ' + data.message);
+            }
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    } catch (error) {
+        alert('❌ Error: ' + error);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// Auto-uppercase input
+document.querySelector('input[name="ticket_code"]').addEventListener('input', function(e) {
+    e.target.value = e.target.value.toUpperCase();
+});
+
+// Play alert sound for duplicate attempts (optional)
+{% if duplicate_attempt %}
+    // You can add an audio alert here if desired
+    // new Audio('/path/to/alert.mp3').play();
+{% endif %}
+</script>
+{% endblock %}
