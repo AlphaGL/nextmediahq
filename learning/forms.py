@@ -1,6 +1,9 @@
-# forms.py - Updated with video_url field
+# forms.py - Updated with video_url field + CGPA Calculator forms
 from django import forms
-from .models import Material, Question, Option, Explanation, ExamYear, Subject, StudentProfile
+from .models import (
+    Material, Question, Option, Explanation, ExamYear, Subject,
+    StudentProfile, Semester, CourseResult
+)
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 
@@ -205,3 +208,47 @@ OptionFormSet = inlineformset_factory(
     max_num=6,
     can_delete=True
 )
+
+
+# ══════════════════════════════════════════════════════════════
+#  CGPA CALCULATOR FORMS
+# ══════════════════════════════════════════════════════════════
+
+class SemesterForm(forms.ModelForm):
+    class Meta:
+        model  = Semester
+        fields = ['level', 'semester', 'session']
+        widgets = {
+            'level': forms.Select(attrs={'class': 'form-select'}),
+            'semester': forms.Select(attrs={'class': 'form-select'}),
+            'session': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g. 2023/2024',
+            }),
+        }
+
+
+class CourseResultForm(forms.ModelForm):
+    class Meta:
+        model  = CourseResult
+        fields = ['course_code', 'course_title', 'credit_units', 'grade', 'score']
+        widgets = {
+            'course_code': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g. MTH 101',
+            }),
+            'course_title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Course title',
+            }),
+            'credit_units': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1, 'max': 6,
+            }),
+            'grade': forms.Select(attrs={'class': 'form-select'}),
+            'score': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Optional raw score',
+                'min': 0, 'max': 100, 'step': '0.01',
+            }),
+        }

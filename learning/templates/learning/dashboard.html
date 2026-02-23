@@ -100,6 +100,9 @@
         height: 100%;
         position: relative;
         overflow: hidden;
+        text-decoration: none;
+        display: block;
+        color: inherit;
     }
 
     .stat-card::before {
@@ -113,21 +116,15 @@
         transition: width 0.3s ease;
     }
 
-    .stat-card.success::before {
-        background: var(--success-color);
-    }
-
-    .stat-card.warning::before {
-        background: var(--warning-color);
-    }
-
-    .stat-card.info::before {
-        background: var(--secondary-color);
-    }
+    .stat-card.success::before { background: var(--success-color); }
+    .stat-card.warning::before { background: var(--warning-color); }
+    .stat-card.info::before    { background: var(--secondary-color); }
+    .stat-card.cgpa::before    { background: #6f42c1; }
 
     .stat-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 30px var(--shadow);
+        color: inherit;
     }
 
     .stat-card:hover::before {
@@ -158,6 +155,13 @@
         color: var(--text-secondary);
         font-size: 0.95rem;
         font-weight: 500;
+    }
+
+    .stat-sublabel {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        opacity: 0.75;
+        margin-top: 0.25rem;
     }
 
     /* Section Cards */
@@ -224,15 +228,8 @@
         gap: 0.3rem;
     }
 
-    .badge-exam {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .badge-test {
-        background: #dbeafe;
-        color: #1e40af;
-    }
+    .badge-exam { background: #fef3c7; color: #92400e; }
+    .badge-test { background: #dbeafe; color: #1e40af; }
 
     .score-badge {
         padding: 0.4rem 0.8rem;
@@ -241,25 +238,10 @@
         font-size: 0.9rem;
     }
 
-    .score-excellent {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .score-good {
-        background: #dbeafe;
-        color: #1e40af;
-    }
-
-    .score-average {
-        background: #fef3c7;
-        color: #78350f;
-    }
-
-    .score-poor {
-        background: #fee2e2;
-        color: #991b1b;
-    }
+    .score-excellent { background: #d1fae5; color: #065f46; }
+    .score-good      { background: #dbeafe; color: #1e40af; }
+    .score-average   { background: #fef3c7; color: #78350f; }
+    .score-poor      { background: #fee2e2; color: #991b1b; }
 
     /* Empty State */
     .empty-state {
@@ -400,37 +382,87 @@
         transform: translateY(-2px);
     }
 
+    /* CGPA Card */
+    .cgpa-card {
+        background: linear-gradient(135deg, #6f42c1, #a855f7);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+        margin-bottom: 1.5rem;
+    }
+
+    .cgpa-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
+        color: white;
+    }
+
+    .cgpa-card-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .cgpa-card-icon {
+        width: 55px;
+        height: 55px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        flex-shrink: 0;
+    }
+
+    .cgpa-card-text h6 {
+        margin: 0 0 0.15rem 0;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .cgpa-card-text small {
+        opacity: 0.85;
+        font-size: 0.82rem;
+    }
+
+    .cgpa-card-value {
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .cgpa-card-value .cgpa-number {
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .cgpa-card-value .cgpa-class {
+        font-size: 0.75rem;
+        opacity: 0.85;
+        margin-top: 0.2rem;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
-        .welcome-banner h1 {
-            font-size: 1.75rem;
-        }
-
-        .welcome-banner p {
-            font-size: 0.95rem;
-        }
-
-        .banner-actions {
-            flex-direction: column;
-        }
-
-        .banner-btn {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-        }
-
-        .exam-table {
-            font-size: 0.85rem;
-        }
-
+        .welcome-banner h1 { font-size: 1.75rem; }
+        .welcome-banner p  { font-size: 0.95rem; }
+        .banner-actions    { flex-direction: column; }
+        .banner-btn        { width: 100%; justify-content: center; }
+        .stat-number       { font-size: 2rem; }
+        .exam-table        { font-size: 0.85rem; }
         .exam-table th,
-        .exam-table td {
-            padding: 0.75rem 0.5rem;
-        }
+        .exam-table td     { padding: 0.75rem 0.5rem; }
+        .cgpa-card         { flex-direction: column; text-align: center; }
+        .cgpa-card-left    { flex-direction: column; text-align: center; }
+        .cgpa-card-value   { text-align: center; }
     }
 </style>
 {% endblock %}
@@ -452,11 +484,36 @@
                     <a href="{% url 'learning:materials_list' %}" class="banner-btn banner-btn-outline">
                         <i class="bi bi-book"></i>Study Materials
                     </a>
+                    <a href="{% url 'learning:cgpa_dashboard' %}" class="banner-btn banner-btn-outline">
+                        <i class="bi bi-calculator"></i>CGPA Calculator
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- CGPA Quick-Access Card -->
+<a href="{% url 'learning:cgpa_dashboard' %}" class="cgpa-card">
+    <div class="cgpa-card-left">
+        <div class="cgpa-card-icon">
+            <i class="bi bi-calculator-fill"></i>
+        </div>
+        <div class="cgpa-card-text">
+            <h6>CGPA Calculator</h6>
+            <small>Track your course results &amp; cumulative GPA across all semesters</small>
+        </div>
+    </div>
+    <div class="cgpa-card-value">
+        {% if cgpa %}
+            <div class="cgpa-number">{{ cgpa }}</div>
+            <div class="cgpa-class">{{ cgpa_class.0 }}</div>
+        {% else %}
+            <div class="cgpa-number" style="font-size:1rem; opacity:0.8;">No data yet</div>
+            <div class="cgpa-class">Click to add results →</div>
+        {% endif %}
+    </div>
+</a>
 
 <!-- Statistics Cards -->
 <div class="row g-4 mb-4">
@@ -494,11 +551,18 @@
         </div>
     </div>
     <div class="col-md-6 col-lg-3">
-        <div class="stat-card info">
-            <i class="bi bi-mortarboard stat-icon text-info"></i>
-            <span class="stat-number text-info">{{ progress.count }}</span>
-            <span class="stat-label">Active Subjects</span>
-        </div>
+        <a href="{% url 'learning:cgpa_dashboard' %}" class="stat-card cgpa" style="text-decoration:none;">
+            <i class="bi bi-mortarboard stat-icon" style="color:#6f42c1;"></i>
+            <span class="stat-number" style="color:#6f42c1;">
+                {% if cgpa %}{{ cgpa }}{% else %}—{% endif %}
+            </span>
+            <span class="stat-label">My CGPA</span>
+            {% if cgpa %}
+            <div class="stat-sublabel">{{ cgpa_class.0 }}</div>
+            {% else %}
+            <div class="stat-sublabel">Click to calculate</div>
+            {% endif %}
+        </a>
     </div>
 </div>
 
@@ -591,10 +655,25 @@
                     </div>
                 </div>
                 {% endfor %}
+
+                <!-- CGPA shortcut inside progress panel -->
+                <div class="mt-3 pt-2 border-top">
+                    <a href="{% url 'learning:cgpa_dashboard' %}" class="btn btn-sm w-100 fw-semibold"
+                       style="background:linear-gradient(135deg,#6f42c1,#a855f7);color:white;border:none;border-radius:8px;padding:0.6rem;">
+                        <i class="bi bi-calculator me-1"></i>
+                        Manage Course Results &amp; CGPA
+                    </a>
+                </div>
+
                 {% else %}
                 <div class="empty-state">
                     <i class="bi bi-graph-up empty-state-icon"></i>
                     <p>Start learning to track your progress!</p>
+                    <!-- CGPA prompt when no exam progress yet -->
+                    <a href="{% url 'learning:cgpa_dashboard' %}" class="btn btn-sm mt-2 fw-semibold"
+                       style="background:linear-gradient(135deg,#6f42c1,#a855f7);color:white;border:none;border-radius:8px;padding:0.6rem 1rem;">
+                        <i class="bi bi-calculator me-1"></i>Set Up CGPA Calculator
+                    </a>
                 </div>
                 {% endif %}
             </div>

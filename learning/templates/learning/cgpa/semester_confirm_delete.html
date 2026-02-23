@@ -1,0 +1,44 @@
+{% extends 'learning/base.html' %}
+{% block title %}Delete Semester{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 520px;">
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'learning:cgpa_dashboard' %}">CGPA Calculator</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'learning:semester_detail' semester.pk %}">{{ semester }}</a></li>
+      <li class="breadcrumb-item active">Delete</li>
+    </ol>
+  </nav>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-danger text-white py-3">
+      <h5 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Delete Semester</h5>
+    </div>
+    <div class="card-body p-4">
+      <p class="fs-6">You are about to delete:</p>
+      <div class="alert alert-warning">
+        <strong>{{ semester }}</strong>
+        {% if semester.session %}&nbsp;({{ semester.session }}){% endif %}
+      </div>
+      <p class="text-danger">
+        <i class="bi bi-exclamation-circle me-1"></i>
+        This will permanently remove this semester and all
+        <strong>{{ semester.courses.count }} course result{{ semester.courses.count|pluralize }}</strong> within it.
+        This action cannot be undone.
+      </p>
+
+      <form method="post" class="d-flex gap-2 mt-4">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger flex-grow-1">
+          <i class="bi bi-trash me-1"></i> Yes, Delete Semester
+        </button>
+        <a href="{% url 'learning:semester_detail' semester.pk %}" class="btn btn-outline-secondary flex-grow-1">
+          Cancel
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

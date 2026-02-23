@@ -1,0 +1,160 @@
+{% extends 'learning/base.html' %}
+{% block title %}{{ action }}{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 620px;">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'learning:cgpa_dashboard' %}">CGPA Calculator</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'learning:semester_detail' semester.pk %}">{{ semester }}</a></li>
+      <li class="breadcrumb-item active">{{ action }}</li>
+    </ol>
+  </nav>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom py-3">
+      <h5 class="mb-0 fw-bold">
+        <i class="bi bi-journal-text me-2 text-success"></i>{{ action }}
+      </h5>
+      <small class="text-muted">{{ semester }}</small>
+    </div>
+    <div class="card-body p-4">
+
+      <!-- Messages -->
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="row g-3">
+
+          <!-- Course Code -->
+          <div class="col-sm-5">
+            <label class="form-label fw-semibold">Course Code <span class="text-danger">*</span></label>
+            {{ form.course_code }}
+            {% if form.course_code.errors %}
+            <div class="text-danger small mt-1">{{ form.course_code.errors.as_text }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Credit Units -->
+          <div class="col-sm-3">
+            <label class="form-label fw-semibold">Credit Units <span class="text-danger">*</span></label>
+            {{ form.credit_units }}
+            {% if form.credit_units.errors %}
+            <div class="text-danger small mt-1">{{ form.credit_units.errors.as_text }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Grade -->
+          <div class="col-sm-4">
+            <label class="form-label fw-semibold">Grade <span class="text-danger">*</span></label>
+            {{ form.grade }}
+            {% if form.grade.errors %}
+            <div class="text-danger small mt-1">{{ form.grade.errors.as_text }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Course Title -->
+          <div class="col-12">
+            <label class="form-label fw-semibold">Course Title <span class="text-danger">*</span></label>
+            {{ form.course_title }}
+            {% if form.course_title.errors %}
+            <div class="text-danger small mt-1">{{ form.course_title.errors.as_text }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Score (optional) -->
+          <div class="col-sm-6">
+            <label class="form-label fw-semibold">
+              Raw Score
+              <span class="text-muted fw-normal">(optional)</span>
+            </label>
+            {{ form.score }}
+            <div class="form-text">Score out of 100</div>
+            {% if form.score.errors %}
+            <div class="text-danger small mt-1">{{ form.score.errors.as_text }}</div>
+            {% endif %}
+          </div>
+
+        </div>
+
+        <!-- Live Grade-Point Preview -->
+        <div class="alert alert-light border mt-3 mb-4" id="gradePreview">
+          <i class="bi bi-info-circle me-1 text-muted"></i>
+          Select a grade and credit units to preview the weighted point.
+        </div>
+
+        <!-- Grade Scale Quick Reference -->
+        <div class="mb-4">
+          <small class="text-muted">
+            <strong>Grade Scale:</strong>
+            A = 5.0 &nbsp;|&nbsp; B = 4.0 &nbsp;|&nbsp; C = 3.0 &nbsp;|&nbsp;
+            D = 2.0 &nbsp;|&nbsp; E = 1.0 &nbsp;|&nbsp; F = 0.0
+          </small>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle me-1"></i> {{ action }}
+          </button>
+          <a href="{% url 'learning:semester_detail' semester.pk %}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const GP_MAP = { A: 5.0, B: 4.0, C: 3.0, D: 2.0, E: 1.0, F: 0.0 };
+  const gradeEl   = document.getElementById('id_grade');
+  const unitsEl   = document.getElementById('id_credit_units');
+  const preview   = document.getElementById('gradePreview');
+
+  const BADGE_MAP = {
+    A: 'bg-success',
+    B: 'bg-primary',
+    C: 'bg-info',
+    D: 'bg-warning text-dark',
+    E: '',
+    F: 'bg-danger',
+  };
+
+  function updatePreview() {
+    const grade = gradeEl.value;
+    const units = parseFloat(unitsEl.value) || 0;
+
+    if (grade && GP_MAP[grade] !== undefined) {
+      const gp = GP_MAP[grade];
+      const wp = (gp * units).toFixed(1);
+      const badgeClass = grade === 'E'
+        ? 'style="background:#fd7e14" class="badge text-dark px-2"'
+        : `class="badge ${BADGE_MAP[grade]} px-2"`;
+
+      preview.innerHTML = `
+        <i class="bi bi-calculator me-1"></i>
+        Grade <span ${badgeClass}>${grade}</span>
+        &nbsp;=&nbsp; <strong>${gp}</strong> grade point
+        &nbsp;&times;&nbsp; <strong>${units}</strong> units
+        &nbsp;=&nbsp; <strong class="text-primary">${wp}</strong> weighted point
+      `;
+      preview.className = 'alert alert-info border mt-3 mb-4';
+    } else {
+      preview.innerHTML = '<i class="bi bi-info-circle me-1 text-muted"></i> Select a grade and credit units to preview the weighted point.';
+      preview.className = 'alert alert-light border mt-3 mb-4';
+    }
+  }
+
+  gradeEl.addEventListener('change', updatePreview);
+  unitsEl.addEventListener('input', updatePreview);
+  // Run on page load (for edit mode where values are pre-filled)
+  updatePreview();
+</script>
+{% endblock %}

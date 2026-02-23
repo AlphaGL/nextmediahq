@@ -1,4 +1,4 @@
-# models.py - Updated with video_url field
+# models.py - Updated with video_url field + CGPA Calculator models
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -18,6 +18,7 @@ class StudentProfile(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
         
 class Subject(models.Model):
     name = models.CharField(max_length=200)
@@ -42,8 +43,8 @@ class Material(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='materials')
     title = models.CharField(max_length=300)
     material_type = models.CharField(max_length=10, choices=MATERIAL_TYPES, null=True, blank=True)
-    content = models.TextField()  # Extracted or manually entered text
-    file_url = models.URLField(max_length=500, blank=True, null=True)  # Cloudinary URL
+    content = models.TextField()
+    file_url = models.URLField(max_length=500, blank=True, null=True)
     cloudinary_public_id = models.CharField(max_length=255, blank=True, null=True)
     video_url = models.URLField(max_length=500, blank=True, null=True, help_text="YouTube video URL for tutorial")
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -59,7 +60,6 @@ class Material(models.Model):
         if not self.video_url:
             return None
         
-        # Pattern for various YouTube URL formats
         patterns = [
             r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)',
             r'(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]+)',
@@ -71,7 +71,6 @@ class Material(models.Model):
             match = re.search(pattern, self.video_url)
             if match:
                 video_id = match.group(1)
-                # Remove any additional parameters from video_id
                 video_id = video_id.split('&')[0].split('?')[0]
                 return f"https://www.youtube.com/embed/{video_id}"
         
@@ -230,3 +229,98 @@ class StudentProgress(models.Model):
     class Meta:
         unique_together = ['student', 'subject']
         verbose_name_plural = "Student Progress"
+
+
+# ══════════════════════════════════════════════════════════════
+#  CGPA CALCULATOR MODELS
+# ══════════════════════════════════════════════════════════════
+
+class Semester(models.Model):
+    """Represents an academic semester / level for a student"""
+    LEVEL_CHOICES = [
+        (100, '100 Level'),
+        (200, '200 Level'),
+        (300, '300 Level'),
+        (400, '400 Level'),
+        (500, '500 Level'),
+        (600, '600 Level'),
+        (700, '700 Level'),
+    ]
+    SEMESTER_CHOICES = [
+        ('first', 'First Semester'),
+        ('second', 'Second Semester'),
+    ]
+
+    student   = models.ForeignKey(User, on_delete=models.CASCADE, related_name='semesters')
+    level     = models.IntegerField(choices=LEVEL_CHOICES)
+    semester  = models.CharField(max_length=10, choices=SEMESTER_CHOICES)
+    session   = models.CharField(max_length=20, help_text='e.g. 2023/2024', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['level', 'semester']
+        unique_together = ['student', 'level', 'semester']
+
+    def __str__(self):
+        return f"{self.get_level_display()} – {self.get_semester_display()} ({self.session})"
+
+    def gpa(self):
+        """Return GPA for this semester (0.00 – 5.00)."""
+        courses = self.courses.all()
+        if not courses:
+            return 0.0
+        total_points = sum(c.credit_units * c.grade_point for c in courses)
+        total_units  = sum(c.credit_units for c in courses)
+        return round(total_points / total_units, 2) if total_units else 0.0
+
+    def total_units(self):
+        return sum(c.credit_units for c in self.courses.all())
+
+    def total_points(self):
+        return sum(c.credit_units * c.grade_point for c in self.courses.all())
+
+
+class CourseResult(models.Model):
+    """A single course result within a semester"""
+    GRADE_CHOICES = [
+        ('A', 'A  (70 – 100)'),
+        ('B', 'B  (60 – 69)'),
+        ('C', 'C  (50 – 59)'),
+        ('D', 'D  (45 – 49)'),
+        ('E', 'E  (40 – 44)'),
+        ('F', 'F  (0  – 39)'),
+    ]
+
+    # 5-point scale (standard Nigerian universities)
+    GRADE_POINT_MAP = {
+        'A': 5.0,
+        'B': 4.0,
+        'C': 3.0,
+        'D': 2.0,
+        'E': 1.0,
+        'F': 0.0,
+    }
+
+    semester     = models.ForeignKey(Semester, on_delete=models.CASCADE, related_name='courses')
+    course_code  = models.CharField(max_length=20)
+    course_title = models.CharField(max_length=200)
+    credit_units = models.PositiveSmallIntegerField(default=2)
+    grade        = models.CharField(max_length=2, choices=GRADE_CHOICES)
+    score        = models.FloatField(null=True, blank=True, help_text='Raw score out of 100 (optional)')
+    created_at   = models.DateTimeField(auto_now_add=True)
+    updated_at   = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['course_code']
+
+    def __str__(self):
+        return f"{self.course_code} – {self.grade}"
+
+    @property
+    def grade_point(self):
+        return self.GRADE_POINT_MAP.get(self.grade, 0.0)
+
+    @property
+    def weighted_point(self):
+        return self.credit_units * self.grade_point

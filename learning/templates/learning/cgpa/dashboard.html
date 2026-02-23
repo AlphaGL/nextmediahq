@@ -1,0 +1,221 @@
+{% extends 'learning/base.html' %}
+{% block title %}CGPA Calculator{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="fw-bold mb-0"><i class="bi bi-calculator me-2 text-primary"></i>CGPA Calculator</h2>
+      <p class="text-muted small mb-0">Track and manage your academic results across all semesters</p>
+    </div>
+    <a href="{% url 'learning:semester_create' %}" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-1"></i> Add Semester
+    </a>
+  </div>
+
+  <!-- Messages -->
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+
+  <!-- CGPA Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="card border-0 shadow-sm h-100 text-center">
+        <div class="card-body py-4">
+          <div class="display-4 fw-bold text-{{ cgpa_class.1 }}">{{ cgpa }}</div>
+          <p class="mb-2 fs-6 text-muted">Cumulative GPA (CGPA)</p>
+          <span class="badge bg-{{ cgpa_class.1 }} fs-6 px-3 py-2">{{ cgpa_class.0 }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="card border-0 shadow-sm h-100 text-center">
+        <div class="card-body py-4">
+          <div class="display-5 fw-bold text-dark">{{ total_units }}</div>
+          <p class="mb-0 text-muted">Total Credit Units</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="card border-0 shadow-sm h-100 text-center">
+        <div class="card-body py-4">
+          <div class="display-5 fw-bold text-dark">{{ semesters|length }}</div>
+          <p class="mb-0 text-muted">Semesters Recorded</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grade Scale Reference -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-light d-flex align-items-center justify-content-between">
+      <h6 class="mb-0 fw-semibold"><i class="bi bi-info-circle me-1 text-primary"></i>Grade Scale Reference (5-Point)</h6>
+      <button class="btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="collapse" data-bs-target="#gradeScale">
+        <i class="bi bi-chevron-down"></i>
+      </button>
+    </div>
+    <div class="collapse show" id="gradeScale">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered mb-0 text-center">
+            <thead class="table-light">
+              <tr>
+                <th>Grade</th>
+                <th>Score Range</th>
+                <th>Grade Point</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="badge bg-success px-2">A</span></td><td>70 – 100</td><td><strong>5.0</strong></td><td>Excellent</td></tr>
+              <tr><td><span class="badge bg-primary px-2">B</span></td><td>60 – 69</td><td><strong>4.0</strong></td><td>Very Good</td></tr>
+              <tr><td><span class="badge bg-info px-2">C</span></td><td>50 – 59</td><td><strong>3.0</strong></td><td>Good</td></tr>
+              <tr><td><span class="badge bg-warning text-dark px-2">D</span></td><td>45 – 49</td><td><strong>2.0</strong></td><td>Fair</td></tr>
+              <tr><td><span class="badge px-2 text-dark" style="background:#fd7e14">E</span></td><td>40 – 44</td><td><strong>1.0</strong></td><td>Pass</td></tr>
+              <tr><td><span class="badge bg-danger px-2">F</span></td><td>0 – 39</td><td><strong>0.0</strong></td><td>Fail</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="px-3 py-2 bg-light border-top">
+          <small class="text-muted">
+            <strong>Degree Classifications:</strong>
+            &nbsp;First Class ≥ 4.50 &nbsp;|&nbsp; 2nd Class Upper ≥ 3.50 &nbsp;|&nbsp;
+            2nd Class Lower ≥ 2.40 &nbsp;|&nbsp; Third Class ≥ 1.50 &nbsp;|&nbsp; Pass ≥ 1.00
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Semester List -->
+  {% if semester_stats %}
+    {% for stat in semester_stats %}
+    <div class="card border-0 shadow-sm mb-3">
+
+      <!-- Semester Header -->
+      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 py-3">
+        <div>
+          <h6 class="mb-0 fw-bold">
+            {{ stat.obj.get_level_display }} &mdash; {{ stat.obj.get_semester_display }}
+            {% if stat.obj.session %}
+              <span class="text-muted fw-normal small">({{ stat.obj.session }})</span>
+            {% endif %}
+          </h6>
+          <small class="text-muted">
+            {{ stat.course_count }} course{{ stat.course_count|pluralize }}
+            &nbsp;&middot;&nbsp;
+            {{ stat.total_units }} unit{{ stat.total_units|pluralize }}
+          </small>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="badge bg-primary fs-6 px-3 py-2">GPA: {{ stat.gpa }}</span>
+          <a href="{% url 'learning:course_create' stat.obj.pk %}" class="btn btn-sm btn-success" title="Add Course">
+            <i class="bi bi-plus"></i> Add Course
+          </a>
+          <a href="{% url 'learning:semester_edit' stat.obj.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit">
+            <i class="bi bi-pencil"></i>
+          </a>
+          <a href="{% url 'learning:semester_delete' stat.obj.pk %}"
+             class="btn btn-sm btn-outline-danger"
+             title="Delete"
+             onclick="return confirm('Delete this entire semester and all its courses?')">
+            <i class="bi bi-trash"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Course Table -->
+      {% if stat.obj.courses.all %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" style="min-width:600px;">
+          <thead class="table-light">
+            <tr>
+              <th>Code</th>
+              <th>Title</th>
+              <th class="text-center">Units</th>
+              <th class="text-center">Score</th>
+              <th class="text-center">Grade</th>
+              <th class="text-center">GP</th>
+              <th class="text-center">Weighted</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for course in stat.obj.courses.all %}
+            <tr>
+              <td><code class="fw-bold">{{ course.course_code }}</code></td>
+              <td>{{ course.course_title }}</td>
+              <td class="text-center">{{ course.credit_units }}</td>
+              <td class="text-center">{{ course.score|default:"—" }}</td>
+              <td class="text-center">
+                {% if course.grade == 'A' %}<span class="badge bg-success">A</span>
+                {% elif course.grade == 'B' %}<span class="badge bg-primary">B</span>
+                {% elif course.grade == 'C' %}<span class="badge bg-info">C</span>
+                {% elif course.grade == 'D' %}<span class="badge bg-warning text-dark">D</span>
+                {% elif course.grade == 'E' %}<span class="badge text-dark" style="background:#fd7e14">E</span>
+                {% else %}<span class="badge bg-danger">F</span>{% endif %}
+              </td>
+              <td class="text-center">{{ course.grade_point }}</td>
+              <td class="text-center fw-semibold">{{ course.weighted_point }}</td>
+              <td class="text-center">
+                <div class="d-flex justify-content-center gap-1">
+                  <a href="{% url 'learning:course_edit' course.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a href="{% url 'learning:course_delete' course.pk %}"
+                     class="btn btn-sm btn-outline-danger"
+                     title="Delete"
+                     onclick="return confirm('Remove {{ course.course_code }}?')">
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot class="table-light fw-bold">
+            <tr>
+              <td colspan="2">Semester Total</td>
+              <td class="text-center">{{ stat.total_units }}</td>
+              <td></td><td></td><td></td>
+              <td class="text-center">{{ stat.obj.total_points }}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <!-- Mobile scroll hint -->
+      <div class="d-md-none text-center py-2 bg-light border-top">
+        <small class="text-muted"><i class="bi bi-arrow-left-right"></i> Swipe to see more</small>
+      </div>
+      {% else %}
+      <div class="card-body text-center text-muted py-3">
+        <i class="bi bi-journal-x me-1"></i> No courses yet.
+        <a href="{% url 'learning:course_create' stat.obj.pk %}">Add your first course</a>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+  {% else %}
+  <!-- Empty State -->
+  <div class="card border-0 shadow-sm text-center py-5">
+    <div class="card-body">
+      <i class="bi bi-journal-plus display-3 text-muted mb-3"></i>
+      <h4>No semesters recorded yet</h4>
+      <p class="text-muted mb-4">Start by adding your first semester, then enter your course results to calculate your CGPA.</p>
+      <a href="{% url 'learning:semester_create' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle me-2"></i>Add First Semester
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

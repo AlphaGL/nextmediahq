@@ -1,0 +1,79 @@
+{% extends 'learning/base.html' %}
+{% block title %}{{ action }}{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 560px;">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'learning:cgpa_dashboard' %}">CGPA Calculator</a></li>
+      {% if semester %}
+      <li class="breadcrumb-item"><a href="{% url 'learning:semester_detail' semester.pk %}">{{ semester }}</a></li>
+      {% endif %}
+      <li class="breadcrumb-item active">{{ action }}</li>
+    </ol>
+  </nav>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom py-3">
+      <h5 class="mb-0 fw-bold">
+        <i class="bi bi-calendar3 me-2 text-primary"></i>{{ action }}
+      </h5>
+    </div>
+    <div class="card-body p-4">
+
+      <!-- Messages -->
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Academic Level <span class="text-danger">*</span></label>
+          {{ form.level }}
+          {% if form.level.errors %}
+          <div class="text-danger small mt-1">{{ form.level.errors.as_text }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Semester <span class="text-danger">*</span></label>
+          {{ form.semester }}
+          {% if form.semester.errors %}
+          <div class="text-danger small mt-1">{{ form.semester.errors.as_text }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">
+            Academic Session
+            <span class="text-muted fw-normal">(optional)</span>
+          </label>
+          {{ form.session }}
+          <div class="form-text">e.g. 2023/2024</div>
+          {% if form.session.errors %}
+          <div class="text-danger small mt-1">{{ form.session.errors.as_text }}</div>
+          {% endif %}
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle me-1"></i> {{ action }}
+          </button>
+          {% if semester %}
+          <a href="{% url 'learning:semester_detail' semester.pk %}" class="btn btn-outline-secondary">Cancel</a>
+          {% else %}
+          <a href="{% url 'learning:cgpa_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
