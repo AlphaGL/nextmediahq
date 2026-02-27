@@ -234,7 +234,7 @@ def start_exam(request, exam_year_id, mode):
         exam_year=exam_year,
         student=request.user,
         mode=mode,
-        duration_minutes=60 if mode == 'exam' else 30
+        duration_minutes=40 if mode == 'exam' else 45
     )
     
     return redirect('learning:take_exam', exam_id=exam.exam_id)
