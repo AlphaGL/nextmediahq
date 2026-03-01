@@ -10,6 +10,12 @@ from django.views.decorators.http import require_GET
 from .models import News, School, Category, PastQuestion
 from django.views.generic import TemplateView
 
+@require_GET
+@cache_control(max_age=86400)
+def ads_txt(request):
+    """Serve ads.txt for Google AdSense"""
+    content = "google.com, pub-8114107298397897, DIRECT, f08c47fec0942fa0"
+    return HttpResponse(content, content_type='text/plain')
 
 class AboutUsViews(TemplateView):
     template_name = 'news/about.html'

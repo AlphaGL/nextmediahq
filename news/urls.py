@@ -5,6 +5,7 @@ from . import views
 app_name = 'news'
 
 urlpatterns = [
+    path('ads.txt', views.ads_txt, name='ads_txt'),
     path('ping/', views.ping_view, name='ping'),
     path('', views.home, name='home'),
     path('schools/', views.school_list, name='school_list'),
