@@ -4,6 +4,27 @@
 {% block title %}{{ news.title }} - NextMedia{% endblock %}
 {% block description %}{{ news.excerpt }}{% endblock %}
 
+{% block og_tags %}
+<meta property="og:title" content="{{ news.title }}">
+<meta property="og:description" content="{{ news.excerpt }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% if news.featured_image %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
+{% elif news.featured_image_url %}
+<meta property="og:image" content="{{ news.featured_image_url }}">
+{% endif %}
+<meta property="og:site_name" content="NextMedia">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ news.title }}">
+<meta name="twitter:description" content="{{ news.excerpt }}">
+{% if news.featured_image %}
+<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
+{% elif news.featured_image_url %}
+<meta name="twitter:image" content="{{ news.featured_image_url }}">
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <style>
 .breadcrumb {

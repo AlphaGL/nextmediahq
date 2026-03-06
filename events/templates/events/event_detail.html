@@ -3,6 +3,27 @@
 
 {% block title %}{{ event.title }} - Events{% endblock %}
 
+{% block og_tags %}
+<meta property="og:title" content="{{ event.title }}">
+<meta property="og:description" content="{{ event.description|truncatewords:30|striptags }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% if event.banner_image %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ event.banner_image.url }}">
+{% elif event.image %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}">
+{% endif %}
+<meta property="og:site_name" content="NextMedia">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ event.title }}">
+<meta name="twitter:description" content="{{ event.description|truncatewords:30|striptags }}">
+{% if event.banner_image %}
+<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ event.banner_image.url }}">
+{% elif event.image %}
+<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}">
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <style>
     
