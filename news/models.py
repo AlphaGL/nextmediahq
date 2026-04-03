@@ -70,6 +70,15 @@ class News(models.Model):
             self.excerpt = self.content[:200] + "..."
         super().save(*args, **kwargs)
 
+    def get_image_url(self):
+        """Returns absolute image URL for OG tags and display."""
+        if self.featured_image:
+            # CloudinaryField - use cloudinary's build_url
+            return self.featured_image.build_url(secure=True)
+        elif self.featured_image_url:
+            return self.featured_image_url
+        return None
+
     def get_absolute_url(self):
         return reverse('news:news_detail', kwargs={'slug': self.slug})
 

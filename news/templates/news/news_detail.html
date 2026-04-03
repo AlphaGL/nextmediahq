@@ -10,25 +10,15 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 <meta property="og:site_name" content="NextMedia">
-
-{% if news.featured_image_url %}
-<meta property="og:image" content="{{ news.featured_image_url }}">
-<meta property="og:image:secure_url" content="{{ news.featured_image_url }}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ news.title }}">
 <meta name="twitter:description" content="{{ news.excerpt }}">
-<meta name="twitter:image" content="{{ news.featured_image_url }}">
-{% elif news.featured_image %}
-<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
-<meta property="og:image:secure_url" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
+{% if og_image %}
+<meta property="og:image" content="{{ og_image }}">
+<meta property="og:image:secure_url" content="{{ og_image }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ news.title }}">
-<meta name="twitter:description" content="{{ news.excerpt }}">
-<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ news.featured_image.url }}">
+<meta name="twitter:image" content="{{ og_image }}">
 {% endif %}
 {% endblock %}
 
@@ -467,14 +457,10 @@
             
             <h2 class="article-title">{{ news.title }}</h2>
         </header>
-
-        {% if news.featured_image %}
+        
+        {% if og_image %}
         <div class="featured-image">
-            <img src="{{ news.featured_image.url }}" alt="{{ news.title }}" loading="lazy">
-        </div>
-        {% elif news.featured_image_url %}
-        <div class="featured-image">
-            <img src="{{ news.featured_image_url }}" alt="{{ news.title }}" loading="lazy">
+            <img src="{{ og_image }}" alt="{{ news.title }}" loading="lazy">
         </div>
         {% endif %}
 

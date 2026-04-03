@@ -168,11 +168,9 @@ def school_news(request, slug):
     
 
 def news_detail(request, slug):
-    """Enhanced news detail view with better error handling"""
     try:
         news = get_object_or_404(News, slug=slug, is_published=True)
         
-        # Get related news
         related_news = News.objects.filter(
             category=news.category,
             is_published=True
@@ -181,11 +179,11 @@ def news_detail(request, slug):
         context = {
             'news': news,
             'related_news': related_news,
+            'og_image': news.get_image_url(),  # ← add this
         }
         return render(request, 'news/news_detail.html', context)
         
     except Http404:
-        # Custom handling for news not found
         recent_news = News.objects.filter(
             is_published=True
         ).select_related('school', 'category')[:3]
@@ -195,7 +193,7 @@ def news_detail(request, slug):
             'missing_slug': slug,
         }
         return render(request, 'news/404.html', context, status=404)
-    
+       
 def category_news(request, slug):
     """Enhanced category news view with better error handling"""
     try:
