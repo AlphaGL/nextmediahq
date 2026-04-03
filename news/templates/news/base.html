@@ -794,6 +794,13 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8114107298397897"
      crossorigin="anonymous"></script>
 
+    <!-- OG / Social sharing meta tags -->
+    {% block og_tags %}
+    <meta property="og:site_name" content="NextMedia">
+    <meta property="og:image" content="{% static 'img/logo.jpg' %}">
+    {% endblock %}
+
+
 </head>
 <body>
     <!-- Navigation -->
