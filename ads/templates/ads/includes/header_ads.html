@@ -27,7 +27,7 @@
     <div class="lh-adsense-track" id="lhHeaderTrack">
       {% for ad in header_ads %}
       <a class="lh-adsense-slide"
-         href="{{ ad.destination_url }}"
+         href="#"
          data-ad-id="{{ ad.id }}"
          data-dest="{{ ad.destination_url }}"
          onclick="lhAdClick(event, '{{ ad.id }}', '{{ ad.destination_url }}')"
@@ -74,7 +74,7 @@
     <div class="lh-adsense-info-box" onclick="event.stopPropagation()">
       <button class="lh-adsense-info-close" onclick="lhHideAdInfo()">✕</button>
       <div class="lh-adsense-info-title">About these ads</div>
-      <p class="lh-adsense-info-text">Nextmedia shows ads to keep resources free. Ads are selected based on this page's content. You can hide them any time.</p>
+      <p class="lh-adsense-info-text">Ads are selected based on the content of this page. LearnHub uses ads to support its free educational content. You can hide ads at any time.</p>
     </div>
   </div>
 </div>
@@ -363,12 +363,14 @@ function lhHideAdInfo() { document.getElementById('lhAdInfoOverlay').classList.r
 
 function lhAdClick(e, adId, dest) {
   e.preventDefault();
-  window.open(dest, '_blank', 'noopener');
   fetch('/ads/track/click/' + adId + '/', {
     method: 'POST',
     headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
     body: '{}',
-  }).catch(() => {});
+  })
+  .then(r => r.json())
+  .then(data => window.open(data.url || dest, '_blank', 'noopener'))
+  .catch(() => window.open(dest, '_blank', 'noopener'));
 }
 
 function getCookie(name) {
