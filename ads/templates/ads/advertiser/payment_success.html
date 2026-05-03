@@ -1,0 +1,98 @@
+{% extends 'ads/ads_base.html' %}
+{% load static %}
+
+{% block title %}Payment Successful — LearnHub Ads{% endblock %}
+
+{% block extra_head %}
+<style>
+  .success-wrap {
+    min-height: calc(100vh - 120px);
+    display: grid; place-items: center;
+    padding: 32px 16px;
+  }
+  .success-card {
+    background: var(--card);
+    border-radius: 20px; max-width: 480px; width: 100%;
+    padding: 48px 40px; text-align: center;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+  }
+  .check-circle {
+    width: 84px; height: 84px; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(79,70,229,.1), rgba(6,182,212,.1));
+    border: 3px solid var(--primary);
+    display: grid; place-items: center;
+    font-size: 38px; margin: 0 auto 20px;
+    animation: pop .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes pop { from { transform: scale(0); opacity:0; } to { transform: scale(1); opacity:1; } }
+  .success-card h2 {
+    font-family: 'Sora',sans-serif;
+    font-size: 26px; font-weight: 800; margin-bottom: 10px;
+  }
+  .success-card .sub {
+    font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 28px;
+  }
+  .steps-list { text-align: left; margin-bottom: 28px; }
+  .steps-list h4 {
+    font-family:'Sora',sans-serif; font-size:12px; font-weight:700;
+    color:var(--muted); text-transform:uppercase; letter-spacing:.07em;
+    margin-bottom:12px;
+  }
+  .step-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 10px;
+    background: var(--paper); border: 1px solid var(--border);
+    margin-bottom: 8px; font-size: 14px;
+  }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    display: grid; place-items: center;
+    font-family:'Sora',sans-serif; font-size:13px; font-weight:700;
+    flex-shrink: 0;
+  }
+  .step-item.done .step-num {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-wrap">
+  <div class="success-card">
+    <div class="check-circle">✅</div>
+    <h2>Payment Confirmed!</h2>
+    <p class="sub">
+      Your payment of <strong>₦{{ ad.slot.price|floatformat:0 }}</strong> for the
+      <strong>{{ ad.slot.get_position_display }}</strong> has been received.
+      Your ad is now in the review queue.
+    </p>
+
+    <div class="steps-list">
+      <h4>What happens next?</h4>
+      <div class="step-item done">
+        <div class="step-num">✓</div>
+        <span><strong>Payment received</strong> — Your ad is now in the queue</span>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <span><strong>Admin review</strong> — We check your ad within 24 hours</span>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <span><strong>Go live</strong> — Your ad is published on the {{ ad.slot.get_position_display }}</span>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <span><strong>Track performance</strong> — View impressions & clicks in your dashboard</span>
+      </div>
+    </div>
+
+    <a href="{% url 'ads_dashboard' %}" class="btn-ads-primary" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+      <i class="bi bi-speedometer2"></i> Go to My Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

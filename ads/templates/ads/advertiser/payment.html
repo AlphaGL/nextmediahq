@@ -1,0 +1,101 @@
+{% extends 'ads/ads_base.html' %}
+{% load static %}
+
+{% block title %}Complete Payment — LearnHub Ads{% endblock %}
+
+{% block breadcrumb %}
+<div class="ads-breadcrumb">
+  <div class="container">
+    <a href="{% url 'home' %}"><i class="bi bi-house me-1"></i>Home</a>
+    <span class="sep">/</span>
+    <a href="{% url 'ads_dashboard' %}">My Ads</a>
+    <span class="sep">/</span>
+    <span class="current">Complete Payment</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .pay-wrap {
+    min-height: calc(100vh - 160px);
+    display: grid; place-items: center;
+    padding: 32px 16px;
+  }
+  .pay-card {
+    background: var(--card);
+    border-radius: 20px;
+    width: 100%; max-width: 480px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+  }
+  .pay-top {
+    background: linear-gradient(135deg, var(--gold) 0%, #f0c040 100%);
+    padding: 28px;
+    text-align: center;
+  }
+  .pay-top .pay-icon { font-size: 44px; margin-bottom: 10px; }
+  .pay-top h2 { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:var(--ink); margin-bottom:4px; }
+  .pay-top p  { font-size:13px; color:rgba(15,14,23,.6); margin:0; }
+  .pay-body   { padding: 28px; }
+  .order-table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+  .order-table tr { border-bottom:1px solid var(--border); }
+  .order-table tr:last-child { border-bottom:none; }
+  .order-table td { padding:10px 0; font-size:14px; }
+  .order-table td:last-child { text-align:right; font-weight:600; }
+  .order-total td { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; padding-top:16px; }
+  .notice-box {
+    background: var(--gold-bg); border:1px solid var(--gold);
+    border-radius:10px; padding:14px 16px; margin-bottom:20px;
+    font-size:13px; color:#78350f; line-height:1.6;
+  }
+  .notice-box strong { color:#92400e; }
+  .secured-note { text-align:center; font-size:11px; color:var(--muted); margin-top:14px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pay-wrap">
+  <div class="pay-card">
+    <div class="pay-top">
+      <div class="pay-icon">💳</div>
+      <h2>Complete Payment</h2>
+      <p>Secure payment via Paystack</p>
+    </div>
+    <div class="pay-body">
+      <table class="order-table">
+        <tr><td>Ad Title</td>         <td>{{ ad.title|truncatechars:32 }}</td></tr>
+        <tr><td>Ad Position</td>      <td>{{ ad.slot.get_position_display }}</td></tr>
+        <tr><td>Campaign Duration</td><td>{{ ad.slot.duration_days }} days</td></tr>
+        <tr><td>Ad Format</td>        <td>{{ ad.get_ad_format_display }}</td></tr>
+        <tr class="order-total">
+          <td>Total Amount</td>
+          <td style="color:var(--accent)">₦{{ ad.slot.price|floatformat:0 }}</td>
+        </tr>
+      </table>
+
+      <div class="notice-box">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <strong>Important:</strong> Once payment is confirmed, your ad <strong>cannot be modified</strong>. It will be submitted for admin review and typically goes live within <strong>24 hours</strong>.
+      </div>
+
+      <form method="POST" action="{% url 'ads_pay' ad.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-ads-primary" style="width:100%;justify-content:center;padding:15px;font-size:16px;">
+          <i class="bi bi-lock"></i> Pay ₦{{ ad.slot.price|floatformat:0 }} with Paystack
+        </button>
+      </form>
+
+      <div style="text-align:center;margin-top:12px;">
+        <a href="{% url 'ads_dashboard' %}" style="font-size:13px;color:var(--muted);text-decoration:none;">
+          <i class="bi bi-arrow-left me-1"></i>Cancel and go back
+        </a>
+      </div>
+      <div class="secured-note">
+        <i class="bi bi-lock me-1"></i>Payments secured by Paystack. Your card details are never stored.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

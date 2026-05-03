@@ -161,8 +161,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"📄 Scraping pages {start_page} to {end_page}"))
         self.stdout.write(self.style.SUCCESS(f"🏷️  Default category: {default_category.name}"))
         
-        base_url = "https://sportingsun.ng"
-        api_url = "https://sportingsun.ng/wp-json/wp/v2/posts"
+        base_url = "https://thesun.ng/"
+        api_url = "https://thesun.ng//wp-json/wp/v2/posts"
         
         total_scraped = 0
         total_skipped = 0

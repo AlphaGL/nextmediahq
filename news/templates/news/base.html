@@ -790,16 +790,11 @@
         }
     </style>
 
-    <!-- Adsense code -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8114107298397897"
-     crossorigin="anonymous"></script>
-
     <!-- OG / Social sharing meta tags -->
     {% block og_tags %}
     <meta property="og:site_name" content="NextMedia">
     <meta property="og:image" content="{% static 'img/logo.jpg' %}">
     {% endblock %}
-
 
 </head>
 <body>
@@ -845,13 +840,25 @@
             </div>
         </div>
     </nav>
+
+    <!-- ── Header Banner Ad ── -->
+    {% include 'ads/includes/header_ads.html' %}
+
     <br>
 
     <!-- Main Content -->
     <main class="main-content">
+
+        <!-- ── Body Ads (top of content) ── -->
+        {% include 'ads/includes/body_ads.html' %}
+
         {% block content %}
         {% endblock %}
+
     </main>
+
+    <!-- ── Footer Banner Ad ── -->
+    {% include 'ads/includes/footer_ads.html' %}
 
     <!-- Floating Action Buttons -->
     <div class="floating-buttons">
@@ -874,9 +881,6 @@
             <button class="modal-close-btn" id="closeModal">Got it!</button>
         </div>
     </div>
-
-<!-- Updated Footer Section - Add this to your base.html -->
-<!-- Replace your existing footer with this code -->
 
 <footer style="background: var(--secondary-bg); padding: 3rem 1rem 1.5rem; margin-top: 4rem; border-top: 1px solid var(--border);">
     <div style="max-width: 1400px; margin: 0 auto;">
@@ -1052,7 +1056,6 @@
         (function() {
             const backToTopBtn = document.getElementById('backToTop');
             
-            // Show button when user scrolls down 300px
             window.addEventListener('scroll', function() {
                 if (window.pageYOffset > 300) {
                     backToTopBtn.style.display = 'flex';
@@ -1061,7 +1064,6 @@
                 }
             });
             
-            // Smooth scroll to top when clicked
             backToTopBtn.addEventListener('click', function() {
                 window.scrollTo({
                     top: 0,
@@ -1076,12 +1078,10 @@
             const modal = document.getElementById('comingSoonModal');
             const closeModalBtn = document.getElementById('closeModal');
 
-            // Navigate to chat when Next AI button is clicked
             nextAiBtn.addEventListener('click', function() {
                 window.location.href = '/ai-chat/';
             });
 
-            // Modal event listeners for fallback
             if (closeModalBtn) {
                 closeModalBtn.addEventListener('click', function() {
                     modal.classList.remove('active');
@@ -1114,7 +1114,7 @@
             });
         });
 
-        // PWA Installation - Improved and Fixed
+        // PWA Installation
         const isDevelopment = location.hostname === 'localhost' || 
                              location.hostname === '127.0.0.1' || 
                              location.hostname.startsWith('192.168.') ||
@@ -1124,7 +1124,6 @@
         const isHTTP = location.protocol === 'http:';
         const isHTTPS = location.protocol === 'https:';
         
-        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             const shouldRegister = isDevelopment ? isHTTP : isHTTPS;
             
@@ -1143,110 +1142,56 @@
             }
         }
 
-        // PWA Install Prompt Handler
         let deferredPrompt;
         let installButton = null;
 
-        // Listen for the beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', function(e) {
-            console.log('🎉 beforeinstallprompt event fired - PWA is installable!');
             e.preventDefault();
             deferredPrompt = e;
             showInstallButton();
         });
 
-        // Check if app is already installed
         window.addEventListener('appinstalled', function() {
-            console.log('✅ PWA was installed successfully');
             hideInstallButton();
             deferredPrompt = null;
         });
 
         function showInstallButton() {
-            // Check if button already exists
-            if (installButton) {
-                console.log('⚠️ Install button already exists');
-                return;
-            }
+            if (installButton) return;
             
             const floatingButtons = document.querySelector('.floating-buttons');
+            if (!floatingButtons) return;
             
-            if (!floatingButtons) {
-                console.error('❌ Floating buttons container not found');
-                return;
-            }
-            
-            // Create install button
             installButton = document.createElement('button');
             installButton.className = 'install-app-btn';
             installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
             installButton.id = 'installAppBtn';
             
-            // Add click event listener
             installButton.addEventListener('click', function() {
-                console.log('🔘 Install button clicked');
                 if (deferredPrompt) {
-                    // Show the install prompt
                     deferredPrompt.prompt();
-                    
-                    // Wait for the user to respond to the prompt
                     deferredPrompt.userChoice.then(function(choiceResult) {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('✅ User accepted the install prompt');
-                        } else {
-                            console.log('❌ User dismissed the install prompt');
-                        }
-                        
-                        // Clear the deferredPrompt
                         deferredPrompt = null;
-                        
-                        // Hide the button
                         hideInstallButton();
                     });
-                } else {
-                    console.error('❌ No deferred prompt available');
                 }
             });
             
-            // Insert install button as first child in floating buttons container
             floatingButtons.insertBefore(installButton, floatingButtons.firstChild);
-            
-            // Trigger animation by adding show class after a brief delay
-            setTimeout(() => {
-                installButton.classList.add('show');
-                console.log('✅ Install button displayed');
-            }, 100);
+            setTimeout(() => { installButton.classList.add('show'); }, 100);
         }
 
         function hideInstallButton() {
             if (installButton) {
-                console.log('🔄 Hiding install button');
                 installButton.classList.remove('show');
                 setTimeout(() => {
                     if (installButton && installButton.parentNode) {
                         installButton.parentNode.removeChild(installButton);
-                        console.log('✅ Install button removed');
                     }
                     installButton = null;
                 }, 300);
             }
         }
-
-        // For testing: Check if the browser supports PWA installation
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('📱 PWA Support Check:');
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('✓ Service Worker supported:', 'serviceWorker' in navigator);
-        console.log('✓ Is HTTPS or localhost:', (isDevelopment && isHTTP) || (!isDevelopment && isHTTPS));
-        console.log('✓ Protocol:', location.protocol);
-        console.log('✓ Hostname:', location.hostname);
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('ℹ️ The install button will appear when:');
-        console.log('  1. Manifest is valid');
-        console.log('  2. Service worker is registered');
-        console.log('  3. App meets PWA criteria');
-        console.log('  4. beforeinstallprompt event fires');
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     </script>
     
     {% block extra_js %}{% endblock %}

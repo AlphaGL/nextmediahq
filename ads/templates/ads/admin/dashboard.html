@@ -1,0 +1,282 @@
+{% extends 'ads/ads_base.html' %}
+{% load static %}
+
+{% block title %}Ads Admin — LearnHub{% endblock %}
+
+{% block breadcrumb %}
+<div class="ads-breadcrumb">
+  <div class="container">
+    <a href="{% url 'home' %}"><i class="bi bi-house me-1"></i>Home</a>
+    <span class="sep">/</span>
+    <a href="{% url 'custom_admin_dashboard' %}">Admin</a>
+    <span class="sep">/</span>
+    <span class="current">Advertisements Manager</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_hero %}
+<div class="ads-page-hero">
+  <div class="container">
+    <h1><i class="bi bi-shield-check me-2"></i>Advertisements Manager</h1>
+    <p>Review paid ads, manage approvals, and monitor revenue</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+
+  .review-card {
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+    overflow: hidden; margin-bottom: 16px;
+    transition: box-shadow .2s;
+  }
+  .review-card:hover { box-shadow: var(--shadow-md); }
+  .review-card-top {
+    padding: 18px 22px;
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .ad-thumb {
+    width: 80px; height: 60px; border-radius: 8px;
+    background: var(--paper); object-fit: cover;
+    border: 1px solid var(--border); flex-shrink: 0;
+    display: grid; place-items: center; font-size: 22px;
+  }
+  .ad-info { flex: 1; }
+  .ad-info h3 { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; margin-bottom:6px; }
+  .ad-meta { display:flex; flex-wrap:wrap; gap:10px; font-size:12px; color:var(--muted); }
+  .ad-meta span { display:flex; align-items:center; gap:4px; }
+  .review-card-body { padding: 0 22px 18px; }
+  .ad-preview-mini {
+    background: var(--paper); border:1px solid var(--border);
+    border-radius:10px; padding:14px; margin-bottom:14px;
+  }
+  .ad-preview-mini img { width:100%; max-height:100px; object-fit:contain; border-radius:6px; margin-bottom:8px; }
+  .ad-preview-mini p    { font-size:12px; color:var(--muted); margin-bottom:4px; }
+  .ad-preview-mini strong { font-size:14px; display:block; margin-bottom:4px; }
+  .ad-preview-mini .desc { font-size:12px; color:var(--muted); margin-bottom:8px; }
+  .cta-preview {
+    display:inline-block; padding:4px 14px;
+    background:var(--primary); color:#fff;
+    border-radius:5px; font-size:11px; font-weight:700;
+    text-decoration:none;
+  }
+  .review-actions { display:flex; gap:10px; align-items:center; }
+  .reject-form {
+    display:none; margin-top:12px;
+    background:#fee2e2; border-radius:10px; padding:14px;
+    border:1px solid #fca5a5;
+  }
+  .reject-form.open { display:block; }
+  .reject-form textarea {
+    width:100%; padding:10px; border-radius:8px;
+    border:1px solid #fca5a5;
+    font-family:'DM Sans',sans-serif; font-size:13px;
+    resize:vertical; min-height:80px; margin-bottom:10px; background:#fff;
+  }
+
+  /* All Ads Table */
+  .table-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow-sm); overflow:hidden; margin-top:32px; border:1px solid var(--border); }
+  .table-card-header { padding:18px 22px; border-bottom:1px solid var(--border); }
+  .ads-table { width:100%; border-collapse:collapse; }
+  .ads-table th {
+    text-align:left; padding:10px 16px;
+    font-size:11px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--muted);
+    background:#fafafa; border-bottom:1px solid var(--border);
+  }
+  .ads-table td {
+    padding:12px 16px; border-bottom:1px solid #f1f5f9;
+    font-size:13px; vertical-align:middle;
+  }
+  .ads-table tr:last-child td { border-bottom:none; }
+  .ads-table tr:hover td { background:#fafafa; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .review-actions { flex-direction:column; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Pending Review</div>
+      <div class="stat-value" style="color:var(--danger)">{{ pending_count }}</div>
+      <div class="stat-sub">Paid ads awaiting approval</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Live Ads</div>
+      <div class="stat-value" style="color:var(--accent)">{{ approved_count }}</div>
+      <div class="stat-sub">Currently running</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value text-gradient">₦{{ total_revenue|floatformat:0 }}</div>
+      <div class="stat-sub">From all ad payments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Slot Status</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+        {% for slot in slots %}
+        <div class="d-flex justify-content-between align-items-center" style="font-size:12px;">
+          <span>{{ slot.get_position_display }}</span>
+          <span style="font-weight:700;{% if slot.is_full %}color:var(--danger){% else %}color:var(--accent){% endif %}">
+            {{ slot.active_ad_count }}/{{ slot.max_advertisers }}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Review -->
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <div class="ads-section-heading mb-0">
+      <i class="bi bi-bell"></i> Pending Review
+    </div>
+    {% if pending_count %}<span class="ads-section-heading mb-0"><span class="badge-count">{{ pending_count }}</span></span>{% endif %}
+  </div>
+
+  {% if pending_review %}
+    {% for ad in pending_review %}
+    <div class="review-card">
+      <div class="review-card-top">
+        {% if ad.image_url %}
+        <img src="{{ ad.image_url }}" class="ad-thumb" alt="{{ ad.title }}"/>
+        {% else %}
+        <div class="ad-thumb">📝</div>
+        {% endif %}
+        <div class="ad-info">
+          <h3>{{ ad.title }}</h3>
+          <div class="ad-meta">
+            <span><i class="bi bi-building"></i>{{ ad.advertiser.business_name }}</span>
+            <span><i class="bi bi-envelope"></i>{{ ad.advertiser.user.email }}</span>
+            <span><i class="bi bi-geo-alt"></i>{{ ad.slot.get_position_display }}</span>
+            <span><i class="bi bi-palette"></i>{{ ad.get_ad_format_display }}</span>
+            <span><i class="bi bi-calendar3"></i>{{ ad.created_at|date:"M d, Y" }}</span>
+          </div>
+        </div>
+        <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:var(--accent);white-space:nowrap;">
+          ₦{{ ad.slot.price|floatformat:0 }}
+        </div>
+      </div>
+      <div class="review-card-body">
+        <div class="ad-preview-mini">
+          <p>Ad Preview:</p>
+          {% if ad.image_url %}<img src="{{ ad.image_url }}" alt="{{ ad.title }}"/>{% endif %}
+          {% if ad.ad_format != 'image' %}
+          <strong>{{ ad.title }}</strong>
+          {% if ad.description %}<div class="desc">{{ ad.description }}</div>{% endif %}
+          <a href="{{ ad.destination_url }}" target="_blank" class="cta-preview">{{ ad.cta_text }}</a>
+          {% endif %}
+          <p style="margin-top:10px;font-size:11px;color:var(--muted);">
+            <i class="bi bi-link-45deg me-1"></i>
+            <a href="{{ ad.destination_url }}" target="_blank" style="color:var(--primary)">{{ ad.destination_url }}</a>
+          </p>
+        </div>
+        <div class="review-actions">
+          <form method="POST" action="{% url 'admin_approve_ad' ad.id %}" style="flex:1;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="approve"/>
+            <button type="submit" class="btn-ads-success" style="width:100%;justify-content:center;padding:11px;">
+              <i class="bi bi-check-circle"></i> Approve & Publish
+            </button>
+          </form>
+          <button class="btn-ads-danger" style="flex:1;justify-content:center;padding:11px;"
+            onclick="toggleReject('reject_{{ ad.id }}')">
+            <i class="bi bi-x-circle"></i> Reject
+          </button>
+        </div>
+        <div class="reject-form" id="reject_{{ ad.id }}">
+          <form method="POST" action="{% url 'admin_approve_ad' ad.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="reject"/>
+            <p style="font-size:13px;font-weight:700;color:#991b1b;margin-bottom:8px;">
+              Provide a reason (shown to advertiser):
+            </p>
+            <textarea name="rejection_reason"
+              placeholder="e.g. Your ad contains prohibited content (gambling references)."></textarea>
+            <button type="submit" class="btn-ads-danger" style="padding:9px 18px;font-size:13px;">
+              <i class="bi bi-send"></i> Confirm Rejection
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div style="text-align:center;padding:40px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-sm);color:var(--muted);">
+      <div style="font-size:36px;margin-bottom:12px;">🎉</div>
+      <p style="font-size:15px;font-weight:600;">No ads pending review — all caught up!</p>
+    </div>
+  {% endif %}
+
+  <!-- All Ads Table -->
+  <div class="table-card">
+    <div class="table-card-header">
+      <h2 style="font-family:'Sora',sans-serif;font-size:16px;font-weight:700;">
+        <i class="bi bi-table me-2"></i>All Advertisements
+      </h2>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="ads-table">
+        <thead>
+          <tr>
+            <th>Ad Title</th>
+            <th>Advertiser</th>
+            <th>Position</th>
+            <th>Status</th>
+            <th>Paid</th>
+            <th>Impr.</th>
+            <th>Clicks</th>
+            <th>CTR</th>
+            <th>Expires</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ad in all_ads %}
+          <tr>
+            <td style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              {{ ad.title }}
+            </td>
+            <td>
+              <div style="font-weight:600;">{{ ad.advertiser.business_name }}</div>
+              <div style="font-size:11px;color:var(--muted);">{{ ad.advertiser.user.email }}</div>
+            </td>
+            <td>{{ ad.slot.get_position_display }}</td>
+            <td>
+              <span class="status-badge badge-{{ ad.status }}">{{ ad.get_status_display }}</span>
+            </td>
+            <td>{% if ad.payment.status == 'successful' %}
+              <span style="color:var(--accent);font-weight:700;">✅ ₦{{ ad.slot.price|floatformat:0 }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td>{{ ad.impressions }}</td>
+            <td>{{ ad.clicks }}</td>
+            <td>{% if ad.impressions > 0 %}{{ ad.ctr }}%{% else %}—{% endif %}</td>
+            <td>{% if ad.expires_at %}{{ ad.expires_at|date:"M d, Y" }}{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleReject(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+</script>
+{% endblock %}

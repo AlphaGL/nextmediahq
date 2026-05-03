@@ -1,0 +1,285 @@
+{% extends 'ads/ads_base.html' %}
+{% load static %}
+
+{% block title %}{{ ad.title }} — Ad Details{% endblock %}
+
+{% block breadcrumb %}
+<div class="ads-breadcrumb">
+  <div class="container">
+    <a href="{% url 'home' %}"><i class="bi bi-house me-1"></i>Home</a>
+    <span class="sep">/</span>
+    <a href="{% url 'ads_dashboard' %}">My Ads</a>
+    <span class="sep">/</span>
+    <span class="current">{{ ad.title|truncatechars:35 }}</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_hero %}
+<div class="ads-page-hero">
+  <div class="container">
+    <h1><i class="bi bi-bar-chart-line me-2"></i>{{ ad.title|truncatechars:50 }}</h1>
+    <p>Ad details, analytics and performance</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; }
+
+  /* Status banner */
+  .status-banner {
+    border-radius: 14px; padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+  }
+  .status-banner.approved { background: #dcfce7; border: 1px solid #86efac; }
+  .status-banner.paid     { background: #eff6ff; border: 1px solid #93c5fd; }
+  .status-banner.pending_payment { background: var(--gold-bg); border: 1px solid var(--gold); }
+  .status-banner.rejected { background: #fee2e2; border: 1px solid #fca5a5; }
+  .status-banner.expired  { background: #f3f4f6; border: 1px solid #d1d5db; }
+  .status-banner.draft    { background: #f3f4f6; border: 1px solid #d1d5db; }
+  .status-icon { font-size: 26px; flex-shrink: 0; }
+  .status-info h3 {
+    font-family: 'Sora',sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 3px;
+  }
+  .status-info p { font-size: 13px; opacity: .75; margin: 0; }
+
+  /* Analytics */
+  .analytics-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+  .metric-box {
+    background: var(--paper); border-radius: 10px;
+    padding: 16px; text-align: center;
+    border: 1px solid var(--border);
+  }
+  .metric-box .m-val { font-family:'Sora',sans-serif; font-size:26px; font-weight:800; }
+  .metric-box .m-label { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-top:4px; }
+  .metric-box .m-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+
+  .perf-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin: 10px 0; }
+  .perf-fill { height: 100%; border-radius: 4px; }
+  .perf-excellent .perf-fill { background: var(--success); width: 95%; }
+  .perf-good      .perf-fill { background: var(--primary); width: 65%; }
+  .perf-average   .perf-fill { background: var(--gold); width: 40%; }
+  .perf-poor      .perf-fill { background: var(--danger); width: 15%; }
+
+  /* Detail list */
+  .detail-list { list-style: none; }
+  .detail-list li {
+    display: flex; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+  }
+  .detail-list li:last-child { border-bottom: none; }
+  .dl { color: var(--muted); }
+  .dv { font-weight: 600; text-align: right; max-width: 55%; word-break: break-all; }
+
+  /* Tips */
+  .tip-item {
+    display: flex; gap: 12px;
+    padding: 14px; border-radius: 10px;
+    background: var(--paper); border: 1px solid var(--border);
+    margin-bottom: 10px;
+  }
+  .tip-icon { font-size: 20px; flex-shrink: 0; }
+  .tip-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .tip-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* Ad preview */
+  .ad-preview-box {
+    border: 1.5px dashed var(--border);
+    border-radius: 10px; overflow: hidden; background: var(--paper);
+  }
+  .preview-label {
+    font-size: 11px; color: var(--muted);
+    text-align: center; padding: 6px;
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--border);
+  }
+  .preview-content { padding: 14px; }
+
+  @media (max-width: 768px) {
+    .detail-grid { grid-template-columns: 1fr; }
+    .analytics-grid { grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Status Banner -->
+  <div class="status-banner {{ ad.status }}">
+    <div class="status-icon">
+      {% if ad.status == 'approved' %}✅
+      {% elif ad.status == 'paid' %}⏳
+      {% elif ad.status == 'pending_payment' %}💳
+      {% elif ad.status == 'rejected' %}❌
+      {% elif ad.status == 'expired' %}🕐
+      {% else %}📝{% endif %}
+    </div>
+    <div class="status-info">
+      <h3>
+        {% if ad.status == 'approved' %}Your Ad is Live!
+        {% elif ad.status == 'paid' %}Payment Received — Awaiting Admin Approval
+        {% elif ad.status == 'pending_payment' %}Payment Required
+        {% elif ad.status == 'rejected' %}Ad Rejected
+        {% elif ad.status == 'expired' %}Ad Campaign Ended
+        {% else %}Draft{% endif %}
+      </h3>
+      <p>
+        {% if ad.status == 'approved' %}Running on {{ ad.slot.get_position_display }}. Expires {{ ad.expires_at|date:"M d, Y" }} ({{ ad.days_remaining }} days left).
+        {% elif ad.status == 'paid' %}Our admin team will review your ad within 24 hours.
+        {% elif ad.status == 'pending_payment' %}Complete payment to submit your ad for admin review.
+        {% elif ad.status == 'rejected' %}Reason: {{ ad.rejection_reason|default:"See admin notes." }}
+        {% elif ad.status == 'expired' %}This campaign has ended. Place a new ad to continue advertising.
+        {% else %}Proceed to payment when ready.{% endif %}
+      </p>
+    </div>
+    {% if ad.status == 'pending_payment' %}
+    <a href="{% url 'ads_pay' ad.id %}" class="btn-ads-gold ms-auto" style="white-space:nowrap;">
+      <i class="bi bi-credit-card"></i> Pay ₦{{ ad.slot.price|floatformat:0 }}
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="detail-grid">
+    <!-- Left -->
+    <div>
+      <!-- Analytics -->
+      <div class="ads-card mb-4">
+        <div class="ads-card-header">
+          <i class="bi bi-bar-chart-line" style="color:var(--primary)"></i>
+          <h3>Performance Analytics</h3>
+        </div>
+        <div class="ads-card-body">
+          <div class="analytics-grid">
+            <div class="metric-box">
+              <div class="m-val" style="color:var(--primary)">{{ ad.impressions }}</div>
+              <div class="m-label">Impressions</div>
+              <div class="m-sub">Times shown</div>
+            </div>
+            <div class="metric-box">
+              <div class="m-val" style="color:var(--secondary)">{{ ad.clicks }}</div>
+              <div class="m-label">Clicks</div>
+              <div class="m-sub">Times clicked</div>
+            </div>
+            <div class="metric-box">
+              <div class="m-val" style="color:var(--accent)">{{ ad.ctr }}%</div>
+              <div class="m-label">CTR</div>
+              <div class="m-sub">Click-through rate</div>
+            </div>
+          </div>
+
+          {% if ad.impressions > 0 %}
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span style="font-size:13px;font-weight:600;">Performance Rating</span>
+              <span style="font-size:12px;color:var(--muted);text-transform:capitalize;">{{ ad.performance_rating }}</span>
+            </div>
+            <div class="perf-bar perf-{{ ad.performance_rating }}"><div class="perf-fill"></div></div>
+            <div class="d-flex justify-content-between" style="font-size:11px;color:var(--muted);">
+              <span>Poor</span><span>Average</span><span>Good</span><span>Excellent</span>
+            </div>
+          </div>
+          {% else %}
+          <p style="font-size:13px;color:var(--muted);text-align:center;padding:16px 0;margin:0;">
+            <i class="bi bi-clock me-2"></i>Analytics will appear once your ad goes live.
+          </p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="ads-card">
+        <div class="ads-card-header">
+          <i class="bi bi-lightbulb" style="color:var(--gold)"></i>
+          <h3>Tips to Improve Performance</h3>
+        </div>
+        <div class="ads-card-body">
+          {% for tip in tips %}
+          <div class="tip-item">
+            <div class="tip-icon">{{ tip.icon }}</div>
+            <div>
+              <div class="tip-title">{{ tip.title }}</div>
+              <div class="tip-text">{{ tip.text }}</div>
+            </div>
+          </div>
+          {% empty %}
+          <p style="font-size:13px;color:var(--muted);">No tips yet. Check back after your ad runs for a while.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div>
+      <!-- Ad Details -->
+      <div class="ads-card mb-4">
+        <div class="ads-card-header">
+          <i class="bi bi-file-earmark-text" style="color:var(--primary)"></i>
+          <h3>Ad Details</h3>
+        </div>
+        <div class="ads-card-body">
+          <ul class="detail-list">
+            <li><span class="dl">Position</span><span class="dv">{{ ad.slot.get_position_display }}</span></li>
+            <li><span class="dl">Format</span><span class="dv">{{ ad.get_ad_format_display }}</span></li>
+            <li><span class="dl">Amount Paid</span><span class="dv" style="color:var(--accent);font-family:'Sora',sans-serif;">₦{{ ad.slot.price|floatformat:0 }}</span></li>
+            <li><span class="dl">Duration</span><span class="dv">{{ ad.slot.duration_days }} days</span></li>
+            <li><span class="dl">CTA Button</span><span class="dv">{{ ad.cta_text }}</span></li>
+            <li><span class="dl">Destination</span>
+              <span class="dv">
+                <a href="{{ ad.destination_url }}" target="_blank" style="color:var(--primary);font-size:12px;">
+                  {{ ad.destination_url|truncatechars:28 }}
+                </a>
+              </span>
+            </li>
+            {% if ad.approved_at %}<li><span class="dl">Approved</span><span class="dv">{{ ad.approved_at|date:"M d, Y" }}</span></li>{% endif %}
+            {% if ad.expires_at %}<li><span class="dl">Expires</span><span class="dv">{{ ad.expires_at|date:"M d, Y" }}</span></li>{% endif %}
+            <li><span class="dl">Created</span><span class="dv">{{ ad.created_at|date:"M d, Y" }}</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="ads-card mb-4">
+        <div class="ads-card-header">
+          <i class="bi bi-image" style="color:var(--secondary)"></i>
+          <h3>Ad Preview</h3>
+        </div>
+        <div class="ads-card-body">
+          <div class="ad-preview-box">
+            <div class="preview-label">{{ ad.slot.get_position_display }} Preview</div>
+            <div class="preview-content">
+              {% if ad.image_url %}
+              <img src="{{ ad.image_url }}" alt="{{ ad.title }}" style="width:100%;border-radius:6px;margin-bottom:8px;"/>
+              {% endif %}
+              {% if ad.ad_format != 'image' %}
+              <div style="font-weight:700;font-size:14px;margin-bottom:4px;">{{ ad.title }}</div>
+              {% if ad.description %}<div style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.4;">{{ ad.description }}</div>{% endif %}
+              <span style="display:inline-block;padding:5px 14px;background:var(--primary);color:#fff;border-radius:6px;font-size:11px;font-weight:700;">
+                {{ ad.cta_text }}
+              </span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex flex-column gap-2">
+        {% if ad.status == 'pending_payment' %}
+        <a href="{% url 'ads_pay' ad.id %}" class="btn-ads-gold" style="justify-content:center;padding:14px;">
+          <i class="bi bi-credit-card"></i> Complete Payment — ₦{{ ad.slot.price|floatformat:0 }}
+        </a>
+        {% endif %}
+        <a href="{% url 'ads_dashboard' %}" class="btn-ads-secondary" style="justify-content:center;padding:12px;">
+          <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

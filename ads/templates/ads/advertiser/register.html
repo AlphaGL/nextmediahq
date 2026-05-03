@@ -1,0 +1,280 @@
+{% extends 'ads/ads_base.html' %}
+{% load static %}
+
+{% block title %}Advertiser Registration — LearnHub Ads{% endblock %}
+
+{% block extra_head %}
+<style>
+  .register-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* Left info panel */
+  .reg-left {
+    background: linear-gradient(160deg, var(--primary), var(--secondary));
+    color: #fff;
+    padding: 48px 40px;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    position: sticky; top: 0; height: 100vh;
+    overflow: hidden;
+  }
+  .reg-left::before {
+    content: '';
+    position: absolute; top: -30%; right: -20%;
+    width: 400px; height: 400px; border-radius: 50%;
+    background: rgba(255,255,255,.06);
+  }
+  .reg-brand { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
+  .reg-brand-dot {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,.2);
+    border: 2px solid rgba(255,255,255,.4);
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-family: 'Sora',sans-serif; font-weight: 800; font-size: 20px; color: #fff;
+  }
+  .reg-brand strong { font-family:'Sora',sans-serif; font-size:20px; font-weight:700; }
+  .reg-brand span   { font-size:12px; opacity:.6; display:block; margin-top:1px; }
+  .reg-hero {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; padding: 40px 0; position: relative; z-index: 1;
+  }
+  .reg-hero h1 {
+    font-family: 'Sora',sans-serif;
+    font-size: clamp(26px,3vw,38px); font-weight: 800; line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .reg-hero h1 span { color: var(--gold); }
+  .reg-hero p { font-size:15px; opacity:.75; line-height:1.7; max-width:340px; }
+  .slot-cards { margin-top:28px; display:flex; flex-direction:column; gap:10px; }
+  .slot-card-mini {
+    display:flex; align-items:center; gap:14px;
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:10px; padding:12px 16px;
+  }
+  .slot-icon-mini {
+    width:36px; height:36px; border-radius:8px;
+    background:rgba(255,255,255,.15);
+    display:grid; place-items:center; font-size:16px;
+  }
+  .slot-card-mini strong { display:block; font-size:13px; font-weight:600; }
+  .slot-card-mini span  { font-size:11px; opacity:.6; }
+  .slot-price-mini { margin-left:auto; font-family:'Sora',sans-serif; font-weight:800; font-size:15px; color:var(--gold); }
+  .reg-footer-note { font-size:12px; opacity:.4; position:relative; z-index:1; }
+
+  /* Right form panel */
+  .reg-right { padding: 48px 40px; overflow-y: auto; background: var(--paper); }
+  .form-header { margin-bottom: 28px; }
+  .form-header h2 { font-family:'Sora',sans-serif; font-size:26px; font-weight:800; margin-bottom:6px; }
+  .form-header p { color:var(--muted); font-size:14px; }
+  .form-header p a { color:var(--primary); font-weight:600; text-decoration:none; }
+
+  .section-label {
+    font-family:'Sora',sans-serif; font-size:11px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+    margin: 22px 0 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .form-row  { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .form-group label { font-size:13px; font-weight:600; }
+
+  /* Existing-user note */
+  .existing-user-note {
+    background: #eff6ff; border: 1px solid #bfdbfe;
+    border-radius: 10px; padding: 12px 14px;
+    font-size: 12px; color: #1e40af;
+    display: flex; gap: 8px; align-items: flex-start;
+    margin-bottom: 14px; line-height: 1.6;
+  }
+
+  /* Guidelines */
+  .guidelines-box {
+    background: var(--gold-bg); border:1px solid var(--gold);
+    border-radius:12px; padding:18px 20px; margin:20px 0;
+  }
+  .guidelines-box h4 {
+    font-family:'Sora',sans-serif; font-size:13px; font-weight:700; color:#92400e;
+    display:flex; align-items:center; gap:8px; margin-bottom:12px;
+  }
+  .guideline-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .guideline-list li {
+    font-size:13px; color:#78350f;
+    display:flex; align-items:flex-start; gap:8px; line-height:1.5;
+  }
+  .g-badge {
+    font-size:10px; font-weight:800; padding:1px 6px;
+    border-radius:4px; flex-shrink:0; margin-top:2px;
+  }
+  .g-allowed { background:var(--gold); color:var(--ink); }
+  .g-banned  { background:#fee2e2; color:var(--danger); }
+
+  .agree-row {
+    display:flex; align-items:flex-start; gap:10px;
+    padding:14px; background:var(--accent-light);
+    border-radius:10px; margin:16px 0;
+    border:1px solid #86efac;
+  }
+  .agree-row input[type="checkbox"] { margin-top:3px; accent-color:var(--accent); }
+  .agree-row label { font-size:13px; line-height:1.5; }
+
+  @media (max-width: 800px) {
+    .register-wrap { grid-template-columns: 1fr; }
+    .reg-left { position:static; height:auto; padding:28px 24px; }
+    .reg-right { padding:28px 20px; }
+    .form-row  { grid-template-columns:1fr; }
+    .slot-cards { display:none; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="padding:0;">
+  <div class="register-wrap">
+
+    <!-- Left Panel -->
+    <div class="reg-left">
+      <div class="reg-brand">
+        <div class="reg-brand-dot">L</div>
+        <div>
+          <strong>LearnHub Ads</strong>
+          <span>Reach thousands of students</span>
+        </div>
+      </div>
+      <div class="reg-hero">
+        <h1>Advertise to <span>Thousands</span> of Active Students</h1>
+        <p>Place your brand in front of motivated learners. Choose your position, pay once.</p>
+        <div class="slot-cards">
+          {% for slot in slots %}
+          <div class="slot-card-mini">
+            <div class="slot-icon-mini">
+              {% if slot.position == 'header' %}📢{% elif slot.position == 'body' %}🖼️{% else %}📌{% endif %}
+            </div>
+            <div>
+              <strong>{{ slot.get_position_display }}</strong>
+              <span>{{ slot.slots_remaining }} of {{ slot.max_advertisers }} slots left</span>
+            </div>
+            <div class="slot-price-mini">₦{{ slot.price|floatformat:0 }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <p class="reg-footer-note">© 2025 LearnHub · All ads are reviewed before going live.</p>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="reg-right">
+      <div class="form-header">
+        <h2>Create Advertiser Account</h2>
+        <p>Already have an account? <a href="{% url 'ads_login' %}">Sign in here</a></p>
+      </div>
+
+      <form method="POST" action="{% url 'ads_register' %}">
+        {% csrf_token %}
+
+        <!-- Personal -->
+        <div class="section-label"><i class="bi bi-person"></i>Personal Information</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input class="ads-input" type="text" name="first_name" placeholder="First Name"
+                   required value="{{ form.first_name.value|default:'' }}"/>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input class="ads-input" type="text" name="last_name" placeholder="Last Name"
+                   required value="{{ form.last_name.value|default:'' }}"/>
+          </div>
+        </div>
+
+        <!-- Business -->
+        <div class="section-label"><i class="bi bi-building"></i>Business Information</div>
+        <div class="form-group">
+          <label>Business / Brand Name</label>
+          <input class="ads-input" type="text" name="business_name"
+                 placeholder="e.g. Ace Tutorials" required
+                 value="{{ form.business_name.value|default:'' }}"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input class="ads-input" type="tel" name="phone_number"
+                   placeholder="08012345678" required
+                   value="{{ form.phone_number.value|default:'' }}"/>
+          </div>
+          <div class="form-group">
+            <label>Website <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+            <input class="ads-input" type="url" name="website"
+                   placeholder="https://yoursite.com"
+                   value="{{ form.website.value|default:'' }}"/>
+          </div>
+        </div>
+
+        <!-- Credentials -->
+        <div class="section-label"><i class="bi bi-envelope"></i>Account Credentials</div>
+
+        <div class="existing-user-note">
+          <i class="bi bi-info-circle-fill" style="font-size:14px;flex-shrink:0;margin-top:1px;"></i>
+          <span>
+            <strong>Already a LearnHub student?</strong> Enter your existing email and password below —
+            we'll link your advertiser profile to your current account automatically. No new account needed.
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input class="ads-input" type="email" name="email"
+                 placeholder="your@email.com" required
+                 value="{{ form.email.value|default:'' }}"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Password</label>
+            <input class="ads-input" type="password" name="password1"
+                   placeholder="Min. 8 characters" required/>
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input class="ads-input" type="password" name="password2"
+                   placeholder="Repeat password" required/>
+          </div>
+        </div>
+
+        <!-- Guidelines -->
+        <div class="guidelines-box">
+          <h4><i class="bi bi-exclamation-triangle me-1"></i>Advertising Guidelines — Please Read</h4>
+          <ul class="guideline-list">
+            <li><span class="g-badge g-allowed">✓ OK</span>Educational services, tutorials, books, student products, legitimate businesses.</li>
+            <li><span class="g-badge g-banned">✗ BAN</span>Gambling, betting, lottery — <strong>account permanently banned.</strong></li>
+            <li><span class="g-badge g-banned">✗ BAN</span>Adult content or anything sexually explicit.</li>
+            <li><span class="g-badge g-banned">✗ BAN</span>Get-rich-quick, Ponzi schemes, or fake investment platforms.</li>
+            <li><span class="g-badge g-banned">✗ BAN</span>Misleading or false claims about your product.</li>
+            <li><span class="g-badge g-banned">✗ BAN</span>Drugs, alcohol, tobacco, or illegal substances.</li>
+            <li><span class="g-badge g-allowed">✓ NOTE</span>All ads are reviewed before going live. Rejected ads forfeit payment.</li>
+          </ul>
+        </div>
+
+        <div class="agree-row">
+          <input type="checkbox" id="id_agree_terms" name="agree_terms" required/>
+          <label for="id_agree_terms">
+            I have read and agree to the <strong>Advertising Guidelines</strong>. I understand that violating
+            these rules will result in my account being permanently banned and forfeiture of any payment made.
+          </label>
+        </div>
+
+        <button type="submit" class="btn-ads-primary"
+                style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+          Create Advertiser Account <i class="bi bi-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

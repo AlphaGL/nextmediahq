@@ -1,0 +1,479 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#4f46e5"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>{% block title %}LearnHub Ads{% endblock %}</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"/>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+
+<style>
+  /* ── Design tokens matching homepage ── */
+  :root {
+    --primary:       #4f46e5;
+    --primary-dark:  #4338ca;
+    --secondary:     #06b6d4;
+    --success:       #10b981;
+    --danger:        #ef4444;
+    --warning:       #f59e0b;
+    --dark:          #1e293b;
+    --light:         #f8fafc;
+    --ink:           #0f0e17;
+    --paper:         #f1f5f9;
+    --gold:          #f5a623;
+    --gold-bg:       #fff8e1;
+    --accent:        #2d6a4f;
+    --accent-light:  #e9f5ee;
+    --muted:         #6b7280;
+    --border:        #e2e8f0;
+    --card:          #ffffff;
+    --radius:        15px;
+    --radius-sm:     10px;
+    --shadow-sm:     0 2px 8px rgba(0,0,0,.07);
+    --shadow-md:     0 4px 20px rgba(0,0,0,.1);
+    --shadow-lg:     0 10px 40px rgba(0,0,0,.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Navbar (matches homepage gradient) ── */
+  .ads-navbar {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,.12);
+    padding: 0;
+  }
+  .ads-navbar .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    height: 60px;
+  }
+  .ads-navbar-brand {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .ads-brand-dot {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,.2);
+    border: 2px solid rgba(255,255,255,.4);
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-family: 'Sora', sans-serif;
+    font-weight: 800; font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .ads-brand-text {
+    display: flex; flex-direction: column;
+  }
+  .ads-brand-text strong {
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 16px; font-weight: 700;
+    line-height: 1;
+  }
+  .ads-brand-text span {
+    color: rgba(255,255,255,.65);
+    font-size: 11px;
+    margin-top: 1px;
+  }
+  .ads-navbar-links {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .ads-nav-link {
+    color: rgba(255,255,255,.85);
+    text-decoration: none;
+    font-size: 13px; font-weight: 500;
+    padding: 7px 13px;
+    border-radius: 8px;
+    transition: background .15s, color .15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .ads-nav-link:hover {
+    background: rgba(255,255,255,.18);
+    color: #fff;
+  }
+  .ads-nav-link.active {
+    background: rgba(255,255,255,.22);
+    color: #fff;
+    font-weight: 700;
+  }
+  .ads-nav-link.btn-outline-nav {
+    border: 1.5px solid rgba(255,255,255,.4);
+  }
+  .ads-nav-link.btn-solid-nav {
+    background: rgba(255,255,255,.2);
+    border: 1.5px solid rgba(255,255,255,.5);
+    color: #fff;
+    font-weight: 700;
+  }
+  .ads-nav-link.btn-solid-nav:hover {
+    background: rgba(255,255,255,.32);
+  }
+
+  /* Mobile hamburger */
+  .ads-navbar-toggler {
+    display: none;
+    background: rgba(255,255,255,.15);
+    border: 1.5px solid rgba(255,255,255,.4);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 18px;
+    transition: background .15s;
+  }
+  .ads-navbar-toggler:hover { background: rgba(255,255,255,.25); }
+
+  /* Breadcrumb strip */
+  .ads-breadcrumb {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 0;
+  }
+  .ads-breadcrumb .container {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px;
+  }
+  .ads-breadcrumb a { color: var(--muted); text-decoration: none; }
+  .ads-breadcrumb a:hover { color: var(--primary); }
+  .ads-breadcrumb .sep { color: var(--border); }
+  .ads-breadcrumb .current { font-weight: 600; color: var(--ink); }
+
+  /* ── Main content wrapper ── */
+  .ads-main { flex: 1; padding: 28px 0 48px; }
+
+  /* ── Cards (matches homepage card style) ── */
+  .ads-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: none;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .ads-card:hover { box-shadow: var(--shadow-md); }
+  .ads-card-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ads-card-header h3, .ads-card-header h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px; font-weight: 700;
+    margin: 0;
+  }
+  .ads-card-body { padding: 22px; }
+
+  /* ── Stat cards ── */
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-sm);
+    border: none;
+  }
+  .stat-label {
+    font-size: 11px; color: var(--muted);
+    font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  }
+  .stat-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 30px; font-weight: 800;
+    margin: 6px 0 4px;
+  }
+  .stat-sub { font-size: 12px; color: var(--muted); }
+
+  /* ── Buttons ── */
+  .btn-ads-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s, transform .15s, box-shadow .2s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ads-primary:hover {
+    opacity: .92; transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(79,70,229,.3);
+    color: #fff;
+  }
+  .btn-ads-secondary {
+    background: var(--card);
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ads-secondary:hover { border-color: var(--primary); color: var(--primary); background: #f5f4ff; }
+  .btn-ads-gold {
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s, transform .15s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ads-gold:hover { opacity: .88; transform: translateY(-1px); color: var(--ink); }
+  .btn-ads-danger {
+    background: var(--danger);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ads-danger:hover { opacity: .88; color: #fff; }
+  .btn-ads-success {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: opacity .2s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ads-success:hover { opacity: .88; color: #fff; }
+
+  /* ── Status badges ── */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 11px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+  }
+  .badge-approved  { background: #dcfce7; color: #16a34a; }
+  .badge-paid      { background: #eff6ff; color: #3b82f6; }
+  .badge-pending_payment { background: var(--gold-bg); color: #92400e; }
+  .badge-rejected  { background: #fee2e2; color: #dc2626; }
+  .badge-expired   { background: #f3f4f6; color: var(--muted); }
+  .badge-draft     { background: #f3f4f6; color: var(--muted); }
+
+  /* ── Form inputs ── */
+  .ads-input {
+    width: 100%; padding: 11px 15px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--ink);
+    background: #fff; outline: none;
+    transition: border .2s, box-shadow .2s;
+  }
+  .ads-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+  }
+  textarea.ads-input { resize: vertical; }
+
+  /* ── Alert / message strip ── */
+  .ads-alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .ads-alert-error   { background: #fee2e2; color: #991b1b; border-left: 3px solid var(--danger); }
+  .ads-alert-success { background: #dcfce7; color: #166534; border-left: 3px solid var(--success); }
+  .ads-alert-info    { background: #eff6ff; color: #1e40af; border-left: 3px solid #3b82f6; }
+  .ads-alert-warning { background: var(--gold-bg); color: #78350f; border-left: 3px solid var(--gold); }
+
+  /* ── Page hero strip (section title) ── */
+  .ads-page-hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: #fff;
+    padding: 28px 0 24px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ads-page-hero::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.06);
+  }
+  .ads-page-hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 26px; font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .ads-page-hero p { font-size: 14px; opacity: .8; margin: 0; }
+
+  /* ── Section heading ── */
+  .ads-section-heading {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px; font-weight: 800;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ads-section-heading .badge-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--danger); color: #fff;
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* ── Footer ── */
+  .ads-footer {
+    background: var(--dark);
+    color: rgba(255,255,255,.5);
+    padding: 20px 0;
+    text-align: center;
+    font-size: 13px;
+  }
+  .ads-footer a { color: rgba(255,255,255,.7); text-decoration: none; }
+  .ads-footer a:hover { color: #fff; }
+
+  /* ── Utility ── */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .font-sora { font-family: 'Sora', sans-serif; }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* ── Mobile menu ── */
+  @media (max-width: 768px) {
+    .ads-navbar-links { display: none; }
+    .ads-navbar-links.open {
+      display: flex; flex-direction: column; align-items: stretch;
+      position: absolute; top: 60px; left: 0; right: 0;
+      background: linear-gradient(160deg, var(--primary), var(--secondary));
+      padding: 12px 16px 16px;
+      z-index: 100;
+      box-shadow: 0 8px 20px rgba(0,0,0,.2);
+    }
+    .ads-navbar-toggler { display: block; }
+    .ads-navbar .container { position: relative; }
+  }
+</style>
+
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="ads-navbar">
+  <div class="container">
+    <a class="ads-navbar-brand" href="{% url 'home' %}">
+      <div class="ads-brand-dot">L</div>
+      <div class="ads-brand-text">
+        <strong>LearnHub</strong>
+        <span>Advertiser Platform</span>
+      </div>
+    </a>
+
+    <button class="ads-navbar-toggler" onclick="document.getElementById('adsNavLinks').classList.toggle('open')">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <div class="ads-navbar-links" id="adsNavLinks">
+      <a class="ads-nav-link" href="{% url 'home' %}">
+        <i class="bi bi-house"></i> Home
+      </a>
+      {% if request.user.is_authenticated %}
+        {% if request.user.is_staff %}
+        <a class="ads-nav-link" href="{% url 'admin_ads_dashboard' %}">
+          <i class="bi bi-shield-check"></i> Ad Admin
+        </a>
+        {% endif %}
+        <a class="ads-nav-link btn-solid-nav" href="{% url 'ads_dashboard' %}">
+          <i class="bi bi-megaphone"></i> My Ads
+        </a>
+        <a class="ads-nav-link" href="{% url 'logout' %}">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      {% else %}
+        <a class="ads-nav-link" href="{% url 'ads_login' %}">
+          <i class="bi bi-box-arrow-in-right"></i> Login
+        </a>
+        <a class="ads-nav-link btn-solid-nav" href="{% url 'ads_register' %}">
+          <i class="bi bi-person-plus"></i> Register
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+{% block breadcrumb %}{% endblock %}
+
+{% block page_hero %}{% endblock %}
+
+<!-- Global messages -->
+{% if messages %}
+<div class="container" style="margin-top:16px;">
+  {% for msg in messages %}
+  <div class="ads-alert {% if msg.tags == 'error' %}ads-alert-error{% elif msg.tags == 'success' %}ads-alert-success{% elif msg.tags == 'warning' %}ads-alert-warning{% else %}ads-alert-info{% endif %}">
+    <i class="bi {% if msg.tags == 'error' %}bi-x-circle{% elif msg.tags == 'success' %}bi-check-circle{% elif msg.tags == 'warning' %}bi-exclamation-triangle{% else %}bi-info-circle{% endif %}"></i>
+    <span>{{ msg }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Main content -->
+<main class="ads-main">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="ads-footer">
+  <div class="container">
+    <p>© 2025 LearnHub Ads · <a href="{% url 'home' %}">Back to LearnHub</a> · All advertising is subject to review and approval.</p>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

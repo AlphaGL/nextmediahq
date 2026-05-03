@@ -12,6 +12,7 @@ urlpatterns = [
     path('events/', include('events.urls')),
     path('learning/', include('learning.urls')),
     path('tickets/', include('tickets.urls')),
+    path('ads/', include('ads.urls', namespace='ads')),
 ]
 
 # Custom error handlers

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'tickets',
     'cloudinary',
     'cloudinary_storage',
+    'ads',
 ]
 
 # MINIMAL middleware for development
@@ -65,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'ads.context_processors.active_ads',
             ],
         },
     },

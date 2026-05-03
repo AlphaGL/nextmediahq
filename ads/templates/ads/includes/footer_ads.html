@@ -1,0 +1,309 @@
+{# ads/templates/ads/includes/footer_ads.html #}
+{# Include this in your base.html just above or inside the footer #}
+{# Usage: {% include 'ads/includes/footer_ads.html' %} #}
+{% if footer_ads %}
+<div class="lh-adsense-wrap lh-adsense-wrap--footer" id="lhAdsFooter" aria-label="Advertisement">
+
+  <!-- Top bar -->
+  <div class="lh-adsense-bar lh-adsense-bar--footer">
+    <div class="lh-adsense-label-group">
+    </div>
+    <div class="lh-adsense-controls">
+      <button class="lh-adsense-hide-btn" id="lhFooterHideBtn" onclick="lhToggleFooterAds()">
+        <svg viewBox="0 0 16 16" width="11" height="11" fill="currentColor"><path d="M2 8s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5zm6 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M13.354 2.646a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.708-.708l10-10a.5.5 0 0 1 .708 0z"/></svg>
+        Hide
+      </button>
+      <button class="lh-adsense-why-btn" onclick="lhShowFooterAdInfo()" title="Why this ad?">ⓘ</button>
+    </div>
+  </div>
+
+  <!-- Collapsed restore bar -->
+  <div class="lh-adsense-collapsed" id="lhFooterCollapsed">
+    <span class="lh-adsense-collapsed-text">Ads are hidden</span>
+    <button class="lh-adsense-show-btn" onclick="lhToggleFooterAds()">Show ads</button>
+  </div>
+
+  <!-- Slider -->
+  <div class="lh-footer-slider-wrap" id="lhFooterSliderWrap">
+    <div class="lh-footer-track" id="lhFooterTrack">
+      {% for ad in footer_ads %}
+      <a class="lh-footer-slide"
+         href="{{ ad.destination_url }}"
+         data-ad-id="{{ ad.id }}"
+         data-dest="{{ ad.destination_url }}"
+         onclick="lhFooterAdClick(event, '{{ ad.id }}', '{{ ad.destination_url }}')"
+         target="_blank" rel="noopener nofollow sponsored"
+         aria-label="{{ ad.title }}">
+        {% if ad.get_image_url and ad.ad_format != 'text' %}
+        <div class="lh-footer-img-wrap">
+          <img src="{{ ad.get_image_url }}" alt="{{ ad.title }}" class="lh-footer-img" loading="lazy"/>
+        </div>
+        {% endif %}
+        <div class="lh-footer-text-wrap">
+          <span class="lh-footer-advertiser">{{ ad.advertiser_name|default:"Sponsored" }}</span>
+          <span class="lh-footer-title">{{ ad.title }}</span>
+          {% if ad.description and ad.ad_format != 'image' %}
+          <span class="lh-footer-desc">{{ ad.description|truncatechars:90 }}</span>
+          {% endif %}
+          <span class="lh-footer-cta">{{ ad.cta_text|default:"Learn More" }} →</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    {% if footer_ads|length > 1 %}
+    <button class="lh-footer-arrow lh-footer-arrow--prev" onclick="lhFooterPrev()" aria-label="Previous">&#8249;</button>
+    <button class="lh-footer-arrow lh-footer-arrow--next" onclick="lhFooterNext()" aria-label="Next">&#8250;</button>
+    <div class="lh-footer-dots" id="lhFooterDots">
+      {% for ad in footer_ads %}
+      <button class="lh-footer-dot {% if forloop.first %}active{% endif %}"
+              onclick="lhFooterGoToSlide({{ forloop.counter0 }})"
+              aria-label="Ad {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Info overlay -->
+  <div class="lh-footer-info-overlay" id="lhFooterInfoOverlay" onclick="lhHideFooterAdInfo()">
+    <div class="lh-footer-info-box" onclick="event.stopPropagation()">
+      <button class="lh-footer-info-close" onclick="lhHideFooterAdInfo()">✕</button>
+      <div class="lh-footer-info-title">About these ads</div>
+      <p class="lh-footer-info-text">Nextmedia shows ads to keep resources free. Ads are selected based on this page's content. You can hide them any time.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ── Footer wrap ── */
+.lh-adsense-wrap--footer {
+  width: 100%;
+  background: #fff;
+  border-top: 2px solid #e8eaed;
+  font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+  position: relative;
+  box-sizing: border-box;
+}
+.lh-adsense-bar--footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 12px 0;
+  height: 22px;
+}
+.lh-adsense-label-group {
+  display: flex; align-items: center; gap: 4px;
+}
+.lh-adsense-label-text {
+  font-size: 10px; font-weight: 600; color: #70757a;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.lh-adsense-controls { display: flex; align-items: center; gap: 6px; }
+.lh-adsense-hide-btn {
+  display: flex; align-items: center; gap: 3px;
+  font-size: 11px; color: #70757a;
+  background: none; border: 1px solid #dadce0;
+  border-radius: 4px; padding: 2px 8px; cursor: pointer;
+  font-family: inherit; transition: background .15s;
+}
+.lh-adsense-hide-btn:hover { background: #f1f3f4; color: #202124; }
+.lh-adsense-why-btn {
+  font-size: 13px; color: #70757a;
+  background: none; border: none; cursor: pointer; padding: 0 2px;
+}
+.lh-adsense-why-btn:hover { color: #1a73e8; }
+
+/* ── Collapsed ── */
+.lh-adsense-collapsed {
+  display: none; align-items: center; justify-content: center;
+  gap: 12px; padding: 8px 16px;
+  background: #f8f9fa; border-top: 1px solid #e8eaed;
+}
+.lh-adsense-collapsed-text { font-size: 12px; color: #70757a; }
+.lh-adsense-show-btn {
+  font-size: 12px; color: #1a73e8; background: none; border: none;
+  cursor: pointer; font-family: inherit; font-weight: 600; padding: 0;
+}
+.lh-adsense-show-btn:hover { text-decoration: underline; }
+
+/* ── Slider ── */
+.lh-footer-slider-wrap { position: relative; overflow: hidden; }
+.lh-footer-track {
+  display: flex;
+  transition: transform .42s cubic-bezier(.4,0,.2,1);
+}
+.lh-footer-slide {
+  min-width: 100%;
+  display: flex; align-items: center;
+  gap: 14px; padding: 11px 48px 11px 16px;
+  text-decoration: none; color: #202124;
+  box-sizing: border-box;
+  transition: background .15s;
+}
+.lh-footer-slide:hover { background: #f8f9fa; }
+
+/* ── Ad image ── */
+.lh-footer-img-wrap {
+  flex-shrink: 0; width: 80px; height: 60px;
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid #e8eaed; background: #f1f3f4;
+}
+.lh-footer-img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ── Ad text ── */
+.lh-footer-text-wrap {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.lh-footer-advertiser {
+  font-size: 10px; color: #1a73e8; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lh-footer-title {
+  font-size: 13px; font-weight: 700; color: #202124;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lh-footer-desc {
+  font-size: 11px; color: #70757a;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lh-footer-cta {
+  font-size: 12px; font-weight: 700; color: #1a73e8;
+  margin-top: 3px;
+}
+
+/* ── Dots ── */
+.lh-footer-dots {
+  display: flex; justify-content: center; gap: 5px;
+  padding: 5px 0 7px; background: #fff;
+  border-top: 1px solid #f1f3f4;
+}
+.lh-footer-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  border: none; background: #dadce0; cursor: pointer;
+  transition: background .2s, width .2s; padding: 0;
+}
+.lh-footer-dot.active { background: #1a73e8; width: 16px; border-radius: 3px; }
+
+/* ── Arrows ── */
+.lh-footer-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,.92); border: 1px solid #dadce0;
+  border-radius: 50%; width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 17px; color: #5f6368; z-index: 3;
+  transition: background .15s, box-shadow .15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+.lh-footer-arrow:hover { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.lh-footer-arrow--prev { left: 4px; }
+.lh-footer-arrow--next { right: 4px; }
+
+/* ── Info overlay ── */
+.lh-footer-info-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.35); z-index: 9999;
+  align-items: center; justify-content: center;
+}
+.lh-footer-info-overlay.active { display: flex; }
+.lh-footer-info-box {
+  background: #fff; border-radius: 12px; padding: 24px;
+  max-width: 320px; width: 90%; position: relative;
+  box-shadow: 0 8px 30px rgba(0,0,0,.2);
+}
+.lh-footer-info-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: none; font-size: 16px; cursor: pointer; color: #70757a;
+}
+.lh-footer-info-title { font-size: 15px; font-weight: 700; color: #202124; margin-bottom: 10px; }
+.lh-footer-info-text { font-size: 13px; color: #5f6368; line-height: 1.6; margin: 0; }
+
+@media (max-width: 480px) {
+  .lh-footer-slide { padding: 10px 36px 10px 12px; gap: 10px; }
+  .lh-footer-img-wrap { width: 60px; height: 46px; }
+  .lh-footer-title { font-size: 12px; }
+}
+</style>
+
+<script>
+(function() {
+  // Track impressions
+  {% for ad in footer_ads %}
+  fetch('/ads/track/impression/{{ ad.id }}/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
+    body: '{}',
+  });
+  {% endfor %}
+
+  {% if footer_ads|length > 1 %}
+  window._lhFooterCurrent = 0;
+  const fTotal = {{ footer_ads|length }};
+  let fTimer = setInterval(() => {
+    window._lhFooterCurrent = (window._lhFooterCurrent + 1) % fTotal;
+    lhFooterGoToSlide(window._lhFooterCurrent);
+  }, 6000);
+
+  const wrap = document.getElementById('lhAdsFooter');
+  if (wrap) {
+    wrap.addEventListener('mouseenter', () => clearInterval(fTimer));
+    wrap.addEventListener('mouseleave', () => {
+      fTimer = setInterval(() => {
+        window._lhFooterCurrent = (window._lhFooterCurrent + 1) % fTotal;
+        lhFooterGoToSlide(window._lhFooterCurrent);
+      }, 6000);
+    });
+  }
+  {% endif %}
+})();
+
+function lhFooterGoToSlide(idx) {
+  const track = document.getElementById('lhFooterTrack');
+  const dots  = document.getElementById('lhFooterDots');
+  if (!track) return;
+  track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+  window._lhFooterCurrent = idx;
+  if (dots) {
+    dots.querySelectorAll('.lh-footer-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+}
+function lhFooterNext() {
+  const total = {{ footer_ads|length }};
+  lhFooterGoToSlide(((window._lhFooterCurrent || 0) + 1) % total);
+}
+function lhFooterPrev() {
+  const total = {{ footer_ads|length }};
+  lhFooterGoToSlide(((window._lhFooterCurrent || 0) - 1 + total) % total);
+}
+
+function lhToggleFooterAds() {
+  const sliderWrap = document.getElementById('lhFooterSliderWrap');
+  const collapsed  = document.getElementById('lhFooterCollapsed');
+  if (!sliderWrap) return;
+  const isHidden = sliderWrap.style.display === 'none';
+  sliderWrap.style.display = isHidden ? '' : 'none';
+  collapsed.style.display  = isHidden ? 'none' : 'flex';
+}
+
+function lhShowFooterAdInfo() { document.getElementById('lhFooterInfoOverlay').classList.add('active'); }
+function lhHideFooterAdInfo() { document.getElementById('lhFooterInfoOverlay').classList.remove('active'); }
+
+function lhFooterAdClick(e, adId, dest) {
+  e.preventDefault();
+  window.open(dest, '_blank', 'noopener');
+  fetch('/ads/track/click/' + adId + '/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
+    body: '{}',
+  }).catch(() => {});
+}
+
+if (typeof getCookie === 'undefined') {
+  function getCookie(name) {
+    const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : '';
+  }
+}
+</script>
+{% endif %}

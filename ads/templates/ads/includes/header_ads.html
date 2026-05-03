@@ -1,0 +1,379 @@
+{# ads/templates/ads/includes/header_ads.html #}
+{# Include this in your base.html where you want header ads to appear #}
+{# Usage: {% include 'ads/includes/header_ads.html' %} #}
+{% if header_ads %}
+<div class="lh-adsense-wrap lh-adsense-wrap--header" id="lhAdsHeader" aria-label="Advertisement">
+  <!-- AdSense-style top bar -->
+  <div class="lh-adsense-bar">
+    <div class="lh-adsense-label-group">
+    </div>
+    <div class="lh-adsense-controls">
+      <button class="lh-adsense-hide-btn" id="lhHeaderHideBtn" onclick="lhToggleHeaderAds()" title="Hide ads">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M2 8s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5zm6 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M13.354 2.646a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.708-.708l10-10a.5.5 0 0 1 .708 0z"/></svg>
+        Hide
+      </button>
+      <button class="lh-adsense-why-btn" onclick="lhShowAdInfo()" title="Why this ad?">ⓘ</button>
+    </div>
+  </div>
+
+  <!-- Collapsed restore bar (shown when hidden) -->
+  <div class="lh-adsense-collapsed" id="lhHeaderCollapsed">
+    <span class="lh-adsense-collapsed-text">Ads are hidden</span>
+    <button class="lh-adsense-show-btn" onclick="lhToggleHeaderAds()">Show ads</button>
+  </div>
+
+  <!-- Slides container -->
+  <div class="lh-adsense-slider-wrap" id="lhHeaderSliderWrap">
+    <div class="lh-adsense-track" id="lhHeaderTrack">
+      {% for ad in header_ads %}
+      <a class="lh-adsense-slide"
+         href="{{ ad.destination_url }}"
+         data-ad-id="{{ ad.id }}"
+         data-dest="{{ ad.destination_url }}"
+         onclick="lhAdClick(event, '{{ ad.id }}', '{{ ad.destination_url }}')"
+         target="_blank" rel="noopener nofollow sponsored"
+         aria-label="{{ ad.title }}">
+        {% if ad.get_image_url and ad.ad_format != 'text' %}
+        <div class="lh-adsense-img-wrap">
+          <img src="{{ ad.get_image_url }}" alt="{{ ad.title }}" class="lh-adsense-img" loading="lazy"/>
+        </div>
+        {% endif %}
+        {% if ad.ad_format != 'image' %}
+        <div class="lh-adsense-text">
+          <div class="lh-adsense-advertiser">{{ ad.advertiser_name|default:"Sponsored" }}</div>
+          <div class="lh-adsense-title">{{ ad.title }}</div>
+          {% if ad.description %}<div class="lh-adsense-desc">{{ ad.description|truncatechars:90 }}</div>{% endif %}
+          <div class="lh-adsense-cta-row">
+            <span class="lh-adsense-cta-btn">{{ ad.cta_text|default:"Learn More" }}</span>
+            <span class="lh-adsense-dest-url">{{ ad.display_url|default:"Visit site" }}</span>
+          </div>
+        </div>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+
+    <!-- Dot indicators -->
+    {% if header_ads|length > 1 %}
+    <div class="lh-adsense-dots" id="lhHeaderDots">
+      {% for ad in header_ads %}
+      <button class="lh-adsense-dot {% if forloop.first %}active{% endif %}"
+              onclick="lhGoToSlide('header', {{ forloop.counter0 }})"
+              aria-label="Ad {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+
+    <!-- Arrow controls -->
+    <button class="lh-adsense-arrow lh-adsense-arrow--prev" onclick="lhPrevSlide('header')" aria-label="Previous ad">&#8249;</button>
+    <button class="lh-adsense-arrow lh-adsense-arrow--next" onclick="lhNextSlide('header')" aria-label="Next ad">&#8250;</button>
+    {% endif %}
+  </div>
+
+  <!-- Ad info tooltip -->
+  <div class="lh-adsense-info-overlay" id="lhAdInfoOverlay" onclick="lhHideAdInfo()">
+    <div class="lh-adsense-info-box" onclick="event.stopPropagation()">
+      <button class="lh-adsense-info-close" onclick="lhHideAdInfo()">✕</button>
+      <div class="lh-adsense-info-title">About these ads</div>
+      <p class="lh-adsense-info-text">Nextmedia shows ads to keep resources free. Ads are selected based on this page's content. You can hide them any time.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ── Base wrap ── */
+.lh-adsense-wrap {
+  width: 100%;
+  font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  position: relative;
+  box-sizing: border-box;
+}
+.lh-adsense-wrap--header {
+  border-left: none; border-right: none;
+  border-top: none;
+  border-bottom: 1px solid #e8e8e8;
+  background: #fff;
+}
+
+/* ── Top bar ── */
+.lh-adsense-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 10px 0;
+  height: 22px;
+}
+.lh-adsense-label-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.lh-adsense-label-text {
+  font-size: 10px;
+  font-weight: 600;
+  color: #70757a;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.lh-adsense-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lh-adsense-hide-btn {
+  display: flex; align-items: center; gap: 3px;
+  font-size: 11px; color: #70757a;
+  background: none; border: 1px solid #dadce0;
+  border-radius: 4px; padding: 2px 8px; cursor: pointer;
+  font-family: inherit; transition: background .15s, color .15s;
+}
+.lh-adsense-hide-btn:hover { background: #f1f3f4; color: #202124; }
+.lh-adsense-why-btn {
+  font-size: 13px; color: #70757a;
+  background: none; border: none; cursor: pointer;
+  padding: 0 2px; line-height: 1;
+}
+.lh-adsense-why-btn:hover { color: #1a73e8; }
+
+/* ── Collapsed bar ── */
+.lh-adsense-collapsed {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: #f8f9fa;
+  border-top: 1px solid #e8e8e8;
+}
+.lh-adsense-collapsed-text {
+  font-size: 12px; color: #70757a;
+}
+.lh-adsense-show-btn {
+  font-size: 12px; color: #1a73e8;
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; font-weight: 600; padding: 0;
+}
+.lh-adsense-show-btn:hover { text-decoration: underline; }
+
+/* ── Slider ── */
+.lh-adsense-slider-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.lh-adsense-track {
+  display: flex;
+  transition: transform .42s cubic-bezier(.4,0,.2,1);
+}
+.lh-adsense-slide {
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 44px 10px 20px;
+  text-decoration: none;
+  color: #202124;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.lh-adsense-slide:hover { background: #f8f9fa; }
+
+/* ── Ad image ── */
+.lh-adsense-img-wrap {
+  flex-shrink: 0;
+  width: 72px; height: 54px;
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid #e8e8e8; background: #f1f3f4;
+}
+.lh-adsense-img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ── Ad text ── */
+.lh-adsense-text { flex: 1; min-width: 0; }
+.lh-adsense-advertiser {
+  font-size: 10px; color: #1a73e8; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 1px;
+}
+.lh-adsense-title {
+  font-size: 14px; font-weight: 700; color: #202124;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.3;
+}
+.lh-adsense-desc {
+  font-size: 12px; color: #70757a; line-height: 1.4;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 1px;
+}
+.lh-adsense-cta-row {
+  display: flex; align-items: center; gap: 10px; margin-top: 5px;
+}
+.lh-adsense-cta-btn {
+  display: inline-block;
+  padding: 4px 14px;
+  background: #1a73e8;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.lh-adsense-dest-url {
+  font-size: 11px; color: #188038; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ── Dots ── */
+.lh-adsense-dots {
+  display: flex; justify-content: center; gap: 5px;
+  padding: 5px 0 6px; background: #fff;
+  border-top: 1px solid #f1f3f4;
+}
+.lh-adsense-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  border: none; background: #dadce0; cursor: pointer;
+  transition: background .2s, width .2s;
+  padding: 0;
+}
+.lh-adsense-dot.active { background: #1a73e8; width: 16px; border-radius: 3px; }
+
+/* ── Arrows ── */
+.lh-adsense-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,.92); border: 1px solid #dadce0;
+  border-radius: 50%; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 18px; line-height: 1;
+  color: #5f6368; z-index: 3;
+  transition: background .15s, box-shadow .15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+.lh-adsense-arrow:hover { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.lh-adsense-arrow--prev { left: 6px; }
+.lh-adsense-arrow--next { right: 6px; }
+
+/* ── Info overlay ── */
+.lh-adsense-info-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.35); z-index: 9999;
+  align-items: center; justify-content: center;
+}
+.lh-adsense-info-overlay.active { display: flex; }
+.lh-adsense-info-box {
+  background: #fff; border-radius: 12px;
+  padding: 24px; max-width: 320px; width: 90%;
+  position: relative; box-shadow: 0 8px 30px rgba(0,0,0,.2);
+}
+.lh-adsense-info-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: none; font-size: 16px;
+  cursor: pointer; color: #70757a;
+}
+.lh-adsense-info-title {
+  font-size: 15px; font-weight: 700; color: #202124; margin-bottom: 10px;
+}
+.lh-adsense-info-text { font-size: 13px; color: #5f6368; line-height: 1.6; margin: 0; }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .lh-adsense-slide { padding: 8px 36px 8px 12px; gap: 10px; }
+  .lh-adsense-img-wrap { width: 56px; height: 42px; }
+  .lh-adsense-title { font-size: 13px; }
+  .lh-adsense-arrow { width: 24px; height: 24px; font-size: 15px; }
+}
+</style>
+
+<script>
+(function() {
+  // Track impressions for all header ads on load
+  {% for ad in header_ads %}
+  fetch('/ads/track/impression/{{ ad.id }}/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
+    body: '{}',
+  });
+  {% endfor %}
+
+  // Auto-rotate header ads
+  {% if header_ads|length > 1 %}
+  let hCurrent = 0;
+  const hTotal = {{ header_ads|length }};
+  let hTimer = setInterval(() => {
+    hCurrent = (hCurrent + 1) % hTotal;
+    lhGoToSlide('header', hCurrent);
+  }, 5000);
+
+  // Pause on hover
+  const wrap = document.getElementById('lhAdsHeader');
+  if (wrap) {
+    wrap.addEventListener('mouseenter', () => clearInterval(hTimer));
+    wrap.addEventListener('mouseleave', () => {
+      hTimer = setInterval(() => {
+        hCurrent = (hCurrent + 1) % hTotal;
+        lhGoToSlide('header', hCurrent);
+      }, 5000);
+    });
+  }
+  {% endif %}
+})();
+
+function lhGoToSlide(type, idx) {
+  const tracks = { header: 'lhHeaderTrack', footer: 'lhFooterTrack', body: null };
+  const dotIds = { header: 'lhHeaderDots', footer: 'lhFooterDots', body: null };
+  const track = document.getElementById(tracks[type]);
+  const dotsEl = document.getElementById(dotIds[type]);
+  if (!track) return;
+  track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+  if (dotsEl) {
+    dotsEl.querySelectorAll('.lh-adsense-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+  if (type === 'header') window._lhHeaderCurrent = idx;
+  if (type === 'footer') window._lhFooterCurrent = idx;
+}
+
+function lhNextSlide(type) {
+  const totals = { header: {{ header_ads|length }}, footer: 0 };
+  let cur = (type === 'header') ? (window._lhHeaderCurrent || 0) : (window._lhFooterCurrent || 0);
+  lhGoToSlide(type, (cur + 1) % totals[type]);
+}
+function lhPrevSlide(type) {
+  const totals = { header: {{ header_ads|length }}, footer: 0 };
+  let cur = (type === 'header') ? (window._lhHeaderCurrent || 0) : (window._lhFooterCurrent || 0);
+  lhGoToSlide(type, (cur - 1 + totals[type]) % totals[type]);
+}
+
+function lhToggleHeaderAds() {
+  const sliderWrap = document.getElementById('lhHeaderSliderWrap');
+  const collapsed  = document.getElementById('lhHeaderCollapsed');
+  const hideBtn    = document.getElementById('lhHeaderHideBtn');
+  if (!sliderWrap) return;
+  const isHidden = sliderWrap.style.display === 'none';
+  sliderWrap.style.display = isHidden ? '' : 'none';
+  collapsed.style.display  = isHidden ? 'none' : 'flex';
+  if (hideBtn) hideBtn.innerHTML = isHidden
+    ? '<svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M2 8s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5zm6 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M13.354 2.646a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.708-.708l10-10a.5.5 0 0 1 .708 0z"/></svg> Hide'
+    : '👁 Show';
+}
+
+function lhShowAdInfo() { document.getElementById('lhAdInfoOverlay').classList.add('active'); }
+function lhHideAdInfo() { document.getElementById('lhAdInfoOverlay').classList.remove('active'); }
+
+function lhAdClick(e, adId, dest) {
+  e.preventDefault();
+  window.open(dest, '_blank', 'noopener');
+  fetch('/ads/track/click/' + adId + '/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
+    body: '{}',
+  }).catch(() => {});
+}
+
+function getCookie(name) {
+  const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+  return v ? v[2] : '';
+}
+</script>
+{% endif %}

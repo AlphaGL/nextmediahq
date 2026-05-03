@@ -1,0 +1,364 @@
+{% extends 'ads/ads_base.html' %}
+{% load static %}
+
+{% block title %}Place New Ad — LearnHub Ads{% endblock %}
+
+{% block breadcrumb %}
+<div class="ads-breadcrumb">
+  <div class="container">
+    <a href="{% url 'home' %}"><i class="bi bi-house me-1"></i>Home</a>
+    <span class="sep">/</span>
+    <a href="{% url 'ads_dashboard' %}">My Ads</a>
+    <span class="sep">/</span>
+    <span class="current">Place New Ad</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_hero %}
+<div class="ads-page-hero">
+  <div class="container">
+    <h1><i class="bi bi-plus-circle me-2"></i>Place a New Advertisement</h1>
+    <p>Fill in the details below — you'll proceed to payment after saving.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .form-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .form-section {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-section:last-child { border-bottom: none; }
+  .section-heading {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    display: grid; place-items: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .section-heading h3 { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; margin:0; }
+  .section-heading p  { font-size:12px; color:var(--muted); margin:0; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .form-group label { font-size: 13px; font-weight: 600; }
+  .char-count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 3px; }
+
+  /* Slot picker */
+  .slot-picker { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+  .slot-option { display: none; }
+  .slot-option + label {
+    display: flex; flex-direction: column;
+    padding: 16px; border: 2px solid var(--border);
+    border-radius: 12px; cursor: pointer;
+    transition: border .2s, background .2s, transform .15s;
+  }
+  .slot-option + label:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  .slot-option:checked + label {
+    border-color: var(--primary);
+    background: linear-gradient(135deg,rgba(79,70,229,.06),rgba(6,182,212,.06));
+  }
+  .slot-option + label.disabled { opacity: .5; pointer-events: none; background: #f3f4f6; }
+  .slot-pos { font-family:'Sora',sans-serif; font-size:13px; font-weight:700; margin-bottom:4px; }
+  .slot-price-tag { font-size:22px; font-weight:800; }
+  .slot-avail { font-size:11px; color:var(--muted); margin-top:6px; }
+  .slot-full-tag {
+    display:inline-block; font-size:10px; font-weight:700;
+    padding:2px 7px; border-radius:20px;
+    background:#fee2e2; color:var(--danger); margin-top:4px;
+  }
+
+  /* Image upload drop zone */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    background: var(--paper);
+    position: relative;
+  }
+  .upload-zone:hover,
+  .upload-zone.dragover {
+    border-color: var(--primary);
+    background: linear-gradient(135deg,rgba(79,70,229,.04),rgba(6,182,212,.04));
+  }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-icon { font-size: 36px; margin-bottom: 10px; display: block; }
+  .upload-title { font-family:'Sora',sans-serif; font-size:14px; font-weight:700; margin-bottom:4px; }
+  .upload-sub { font-size:12px; color:var(--muted); line-height:1.6; }
+  .upload-browse {
+    display: inline-block; margin-top: 10px;
+    padding: 7px 18px; border-radius: 8px;
+    background: var(--primary); color: #fff;
+    font-size: 12px; font-weight: 700;
+    pointer-events: none;
+  }
+
+  #imagePreviewWrap {
+    display: none;
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  #imagePreviewWrap img {
+    display: block; width: 100%;
+    max-height: 160px; object-fit: contain;
+    background: #f8f8f8;
+  }
+  .preview-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--paper);
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .preview-bar .file-name { font-weight: 600; color: var(--text); }
+  .preview-bar .file-size { color: var(--muted); }
+  .remove-image {
+    background: none; border: none; cursor: pointer;
+    color: var(--danger); font-size: 13px; font-weight: 700;
+    padding: 0 4px;
+  }
+
+  /* Sizing hint grid */
+  .size-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 8px; margin-top: 14px;
+  }
+  .size-chip {
+    background: #f1f5f9; border-radius: 8px;
+    padding: 10px; text-align: center; font-size: 11px;
+  }
+  .size-chip strong { display:block; font-size:12px; margin-bottom:3px; color:var(--text); }
+  .size-chip span { color:var(--muted); }
+
+  .submit-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 28px;
+    background: var(--paper);
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--radius) var(--radius);
+    gap: 16px;
+  }
+  .submit-note { font-size:12px; color:var(--muted); max-width:420px; line-height:1.6; }
+
+  @media (max-width: 680px) {
+    .form-row, .slot-picker, .size-grid { grid-template-columns: 1fr; }
+    .submit-row { flex-direction: column; align-items: stretch; }
+    .form-section { padding: 18px 16px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:860px;">
+
+  <form method="POST" action="{% url 'ads_create' %}" id="adForm" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {# Hidden: ad_format is always image_text — no need to show the picker #}
+    <input type="hidden" name="ad_format" value="image_text"/>
+
+    <div class="form-card">
+
+      <!-- Step 1: Position -->
+      <div class="form-section">
+        <div class="section-heading">
+          <div class="section-icon"><i class="bi bi-geo-alt"></i></div>
+          <div>
+            <h3>Choose Ad Position</h3>
+            <p>Select where you want your ad to appear on LearnHub</p>
+          </div>
+        </div>
+        <div class="slot-picker">
+          {% for slot in slots %}
+          <div>
+            {% with is_full=slot.is_full %}
+            <input type="radio" name="slot" id="slot_{{ slot.pk }}"
+                   value="{{ slot.pk }}" class="slot-option"
+                   {% if forloop.first and not is_full %}checked{% endif %}
+                   {% if is_full %}disabled{% endif %}/>
+            <label for="slot_{{ slot.pk }}" {% if is_full %}class="disabled"{% endif %}>
+              <span class="slot-pos">
+                {% if slot.position == 'header' %}📢{% elif slot.position == 'body' %}🖼️{% else %}📌{% endif %}
+                {{ slot.get_position_display }}
+              </span>
+              <span class="slot-price-tag" style="color:var(--accent)">₦{{ slot.price|floatformat:0 }}</span>
+              <span class="slot-avail">{{ slot.slots_remaining }} slot{{ slot.slots_remaining|pluralize }} left · {{ slot.duration_days }} days</span>
+              {% if is_full %}<span class="slot-full-tag">FULL</span>{% endif %}
+            </label>
+            {% endwith %}
+          </div>
+          {% empty %}
+          <p style="color:var(--muted);font-size:13px;">No ad slots available right now. Please check back soon.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Step 2: Content -->
+      <div class="form-section">
+        <div class="section-heading">
+          <div class="section-icon"><i class="bi bi-pencil"></i></div>
+          <div>
+            <h3>Ad Content</h3>
+            <p>Write your headline and call-to-action</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="id_title">Business Title <span style="color:var(--danger)">*</span></label>
+          <input class="ads-input" type="text" name="title" id="id_title" maxlength="100" required
+            placeholder="e.g. Boost Your WAEC Score With Our Study Cards"/>
+          <div class="char-count"><span id="titleCount">0</span>/100</div>
+        </div>
+        <div class="form-group">
+          <label for="id_description">Short Description <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+          <textarea class="ads-input" name="description" id="id_description" rows="3" maxlength="300"
+            placeholder="Briefly describe your offer — recommended for better engagement"></textarea>
+          <div class="char-count"><span id="descCount">0</span>/300</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="id_cta_text">Button Text <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+            <input class="ads-input" type="text" name="cta_text" id="id_cta_text" maxlength="50"
+              placeholder="e.g. Shop Now, Learn More" value="Learn More"/>
+          </div>
+          <div class="form-group">
+            <label for="id_destination_url">Business Link <span style="color:var(--danger)">*</span></label>
+            <input class="ads-input" type="url" name="destination_url" id="id_destination_url" required
+              placeholder="https://yourwebsite.com or WhatsApp link"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Image Upload -->
+      <div class="form-section">
+        <div class="section-heading">
+          <div class="section-icon"><i class="bi bi-image"></i></div>
+          <div>
+            <h3>Business Image <span style="color:var(--danger)">*</span></h3>
+            <p>Upload a banner image for your ad (JPG · PNG · WebP, max 2 MB)</p>
+          </div>
+        </div>
+
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" name="image" id="id_image"
+                 accept="image/jpeg,image/png,image/webp"
+                 onchange="handleFileSelect(this)"/>
+          <span class="upload-icon">🖼️</span>
+          <div class="upload-title">Drag & drop your banner image here</div>
+          <div class="upload-sub">or click to browse from your device<br/>JPG · PNG · WebP &nbsp;·&nbsp; Max 2 MB</div>
+          <span class="upload-browse"><i class="bi bi-folder2-open me-1"></i>Choose File</span>
+        </div>
+
+        <div id="imagePreviewWrap">
+          <img id="previewImg" src="" alt="Banner preview"/>
+          <div class="preview-bar">
+            <span class="file-name" id="previewName">—</span>
+            <span class="file-size" id="previewSize">—</span>
+            <button type="button" class="remove-image" onclick="removeImage()">
+              <i class="bi bi-x-circle me-1"></i>Remove
+            </button>
+          </div>
+        </div>
+
+        <div class="size-grid">
+          <div class="size-chip"><strong>📢 Header</strong><span>970×90 px<br/>or 728×90 px</span></div>
+          <div class="size-chip"><strong>🖼️ Body</strong><span>300×250 px<br/>or 336×280 px</span></div>
+          <div class="size-chip"><strong>📌 Footer</strong><span>728×90 px<br/>or 468×60 px</span></div>
+        </div>
+      </div>
+
+    </div><!-- /form-card -->
+
+    <div class="submit-row">
+      <p class="submit-note">
+        <i class="bi bi-exclamation-triangle text-warning me-1"></i>
+        Once payment is made, your ad <strong>cannot be edited</strong>. Please review all details carefully.
+      </p>
+      <button type="submit" class="btn-ads-primary" style="padding:13px 28px;white-space:nowrap;">
+        Save & Proceed to Payment <i class="bi bi-arrow-right"></i>
+      </button>
+    </div>
+  </form>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* ── Character counters ── */
+  const titleInput = document.getElementById('id_title');
+  const descInput  = document.getElementById('id_description');
+  titleInput.addEventListener('input', () => document.getElementById('titleCount').textContent = titleInput.value.length);
+  descInput.addEventListener('input',  () => document.getElementById('descCount').textContent  = descInput.value.length);
+
+  /* ── Drag-and-drop ── */
+  const zone = document.getElementById('uploadZone');
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', ()  => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) applyFile(file);
+  });
+
+  function handleFileSelect(input) {
+    if (input.files && input.files[0]) applyFile(input.files[0]);
+  }
+
+  function applyFile(file) {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) { alert('Only JPG, PNG or WebP images are allowed.'); return; }
+    if (file.size > 2 * 1024 * 1024)  { alert('File is too large. Maximum size is 2 MB.'); return; }
+
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    document.getElementById('id_image').files = dt.files;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('previewImg').src = e.target.result;
+      document.getElementById('previewName').textContent = file.name;
+      document.getElementById('previewSize').textContent = formatBytes(file.size);
+      document.getElementById('imagePreviewWrap').style.display = 'block';
+      zone.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeImage() {
+    document.getElementById('id_image').value = '';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('imagePreviewWrap').style.display = 'none';
+    zone.style.display = 'block';
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+</script>
+{% endblock %}

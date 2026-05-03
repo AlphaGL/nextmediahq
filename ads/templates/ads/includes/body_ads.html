@@ -1,0 +1,310 @@
+{# ads/templates/ads/includes/body_ads.html #}
+{# Usage: {% include 'ads/includes/body_ads.html' %} #}
+{% if body_ads %}
+<div class="lh-ad-unit" id="lhBodyAdsWrap">
+
+  <div class="lh-ad-label-row">
+    <span class="lh-ad-label">Sponsored</span>
+    <div class="lh-ad-label-actions">
+      <button class="lh-ad-btn-ghost" onclick="lhBodyInfo()">ⓘ Why these ads</button>
+      <button class="lh-ad-btn-ghost" onclick="lhBodyToggle()" id="lhBodyHideBtn">Hide ✕</button>
+    </div>
+  </div>
+
+  <div class="lh-ad-restored" id="lhBodyRestored" style="display:none">
+    <span>Ads are hidden</span>
+    <button onclick="lhBodyToggle()">Show ads</button>
+  </div>
+
+  <div id="lhBodyGrid" class="lh-ad-grid">
+    {% for ad in body_ads %}
+    <a class="lh-ad-card"
+       href="{{ ad.destination_url }}"
+       data-id="{{ ad.id }}"
+       onclick="lhBodyClick(event,'{{ ad.id }}','{{ ad.destination_url }}')"
+       target="_blank" rel="noopener nofollow sponsored">
+
+      {% if ad.get_image_url and ad.ad_format != 'text' %}
+      <div class="lh-ad-thumb">
+        <img src="{{ ad.get_image_url }}" alt="{{ ad.title }}" loading="lazy">
+      </div>
+      {% endif %}
+
+      <div class="lh-ad-info {% if not ad.get_image_url or ad.ad_format == 'text' %}lh-ad-info--noimg{% endif %}">
+        <p class="lh-ad-advertiser">{{ ad.advertiser_name|default:"Sponsored" }}</p>
+        <p class="lh-ad-title">{{ ad.title }}</p>
+        {% if ad.description and ad.ad_format != 'image' %}
+        <p class="lh-ad-desc">{{ ad.description|truncatechars:110 }}</p>
+        {% endif %}
+        <div class="lh-ad-bottom">
+          <span class="lh-ad-cta-pill">{{ ad.cta_text|default:"Learn More" }}</span>
+          <span class="lh-ad-dest">{{ ad.destination_url }}</span>
+        </div>
+      </div>
+
+    </a>
+    {% endfor %}
+  </div>
+
+  {% if body_ads|length > 6 %}
+  <div class="lh-ad-pager" id="lhBodyPager">
+    <button onclick="lhBodyPage(-1)">&#8249; Prev</button>
+    <span id="lhBodyPagerTxt">1 / 1</span>
+    <button onclick="lhBodyPage(1)">Next &#8250;</button>
+  </div>
+  {% endif %}
+
+  <div class="lh-ad-overlay" id="lhBodyOverlay" onclick="lhBodyOverlayClose()">
+    <div class="lh-ad-overlay-box" onclick="event.stopPropagation()">
+      <button class="lh-ad-overlay-close" onclick="lhBodyOverlayClose()">✕</button>
+      <strong>About these ads</strong>
+      <p>Nextmedia shows ads to keep resources free. Ads are selected based on this page's content. You can hide them any time.</p>
+    </div>
+  </div>
+
+</div>
+
+<style>
+.lh-ad-unit {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* ── Label bar ── */
+.lh-ad-label-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 12px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e8eaed;
+}
+.lh-ad-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: #fff;
+  background: #1a73e8; border-radius: 3px; padding: 2px 8px;
+}
+.lh-ad-label-actions { display: flex; gap: 6px; }
+.lh-ad-btn-ghost {
+  font-size: 11px; color: #70757a; background: none;
+  border: 1px solid #dadce0; border-radius: 4px;
+  padding: 2px 9px; cursor: pointer;
+  font-family: inherit; transition: background .15s;
+}
+.lh-ad-btn-ghost:hover { background: #f1f3f4; color: #202124; }
+
+/* ── Hidden restore bar ── */
+.lh-ad-restored {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 8px; background: #f8f9fa;
+  font-size: 12px; color: #70757a;
+}
+.lh-ad-restored button {
+  font-size: 12px; color: #1a73e8; font-weight: 700;
+  background: none; border: none; cursor: pointer;
+}
+
+/* ── Grid: auto-fill, min 280px per card ── */
+.lh-ad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+  padding: 12px;
+}
+
+/* ── Card: horizontal image + text ── */
+.lh-ad-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  text-decoration: none;
+  color: #202124;
+  background: #fff;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: box-shadow .2s, border-color .2s;
+  min-height: 96px;
+}
+.lh-ad-card:hover {
+  box-shadow: 0 4px 18px rgba(0,0,0,.10);
+  border-color: #b0bec5;
+}
+
+/* ── Thumbnail: fixed width/height, cover so full image shows ── */
+.lh-ad-thumb {
+  flex-shrink: 0;
+  width: 110px;
+  height: 86px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f1f3f4;
+}
+.lh-ad-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform .35s ease;
+}
+.lh-ad-card:hover .lh-ad-thumb img { transform: scale(1.05); }
+
+/* ── Text pane ── */
+.lh-ad-info {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.lh-ad-advertiser {
+  margin: 0; font-size: 10px; font-weight: 700;
+  color: #1a73e8; text-transform: uppercase; letter-spacing: .07em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lh-ad-title {
+  margin: 0; font-size: 13px; font-weight: 700; color: #202124;
+  line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.lh-ad-desc {
+  margin: 0; font-size: 11.5px; color: #5f6368; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.lh-ad-bottom {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: auto; padding-top: 6px; flex-wrap: wrap;
+}
+.lh-ad-cta-pill {
+  font-size: 11px; font-weight: 700; color: #1a73e8;
+  background: #e8f0fe; border-radius: 20px; padding: 3px 11px;
+  white-space: nowrap; transition: background .15s;
+}
+.lh-ad-card:hover .lh-ad-cta-pill { background: #d2e3fc; }
+.lh-ad-dest {
+  font-size: 10px; color: #188038;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+/* ── Pager ── */
+.lh-ad-pager {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; padding: 8px 12px 10px;
+  border-top: 1px solid #f1f3f4;
+  font-size: 12px; color: #70757a;
+}
+.lh-ad-pager button {
+  font-size: 12px; font-weight: 700; color: #1a73e8;
+  background: none; border: 1px solid #dadce0; border-radius: 4px;
+  padding: 4px 12px; cursor: pointer; transition: background .15s;
+}
+.lh-ad-pager button:hover { background: #e8f0fe; }
+
+/* ── Info overlay ── */
+.lh-ad-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.38); z-index: 9999;
+  align-items: center; justify-content: center;
+}
+.lh-ad-overlay.on { display: flex; }
+.lh-ad-overlay-box {
+  background: #fff; border-radius: 12px;
+  padding: 22px 26px; max-width: 320px; width: 90%;
+  position: relative; font-family: inherit;
+}
+.lh-ad-overlay-box strong { font-size: 15px; display: block; margin-bottom: 8px; color: #202124; }
+.lh-ad-overlay-box p { font-size: 13px; color: #5f6368; line-height: 1.6; margin: 0; }
+.lh-ad-overlay-close {
+  position: absolute; top: 11px; right: 13px;
+  background: none; border: none; font-size: 16px; cursor: pointer; color: #70757a;
+}
+
+/* ── Responsive ── */
+
+/* Wide screens (900px+): 3 columns via auto-fill */
+
+/* Mid screens (600–899px): 2 columns */
+@media (max-width: 899px) {
+  .lh-ad-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Tablets (480–599px): 1 column, card stays horizontal */
+@media (max-width: 599px) {
+  .lh-ad-grid { grid-template-columns: 1fr; gap: 8px; padding: 10px; }
+  .lh-ad-thumb { width: 100px; height: 78px; }
+}
+
+/* Mobile (≤420px): card flips to vertical, image becomes full-width hero */
+@media (max-width: 420px) {
+  .lh-ad-card { flex-direction: column; gap: 0; padding: 0 0 10px; }
+  .lh-ad-thumb { width: 100%; height: 150px; border-radius: 8px 8px 0 0; }
+  .lh-ad-info { padding: 8px 10px 0; }
+  .lh-ad-title { font-size: 14px; -webkit-line-clamp: 3; }
+  .lh-ad-desc { -webkit-line-clamp: 3; }
+  .lh-ad-dest { max-width: 100%; }
+  .lh-ad-label-actions { gap: 4px; }
+  .lh-ad-btn-ghost { padding: 2px 7px; font-size: 10px; }
+}
+</style>
+
+<script>
+(function () {
+  {% for ad in body_ads %}
+  fetch('/ads/track/impression/{{ ad.id }}/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': _lhCk('csrftoken'), 'Content-Type': 'application/json' },
+    body: '{}'
+  });
+  {% endfor %}
+
+  {% if body_ads|length > 6 %}
+  window._lhBP = 0;
+  const _lhCards = Array.from(document.querySelectorAll('#lhBodyGrid .lh-ad-card'));
+  const _lhPP = 6;
+  const _lhTotal = Math.ceil(_lhCards.length / _lhPP);
+  function _lhBRender(p) {
+    _lhCards.forEach((c, i) => c.style.display = (i >= p * _lhPP && i < (p+1) * _lhPP) ? '' : 'none');
+    const el = document.getElementById('lhBodyPagerTxt');
+    if (el) el.textContent = (p + 1) + ' / ' + _lhTotal;
+    window._lhBP = p;
+  }
+  _lhBRender(0);
+  window.lhBodyPage = function (d) {
+    const n = window._lhBP + d;
+    if (n >= 0 && n < _lhTotal) _lhBRender(n);
+  };
+  {% endif %}
+})();
+
+function lhBodyToggle() {
+  const g = document.getElementById('lhBodyGrid');
+  const r = document.getElementById('lhBodyRestored');
+  const p = document.getElementById('lhBodyPager');
+  const hidden = g.style.display === 'none';
+  g.style.display = hidden ? '' : 'none';
+  if (p) p.style.display = hidden ? '' : 'none';
+  r.style.display = hidden ? 'none' : 'flex';
+}
+function lhBodyInfo() { document.getElementById('lhBodyOverlay').classList.add('on'); }
+function lhBodyOverlayClose() { document.getElementById('lhBodyOverlay').classList.remove('on'); }
+function lhBodyClick(e, id, dest) {
+  e.preventDefault();
+  window.open(dest, '_blank', 'noopener');
+  fetch('/ads/track/click/' + id + '/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': _lhCk('csrftoken'), 'Content-Type': 'application/json' },
+    body: '{}'
+  }).catch(() => {});
+}
+function _lhCk(n) {
+  const v = document.cookie.match('(^|;) ?' + n + '=([^;]*)(;|$)');
+  return v ? v[2] : '';
+}
+</script>
+{% endif %}
