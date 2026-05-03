@@ -1,5 +1,6 @@
 # ads/models.py
 from django.db import models
+from cloudinary.models import CloudinaryField
 from datetime import datetime, timedelta
 import uuid
 
@@ -58,12 +59,7 @@ class Advertisement(models.Model):
     title = models.CharField(max_length=100, help_text='Ad headline (max 100 chars)')
     description = models.TextField(max_length=300, blank=True, help_text='Short description (max 300 chars)')
 
-    image = models.ImageField(
-        upload_to='ads/banners/',
-        blank=True,
-        null=True,
-        help_text='Upload your banner image (JPG/PNG, max 2MB)',
-    )
+    image = CloudinaryField('ads/banners/', blank=True, null=True)
     image_url = models.URLField(blank=True, null=True, help_text='Auto-filled from uploaded image')
     cloudinary_public_id = models.CharField(max_length=255, blank=True, null=True)
 
