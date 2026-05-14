@@ -10,8 +10,6 @@
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% if event.banner_image %}
 <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ event.banner_image.url }}">
-{% elif event.image %}
-<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}">
 {% endif %}
 <meta property="og:site_name" content="NextMedia">
 <meta name="twitter:card" content="summary_large_image">
@@ -19,8 +17,6 @@
 <meta name="twitter:description" content="{{ event.description|truncatewords:30|striptags }}">
 {% if event.banner_image %}
 <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ event.banner_image.url }}">
-{% elif event.image %}
-<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}">
 {% endif %}
 {% endblock %}
 
@@ -1045,13 +1041,6 @@ function openVoteModal(id, name) {
     document.getElementById('contestant_id').value = id;
     document.getElementById('voteContestantName').textContent = name;
     document.getElementById('voteModal').classList.add('active');
-
-    const input = document.getElementById('vote_amount');
-    const count = document.getElementById('voteCount');
-    const price = {{ event.voting_price_per_vote }};
-    input.addEventListener('input', () => {
-        count.textContent = Math.floor(input.value / price) || 0;
-    });
 }
 
 function openRSVPModal() {
@@ -1065,6 +1054,18 @@ function closeModal(id) {
 window.addEventListener('click', e => {
     if (e.target.classList.contains('modal')) closeModal(e.target.id);
 });
+
+// Vote amount listener — attached once, not on every modal open
+(function() {
+    const input = document.getElementById('vote_amount');
+    const count = document.getElementById('voteCount');
+    if (input && count) {
+        const price = {{ event.voting_price_per_vote }};
+        input.addEventListener('input', () => {
+            count.textContent = Math.floor(parseFloat(input.value) / price) || 0;
+        });
+    }
+})();
 
 // Share
 function shareEvent() {
@@ -1080,11 +1081,12 @@ function shareEvent() {
     }
 }
 
-// Countdown
+// Countdown — runs immediately then every 60 seconds
 {% if event.allow_voting and voting_active and event.voting_ends_at %}
 const countdown = document.getElementById('votingCountdown');
 const end = new Date("{{ event.voting_ends_at|date:'c' }}").getTime();
-setInterval(() => {
+
+function updateCountdown() {
     const diff = end - new Date().getTime();
     if (diff <= 0) {
         countdown.textContent = "Ended";
@@ -1094,7 +1096,10 @@ setInterval(() => {
     const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
     const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
     countdown.textContent = `${days}d ${hours}h ${mins}m`;
-}, 60000);
+}
+
+updateCountdown(); // show immediately on page load
+setInterval(updateCountdown, 60000);
 {% endif %}
 
 // Vote Form
@@ -1135,7 +1140,7 @@ document.getElementById('voteForm')?.addEventListener('submit', async function(e
             btn.textContent = "Proceed to Payment";
         }
     } catch (err) {
-        alert("Network error");
+        alert("Network error. Please try again.");
         btn.disabled = false;
         btn.textContent = "Proceed to Payment";
     }
@@ -1169,7 +1174,7 @@ document.getElementById('rsvpForm')?.addEventListener('submit', async function(e
             alert(json.error);
         }
     } catch { 
-        alert("Failed to RSVP"); 
+        alert("Failed to RSVP. Please try again."); 
     }
     btn.disabled = false;
     btn.textContent = "Confirm RSVP";

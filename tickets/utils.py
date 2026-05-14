@@ -7,8 +7,12 @@ from django.templatetags.static import static
 import os
 import requests
 from io import BytesIO
-import cloudinary
-from cloudinary.utils import cloudinary_url
+try:
+    import cloudinary
+    from cloudinary.utils import cloudinary_url
+except ImportError:
+    cloudinary = None
+    cloudinary_url = None
 
 
 def download_image_from_url(url, max_size=(1000, 1000)):

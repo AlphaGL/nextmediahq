@@ -246,7 +246,7 @@ def initiate_vote_payment(request):
             "email": voter_email,
             "amount": int(amount * 100),  # Convert to kobo
             "reference": vote.reference,
-            "callback_url": request.build_absolute_uri(f"/events/payment/callback/"),
+            "callback_url": request.build_absolute_uri('/events/payment/callback/'),
             "metadata": {
                 "type": "vote",
                 "vote_id": vote.id,
@@ -303,19 +303,21 @@ def payment_callback(request):
             payment_type = metadata.get('type')
             
             if payment_type == 'vote':
-                # Update vote
                 vote_id = metadata.get('vote_id')
                 vote = Vote.objects.get(id=vote_id)
-                vote.payment_status = 'completed'
-                vote.paid_at = timezone.now()
-                vote.save()
-                
-                # Update contestant votes
-                contestant = vote.contestant
-                contestant.total_votes += vote.votes_count
-                contestant.total_amount_received += vote.amount_paid
-                contestant.save()
-                
+
+                # Idempotency guard — only credit once (webhook may also fire)
+                if vote.payment_status != 'completed':
+                    vote.payment_status = 'completed'
+                    vote.paid_at = timezone.now()
+                    vote.save()
+
+                    # Update contestant votes
+                    contestant = vote.contestant
+                    contestant.total_votes += vote.votes_count
+                    contestant.total_amount_received += vote.amount_paid
+                    contestant.save()
+
                 messages.success(request, f'{vote.votes_count} vote(s) cast successfully!')
                 return redirect('events:event_detail', slug=vote.event.slug)
         else:
@@ -360,11 +362,11 @@ def paystack_webhook(request):
                     vote.paid_at = timezone.now()
                     vote.save()
                     
-                    # Update contestant votes
-                    contestant = vote.contestant
-                    contestant.total_votes += vote.votes_count
-                    contestant.total_amount_received += vote.amount_paid
-                    contestant.save()
+                    # Use F() for atomic update — avoids race condition with callback
+                    VotingContestant.objects.filter(pk=vote.contestant_id).update(
+                        total_votes=F('total_votes') + vote.votes_count,
+                        total_amount_received=F('total_amount_received') + vote.amount_paid
+                    )
         
         return HttpResponse(status=200)
         
