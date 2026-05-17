@@ -290,20 +290,28 @@ def purchase_success(request, purchase_id):
     return render(request, 'tickets/purchase_success.html', context)
 
 
-def download_ticket(request, ticket_code):
-    """Generate and download ticket image"""
-    from .utils import generate_ticket_image
+# def download_ticket(request, ticket_code):
+#     """Generate and download ticket image"""
+#     from .utils import generate_ticket_image
     
-    ticket = get_object_or_404(Ticket, ticket_code=ticket_code)
+#     ticket = get_object_or_404(Ticket, ticket_code=ticket_code)
     
-    # Generate ticket image
-    image_buffer = generate_ticket_image(ticket)
+#     # Generate ticket image
+#     image_buffer = generate_ticket_image(ticket)
     
-    # Return as downloadable image
-    response = HttpResponse(image_buffer.getvalue(), content_type='image/png')
-    response['Content-Disposition'] = f'attachment; filename="ticket_{ticket_code}.png"'
-    return response
+#     # Return as downloadable image
+#     response = HttpResponse(image_buffer.getvalue(), content_type='image/png')
+#     response['Content-Disposition'] = f'attachment; filename="ticket_{ticket_code}.png"'
+#     return response
 
+
+def download_ticket(request, ticket_code):
+    """Render ticket page — download handled client-side via html2canvas"""
+    ticket = get_object_or_404(
+        Ticket.objects.select_related('purchase', 'event', 'purchase__event'),
+        ticket_code=ticket_code
+    )
+    return render(request, 'tickets/download_ticket.html', {'ticket': ticket})
 
 def verify_ticket(request):
     """Verify ticket by code with duplicate usage detection"""
