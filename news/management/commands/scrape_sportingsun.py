@@ -1,4 +1,18 @@
 # news/management/commands/scrape_sportingsun.py
+"""
+Scrapes thesun.ng (Sporting Sun) via HTML scraping.
+
+Their WP REST API blocks GitHub Actions IPs with 403.
+Strategy:
+  1. Fetch category listing pages (HTML) for sports sections
+  2. Extract article links from each page
+  3. Fetch + parse each article for content, image, author, date
+  4. Save to DB, skip duplicates
+
+Listing URLs tried (in order):
+  https://thesun.ng/sports/
+  https://thesun.ng/sports/page/N/
+"""
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -8,376 +22,280 @@ import requests
 import re
 import time
 from urllib.parse import urljoin
+from dateutil import parser as dateparser
+
+
+HEADERS = {
+    'User-Agent': (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/124.0.0.0 Safari/537.36'
+    ),
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Referer': 'https://www.google.com/',
+}
+
+BASE_URL = 'https://thesun.ng'
+
+# Category pages to crawl — each is a separate sports section
+CATEGORY_PAGES = [
+    ('Sports',            '/sports/'),
+    ('Football',          '/sports/football/'),
+    ('EPL',               '/sports/football/english-premier-league/'),
+    ('Transfer News',     '/sports/football/transfer-news/'),
+    ('Basketball',        '/sports/basketball/'),
+    ('Boxing',            '/sports/boxing/'),
+]
+
+FEATURED_CATS = {'Football', 'EPL', 'Transfer News', 'Champions League', 'Sports'}
+
 
 class Command(BaseCommand):
-    help = 'Scrape sports news from Sporting Sun with automatic category detection'
+    help = 'Scrape sports news from Sporting Sun (HTML scraping)'
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            '--start-page',
-            type=int,
-            default=1,
-            help='Page number to start scraping from (default: 1)'
-        )
-        parser.add_argument(
-            '--max-pages',
-            type=int,
-            default=3,
-            help='Maximum number of pages to scrape (default: 3)'
-        )
-        parser.add_argument(
-            '--default-category',
-            type=str,
-            default='sports',
-            help='Default category if none detected (default: sports)'
-        )
+        parser.add_argument('--max-pages', type=int, default=5,
+                            help='Max listing pages per category (default: 5)')
+        parser.add_argument('--start-page', type=int, default=1)
+        parser.add_argument('--default-category', type=str, default='sports')
 
-    def get_or_create_category(self, category_name):
-        """Get or create category, checking if it exists first"""
-        # Normalize category name
-        category_name = category_name.strip().title()
-        category_slug = re.sub(r'[^\w\s-]', '', category_name.lower())
-        category_slug = re.sub(r'[-\s]+', '-', category_slug)
-        
-        # Check if category already exists (by slug or name)
-        category = Category.objects.filter(slug=category_slug).first()
-        
-        if category:
-            return category
-        
-        # Check by name (case-insensitive)
-        category = Category.objects.filter(name__iexact=category_name).first()
-        
-        if category:
-            return category
-        
-        # Create new category
-        category = Category.objects.create(
-            name=category_name,
-            slug=category_slug,
-            is_active=True
-        )
-        self.stdout.write(self.style.SUCCESS(f"      ✨ Created new category: {category.name}"))
-        return category
+    # ── helpers ───────────────────────────────────────────────
 
-    def map_wordpress_category(self, category_id, category_name):
-        """Map WordPress category ID/name to our category structure"""
-        # Sporting Sun category mapping based on their WordPress structure
-        category_mapping = {
-            # Football-related
-            4: 'Football',
-            7: 'EPL',  # English Premier League
-            8: 'Transfer News',
-            26: 'La Liga',
-            27: 'Serie A',
-            28: 'Bundesliga',
-            29: 'Champions League',
-            30: 'Europa League',
-            31: 'World Cup',
-            
-            # Other sports
-            5: 'Basketball',
-            6: 'Boxing',
-            9: 'Tennis',
-            10: 'Athletics',
-            11: 'Cricket',
-            12: 'Rugby',
-            13: 'Formula 1',
-            14: 'MMA',
-            15: 'Golf',
-            
-            # General
-            1: 'Sports',  # General sports
-            2: 'News',
-            3: 'Features',
+    def _session(self):
+        s = requests.Session()
+        s.headers.update(HEADERS)
+        return s
+
+    def _get_or_create_category(self, name):
+        name = (name or 'Sports').strip().title()
+        slug = re.sub(r'[^\w\s-]', '', name.lower())
+        slug = re.sub(r'[-\s]+', '-', slug)
+        cat  = (Category.objects.filter(slug=slug).first() or
+                Category.objects.filter(name__iexact=name).first())
+        if cat:
+            return cat
+        cat = Category.objects.create(name=name, slug=slug, is_active=True)
+        self.stdout.write(self.style.SUCCESS(f'      ✨ New category: {cat.name}'))
+        return cat
+
+    def _make_slug(self, title):
+        slug = re.sub(r'[^\w\s-]', '', title.lower())
+        slug = re.sub(r'[-\s]+', '-', slug)[:60]
+        base, n = slug, 1
+        while News.objects.filter(slug=slug).exists():
+            slug = f'{base}-{n}'; n += 1
+        return slug
+
+    # ── listing page ─────────────────────────────────────────
+
+    def _article_links_from_listing(self, session, cat_path, page):
+        url = BASE_URL + cat_path if page == 1 else f'{BASE_URL}{cat_path}page/{page}/'
+        try:
+            r = session.get(url, timeout=20)
+            if r.status_code == 404:
+                return None     # no more pages
+            r.raise_for_status()
+        except Exception as e:
+            self.stdout.write(f'      ❌ Listing error ({url}): {e}')
+            return []
+
+        soup  = BeautifulSoup(r.text, 'html.parser')
+        links = set()
+
+        # Strategy 1: <h2>/<h3> with title-like class containing a link
+        for tag in soup.find_all(['h2', 'h3'], class_=re.compile(r'(entry|post)-title', re.I)):
+            a = tag.find('a', href=True)
+            if a:
+                links.add(urljoin(BASE_URL, a['href']))
+
+        # Strategy 2: links inside <article> tags
+        if not links:
+            for art in soup.find_all('article'):
+                a = art.find('a', href=True)
+                if a and 'thesun.ng' in urljoin(BASE_URL, a['href']):
+                    links.add(urljoin(BASE_URL, a['href']))
+
+        # Strategy 3: any thesun.ng link that looks like an article slug
+        if not links:
+            for a in soup.find_all('a', href=True):
+                href = urljoin(BASE_URL, a['href'])
+                # article slugs: thesun.ng/<slug>/ or thesun.ng/<cat>/<slug>/
+                if re.match(r'https://thesun\.ng/[^/]+/[^/]+/$', href):
+                    links.add(href)
+
+        self.stdout.write(f'      📋 Page {page}: {len(links)} links')
+        return list(links)
+
+    # ── article parser ────────────────────────────────────────
+
+    def _parse_article(self, session, url):
+        try:
+            r = session.get(url, timeout=20)
+            r.raise_for_status()
+        except Exception as e:
+            self.stdout.write(f'      ❌ Fetch error: {e}')
+            return None
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+
+        # Title
+        og    = soup.find('meta', property='og:title')
+        title = og['content'].strip() if og and og.get('content') else ''
+        if not title:
+            h1    = soup.find('h1')
+            title = h1.get_text(strip=True) if h1 else ''
+        title = re.sub(r'\s*[|\-–]\s*(Sun|Sporting Sun|TheSun).*$', '', title, flags=re.I).strip()
+        if not title:
+            return None
+
+        # Category from meta
+        cat_name = 'Sports'
+        sec = soup.find('meta', property='article:section')
+        if sec:
+            cat_name = sec.get('content', 'Sports').strip()
+        else:
+            # try breadcrumb
+            bc = soup.find(class_=re.compile(r'breadcrumb', re.I))
+            if bc:
+                links = bc.find_all('a')
+                if len(links) > 1:
+                    cat_name = links[-1].get_text(strip=True) or cat_name
+
+        # Content
+        content_div = (
+            soup.find('div', class_='entry-content') or
+            soup.find('div', class_='post-content')  or
+            soup.find('article')
+        )
+        if not content_div:
+            return None
+        paras   = [p.get_text(strip=True) for p in content_div.find_all('p') if p.get_text(strip=True)]
+        content = '\n\n'.join(paras)
+        content = re.sub(r'\s+', ' ', content).strip()
+        # Remove "sunsports reports" filler
+        content = re.sub(r'sunsports\s+reports[.,]?\s*', '', content, flags=re.I)
+        if len(content) < 80:
+            return None
+
+        # Image
+        image_url = ''
+        og_img = soup.find('meta', property='og:image')
+        if og_img:
+            image_url = og_img.get('content', '')
+        if not image_url:
+            img = content_div.find('img')
+            if img:
+                image_url = img.get('src') or img.get('data-src', '')
+
+        # Author
+        author = 'Sporting Sun'
+        for sel in [('a', {'rel': 'author'}), ('span', {'class': 'author'}),
+                    ('span', {'class': 'by-author'})]:
+            el = soup.find(sel[0], sel[1])
+            if el:
+                author = re.sub(r'^by\s+', '', el.get_text(strip=True), flags=re.I).strip() or author
+                break
+
+        # Date
+        pub_date = timezone.now()
+        for sel in [('time', {'class': 'entry-date'}), ('time', {}),
+                    ('meta', {'property': 'article:published_time'})]:
+            el = soup.find(sel[0], sel[1])
+            if el:
+                raw = el.get('content') or el.get('datetime') or el.get_text()
+                try:
+                    pub_date = dateparser.parse(raw)
+                except Exception:
+                    pass
+                break
+
+        return {
+            'title':     title,
+            'cat_name':  cat_name,
+            'content':   content,
+            'excerpt':   content[:500],
+            'image_url': image_url,
+            'author':    author,
+            'pub_date':  pub_date,
         }
-        
-        # Try mapping by ID first
-        if category_id in category_mapping:
-            return category_mapping[category_id]
-        
-        # Try to extract from category name
-        if category_name:
-            name_lower = category_name.lower()
-            
-            # Football/Soccer keywords
-            if any(keyword in name_lower for keyword in ['football', 'soccer', 'premier league', 'epl']):
-                if 'premier' in name_lower or 'epl' in name_lower:
-                    return 'EPL'
-                elif 'transfer' in name_lower:
-                    return 'Transfer News'
-                elif 'champions' in name_lower:
-                    return 'Champions League'
-                else:
-                    return 'Football'
-            
-            # Basketball
-            if 'basketball' in name_lower or 'nba' in name_lower:
-                return 'Basketball'
-            
-            # Boxing/MMA
-            if 'boxing' in name_lower:
-                return 'Boxing'
-            if 'mma' in name_lower or 'ufc' in name_lower:
-                return 'MMA'
-            
-            # Tennis
-            if 'tennis' in name_lower:
-                return 'Tennis'
-            
-            # Athletics
-            if 'athletics' in name_lower or 'track' in name_lower:
-                return 'Athletics'
-            
-            # Use the category name as-is if it doesn't match
-            return category_name.title()
-        
-        return 'Sports'  # Default fallback
+
+    # ── main ─────────────────────────────────────────────────
 
     def handle(self, *args, **options):
-        start_page = options['start_page']
-        max_pages = options['max_pages']
-        default_category_name = options['default_category']
-        
-        # Calculate end page
-        end_page = start_page + max_pages - 1
-        
-        # Get or create a system user for scraped content
-        scraper_user, created = User.objects.get_or_create(
+        max_pages   = options['max_pages']
+        start_page  = options['start_page']
+        default_cat = options['default_category']
+
+        scraper_user, _ = User.objects.get_or_create(
             username='sportingsun_scraper',
-            defaults={
-                'email': 'scraper@sportingsun.ng',
-                'first_name': 'Sporting Sun',
-                'last_name': 'Scraper'
-            }
+            defaults={'email': 'scraper@sportingsun.ng',
+                      'first_name': 'Sporting Sun', 'last_name': 'Scraper'}
         )
-        if created:
-            self.stdout.write(self.style.SUCCESS(f"✅ Created scraper user: {scraper_user.username}"))
-        
-        # Get or create default category
-        default_category = self.get_or_create_category(default_category_name)
-        
-        self.stdout.write(self.style.SUCCESS(f"🚀 Starting Sporting Sun scraper with auto-category detection"))
-        self.stdout.write(self.style.SUCCESS(f"📄 Scraping pages {start_page} to {end_page}"))
-        self.stdout.write(self.style.SUCCESS(f"🏷️  Default category: {default_category.name}"))
-        
-        base_url = "https://thesun.ng/"
-        api_url = "https://thesun.ng//wp-json/wp/v2/posts"
-        
-        total_scraped = 0
-        total_skipped = 0
-        categories_created = set()
-        category_stats = {}
-        
-        for page in range(start_page, end_page + 1):
-            self.stdout.write(f"\n📄 Fetching page {page}...")
-            
-            try:
-                # Fetch posts from WordPress API
-                params = {
-                    'page': page,
-                    'per_page': 10,
-                    '_embed': 1  # Include featured media and author info
-                }
-                
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                }
-                
-                response = requests.get(api_url, params=params, headers=headers, timeout=15)
-                response.raise_for_status()
-                posts = response.json()
-                
-                if not posts:
-                    self.stdout.write(self.style.WARNING("⚠️ No more posts found"))
+        default_category = self._get_or_create_category(default_cat)
+        session          = self._session()
+
+        self.stdout.write(self.style.SUCCESS(
+            f'🚀 Sporting Sun scraper | pages {start_page}–{start_page + max_pages - 1} per category'
+        ))
+
+        total_scraped = total_skipped = 0
+        seen_urls     = set()
+
+        for cat_label, cat_path in CATEGORY_PAGES:
+            self.stdout.write(f'\n\n{"═"*55}')
+            self.stdout.write(f'📂  Category: {cat_label}  ({BASE_URL + cat_path})')
+            self.stdout.write(f'{"═"*55}')
+
+            for page in range(start_page, start_page + max_pages):
+                links = self._article_links_from_listing(session, cat_path, page)
+                if links is None:
+                    self.stdout.write(f'   ✅ No more pages for {cat_label}.')
                     break
-                
-                self.stdout.write(f"   📰 Found {len(posts)} posts on page {page}")
-                
-                for post in posts:
-                    try:
-                        # Extract post data
-                        title = BeautifulSoup(post['title']['rendered'], 'html.parser').get_text().strip()
-                        link = post['link']
-                        
-                        # Check if already exists
-                        if News.objects.filter(title=title).exists():
-                            self.stdout.write(self.style.WARNING(f"⏭️ Skipped (exists): {title[:50]}..."))
-                            total_skipped += 1
-                            continue
-                        
-                        self.stdout.write(f"\n   📰 Processing: {title[:60]}...")
-                        
-                        # Get categories for this post
-                        post_categories = post.get('categories', [])
-                        category = None
-                        category_name = None
-                        
-                        # If post has categories, try to map them
-                        if post_categories and '_embedded' in post and 'wp:term' in post['_embedded']:
-                            try:
-                                terms = post['_embedded']['wp:term']
-                                if terms and len(terms) > 0:
-                                    # Get the first category
-                                    first_category = terms[0][0] if isinstance(terms[0], list) and terms[0] else None
-                                    
-                                    if first_category:
-                                        wp_category_id = first_category.get('id')
-                                        wp_category_name = first_category.get('name', '')
-                                        
-                                        self.stdout.write(f"      🏷️  WP Category: {wp_category_name} (ID: {wp_category_id})")
-                                        
-                                        # Map to our category
-                                        category_name = self.map_wordpress_category(wp_category_id, wp_category_name)
-                                        self.stdout.write(f"      🏷️  Mapped to: {category_name}")
-                            except (KeyError, IndexError, TypeError) as e:
-                                self.stdout.write(f"      ⚠️ Category extraction error: {e}")
-                        
-                        # Get or create the category
-                        if category_name:
-                            category = self.get_or_create_category(category_name)
-                            if category.name not in categories_created:
-                                categories_created.add(category.name)
-                        else:
-                            category = default_category
-                            self.stdout.write(f"      🏷️  Using default category: {category.name}")
-                        
-                        # Track category usage
-                        category_stats[category.name] = category_stats.get(category.name, 0) + 1
-                        
-                        # Get content
-                        content_html = post['content']['rendered']
-                        content = BeautifulSoup(content_html, 'html.parser').get_text()
-                        
-                        # Clean up content - remove excessive whitespace
-                        content = re.sub(r'\s+', ' ', content).strip()
-                        
-                        # Remove "sunsports reports" and similar patterns
-                        content = re.sub(r'sunsports\s+reports[.,]?\s*', '', content, flags=re.IGNORECASE)
-                        
-                        # Get excerpt
-                        excerpt_html = post['excerpt']['rendered']
-                        excerpt = BeautifulSoup(excerpt_html, 'html.parser').get_text().strip()
-                        
-                        # Get featured image
-                        image_url = ''
-                        if '_embedded' in post and 'wp:featuredmedia' in post['_embedded']:
-                            try:
-                                media = post['_embedded']['wp:featuredmedia'][0]
-                                # Try to get the largest available image
-                                if 'media_details' in media and 'sizes' in media['media_details']:
-                                    sizes = media['media_details']['sizes']
-                                    # Prefer full > large > medium-large > medium
-                                    for size_name in ['full', 'large', 'medium_large', 'medium']:
-                                        if size_name in sizes:
-                                            image_url = sizes[size_name]['source_url']
-                                            break
-                                if not image_url:
-                                    image_url = media.get('source_url', '')
-                            except (KeyError, IndexError):
-                                pass
-                        
-                        # Get author
-                        author = ''
-                        if '_embedded' in post and 'author' in post['_embedded']:
-                            try:
-                                author = post['_embedded']['author'][0]['name']
-                            except (KeyError, IndexError):
-                                author = 'Sporting Sun'
-                        else:
-                            author = 'Sporting Sun'
-                        
-                        # Get published date
-                        published_date = timezone.now()
-                        try:
-                            from dateutil import parser
-                            published_date = parser.parse(post['date_gmt']).replace(tzinfo=timezone.utc)
-                        except:
-                            pass
-                        
-                        # Create slug from title
-                        slug = re.sub(r'[^\w\s-]', '', title.lower())
-                        slug = re.sub(r'[-\s]+', '-', slug)[:50]
-                        
-                        # Make slug unique if needed
-                        original_slug = slug
-                        counter = 1
-                        while News.objects.filter(slug=slug).exists():
-                            slug = f"{original_slug}-{counter}"
-                            counter += 1
-                        
-                        # Determine if should be featured
-                        # Feature posts from important categories
-                        featured_categories = ['Football', 'EPL', 'Transfer News', 'Champions League']
-                        is_featured = category.name in featured_categories
-                        
-                        # Create news entry - ENSURE is_published is True
-                        news = News.objects.create(
-                            title=title,
-                            slug=slug,
-                            content=content,
-                            excerpt=excerpt[:500] if len(excerpt) > 500 else excerpt,
-                            category=category,
-                            author=author,
-                            published_by=scraper_user,
-                            published_date=published_date,
-                            is_published=True,  # CRITICAL: Set to True
-                            is_featured=is_featured,
-                            featured_image_url=image_url if image_url else None
-                        )
-                        
-                        # Log image URL
-                        if image_url:
-                            self.stdout.write(f"      🖼️ Image URL: {image_url[:60]}...")
-                        
-                        total_scraped += 1
-                        feat_indicator = "⭐" if is_featured else ""
-                        self.stdout.write(self.style.SUCCESS(
-                            f"      ✅ {feat_indicator} Scraped! Category: {category.name}"
-                        ))
-                        
-                        # Respect rate limiting
-                        time.sleep(1)
-                        
-                    except Exception as e:
-                        self.stdout.write(self.style.ERROR(f"❌ Error processing post: {e}"))
-                        import traceback
-                        self.stdout.write(self.style.ERROR(traceback.format_exc()))
+                if not links:
+                    break
+
+                for url in links:
+                    if url in seen_urls:
                         continue
-                
-                # Delay between pages
+                    seen_urls.add(url)
+
+                    self.stdout.write(f'\n   🔗 {url[:80]}')
+                    time.sleep(1)
+
+                    data = self._parse_article(session, url)
+                    if not data:
+                        self.stdout.write('      ⚠️  Could not parse — skipping')
+                        continue
+
+                    if News.objects.filter(title=data['title']).exists():
+                        self.stdout.write('      ⏭️  Already exists — skipping')
+                        total_skipped += 1
+                        continue
+
+                    category    = self._get_or_create_category(data['cat_name'])
+                    is_featured = category.name in FEATURED_CATS
+
+                    News.objects.create(
+                        title             = data['title'][:200],
+                        slug              = self._make_slug(data['title']),
+                        content           = data['content'],
+                        excerpt           = data['excerpt'],
+                        category          = category,
+                        author            = data['author'],
+                        published_by      = scraper_user,
+                        published_date    = data['pub_date'],
+                        is_published      = True,
+                        is_featured       = is_featured,
+                        featured_image_url= data['image_url'] or None,
+                    )
+                    total_scraped += 1
+                    self.stdout.write(self.style.SUCCESS(
+                        f"      ✅ Saved | {category.name} | {'⭐' if is_featured else ''} {data['title'][:60]}"
+                    ))
+
                 time.sleep(2)
-                
-            except requests.exceptions.HTTPError as e:
-                if e.response.status_code == 400:
-                    self.stdout.write(self.style.WARNING(f"⚠️ No more pages available (page {page})"))
-                    break
-                else:
-                    self.stdout.write(self.style.ERROR(f"❌ HTTP Error on page {page}: {e}"))
-                    continue
-            except requests.exceptions.RequestException as e:
-                self.stdout.write(self.style.ERROR(f"❌ Request Error on page {page}: {e}"))
-                continue
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(f"❌ Unexpected error on page {page}: {e}"))
-                import traceback
-                self.stdout.write(self.style.ERROR(traceback.format_exc()))
-                continue
-        
-        self.stdout.write(self.style.SUCCESS(f"\n🎉 Scraping complete!"))
-        self.stdout.write(self.style.SUCCESS(f"   📊 Total scraped: {total_scraped}"))
-        self.stdout.write(self.style.SUCCESS(f"   ⏭️ Total skipped: {total_skipped}"))
-        
-        if categories_created:
-            self.stdout.write(self.style.SUCCESS(f"   ✨ New categories created: {', '.join(sorted(categories_created))}"))
-        
-        if category_stats:
-            self.stdout.write(self.style.SUCCESS(f"\n📈 Category Distribution:"))
-            for cat_name, count in sorted(category_stats.items(), key=lambda x: x[1], reverse=True):
-                self.stdout.write(self.style.SUCCESS(f"      {cat_name}: {count} articles"))
-        
-        featured_count = News.objects.filter(
-            published_by=scraper_user,
-            is_featured=True
-        ).count()
-        self.stdout.write(self.style.SUCCESS(f"   ⭐ Featured articles: {featured_count}"))
+
+        self.stdout.write(self.style.SUCCESS(
+            f'\n🎉 Done — scraped: {total_scraped} | skipped: {total_skipped}'
+        ))
