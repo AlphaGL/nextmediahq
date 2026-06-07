@@ -33,3 +33,7 @@ django-js-asset==3.1.2
 PyPDF2==3.0.1
 Pillow==10.2.0              # Updated to latest stable version
 # pytesseract==0.3.10       # REMOVED - Requires system Tesseract binary, not compatible with Vercel
+
+
+celery==5.3.6
+redis==5.0.8
