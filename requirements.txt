@@ -34,6 +34,9 @@ PyPDF2==3.0.1
 Pillow==10.2.0              # Updated to latest stable version
 # pytesseract==0.3.10       # REMOVED - Requires system Tesseract binary, not compatible with Vercel
 
+beautifulsoup4==4.12.3
+python-dateutil==2.9.0
+
 
 celery==5.3.6
 redis==5.0.8
