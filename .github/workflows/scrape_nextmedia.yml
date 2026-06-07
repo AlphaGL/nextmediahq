@@ -1,0 +1,140 @@
+name: Scrape News Sources
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'    # every 3 hours — Punch (runs first)
+    - cron: '5 */3 * * *'    # every 3 hours + 5 min — Sporting Sun (offset to avoid DB collision)
+  workflow_dispatch:          # manual trigger from Actions tab
+    inputs:
+      scraper:
+        description: 'Which scraper to run?'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - punch
+          - sportingsun
+
+# ── Job priority / rationale ──────────────────────────────────────────────────
+# JOB 1  scrape_punch       — punchng.com, general Nigerian news
+# JOB 2  scrape_sportingsun — thesun.ng,   sports news via WP REST API
+#
+# Both jobs run in PARALLEL on separate GitHub runners.
+# One failing will NOT stop the other.
+# ─────────────────────────────────────────────────────────────────────────────
+
+jobs:
+
+  # ══════════════════════════════════════════════════════════════
+  # JOB 1 — Punch Nigeria
+  # ══════════════════════════════════════════════════════════════
+  scrape_punch:
+    name: "📰 Punch Nigeria"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    # Run on manual dispatch (both / punch) OR the :00 cron
+    if: >
+      github.event_name == 'workflow_dispatch' && (
+        github.event.inputs.scraper == 'both' ||
+        github.event.inputs.scraper == 'punch'
+      ) ||
+      github.event_name == 'schedule'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create .env file
+        run: |
+          cat > .env << 'ENVEOF'
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          DEBUG=False
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          REDIS_URL=${{ secrets.REDIS_URL }}
+          CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}
+          CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+          NEWS_API_KEY=${{ secrets.NEWS_API_KEY }}
+          OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}
+          PAYSTACK_PUBLIC_KEY=${{ secrets.PAYSTACK_PUBLIC_KEY }}
+          PAYSTACK_SECRET_KEY=${{ secrets.PAYSTACK_SECRET_KEY }}
+          ENVEOF
+
+      - name: Run Punch scraper
+        run: |
+          echo "▶️  python manage.py scrape_punch --max-pages 3"
+          python manage.py scrape_punch --max-pages 3
+
+      - name: Cleanup
+        if: always()
+        run: echo "✅ Punch scrape job finished."
+
+
+  # ══════════════════════════════════════════════════════════════
+  # JOB 2 — Sporting Sun
+  # ══════════════════════════════════════════════════════════════
+  scrape_sportingsun:
+    name: "⚽ Sporting Sun"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    # Run on manual dispatch (both / sportingsun) OR the :05 cron
+    if: >
+      github.event_name == 'workflow_dispatch' && (
+        github.event.inputs.scraper == 'both' ||
+        github.event.inputs.scraper == 'sportingsun'
+      ) ||
+      github.event_name == 'schedule'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create .env file
+        run: |
+          cat > .env << 'ENVEOF'
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          DEBUG=False
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          REDIS_URL=${{ secrets.REDIS_URL }}
+          CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}
+          CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+          CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+          NEWS_API_KEY=${{ secrets.NEWS_API_KEY }}
+          OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}
+          PAYSTACK_PUBLIC_KEY=${{ secrets.PAYSTACK_PUBLIC_KEY }}
+          PAYSTACK_SECRET_KEY=${{ secrets.PAYSTACK_SECRET_KEY }}
+          ENVEOF
+
+      - name: Run Sporting Sun scraper
+        run: |
+          echo "▶️  python manage.py scrape_sportingsun --max-pages 3"
+          python manage.py scrape_sportingsun --max-pages 3
+
+      - name: Cleanup
+        if: always()
+        run: echo "✅ Sporting Sun scrape job finished."
