@@ -1,17 +1,17 @@
-# news/management/commands/scrape_sportingsun.py
 """
-Scrapes thesun.ng (Sporting Sun) via HTML scraping.
+Scrapes thesun.ng (Sporting Sun) via RSS feed + article pages.
 
-Their WP REST API blocks GitHub Actions IPs with 403.
+thesun.ng blocks GitHub Actions IPs on their HTML listing pages AND
+their WP REST API with 403. Their RSS feed however is publicly
+accessible from any IP.
+
 Strategy:
-  1. Fetch category listing pages (HTML) for sports sections
-  2. Extract article links from each page
-  3. Fetch + parse each article for content, image, author, date
-  4. Save to DB, skip duplicates
+  1. Fetch RSS feed  https://thesun.ng/feed/  (main feed, ~20 items)
+  2. Also fetch sports-specific RSS  https://thesun.ng/sports/feed/
+  3. For each item: fetch the article page for full content + category
+  4. Save to DB, skip duplicates by title
 
-Listing URLs tried (in order):
-  https://thesun.ng/sports/
-  https://thesun.ng/sports/page/N/
+Falls back to rotating through multiple RSS feeds if one is empty.
 """
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -38,25 +38,31 @@ HEADERS = {
 
 BASE_URL = 'https://thesun.ng'
 
-# Category pages to crawl — each is a separate sports section
-CATEGORY_PAGES = [
-    ('Sports',            '/sports/'),
-    ('Football',          '/sports/football/'),
-    ('EPL',               '/sports/football/english-premier-league/'),
-    ('Transfer News',     '/sports/football/transfer-news/'),
-    ('Basketball',        '/sports/basketball/'),
-    ('Boxing',            '/sports/boxing/'),
+# Multiple RSS feeds — pulls from sports sections + main feed
+RSS_FEEDS = [
+    ('Sports',        'https://thesun.ng/sports/feed/'),
+    ('Football',      'https://thesun.ng/sports/football/feed/'),
+    ('Basketball',    'https://thesun.ng/sports/basketball/feed/'),
+    ('Boxing',        'https://thesun.ng/sports/boxing/feed/'),
+    ('Athletics',     'https://thesun.ng/sports/athletics/feed/'),
+    ('General',       'https://thesun.ng/feed/'),
 ]
 
-FEATURED_CATS = {'Football', 'EPL', 'Transfer News', 'Champions League', 'Sports'}
+FEATURED_CATS = {'Football', 'EPL', 'Transfer News', 'Champions League', 'Sports', 'Boxing'}
+
+SPORTS_KEYWORDS = [
+    'football', 'soccer', 'epl', 'premier league', 'transfer', 'champions league',
+    'basketball', 'nba', 'boxing', 'tennis', 'athletics', 'sport', 'fifa',
+    'super eagles', 'afcon', 'world cup', 'bundesliga', 'la liga', 'serie a',
+]
 
 
 class Command(BaseCommand):
-    help = 'Scrape sports news from Sporting Sun (HTML scraping)'
+    help = 'Scrape sports news from Sporting Sun (RSS + article pages)'
 
     def add_arguments(self, parser):
         parser.add_argument('--max-pages', type=int, default=5,
-                            help='Max listing pages per category (default: 5)')
+                            help='Max items per RSS feed (multiplied by 10, default: 5 → 50 items)')
         parser.add_argument('--start-page', type=int, default=1)
         parser.add_argument('--default-category', type=str, default='sports')
 
@@ -87,49 +93,63 @@ class Command(BaseCommand):
             slug = f'{base}-{n}'; n += 1
         return slug
 
-    # ── listing page ─────────────────────────────────────────
+    def _detect_sports_category(self, title, url, meta_cat):
+        """Map title/url/meta to a clean sports category name."""
+        combined = f'{title} {url} {meta_cat}'.lower()
 
-    def _article_links_from_listing(self, session, cat_path, page):
-        url = BASE_URL + cat_path if page == 1 else f'{BASE_URL}{cat_path}page/{page}/'
+        if any(k in combined for k in ['premier league', 'epl', 'english premier']):
+            return 'EPL'
+        if any(k in combined for k in ['transfer', 'signing', 'signed']):
+            return 'Transfer News'
+        if 'champions league' in combined:
+            return 'Champions League'
+        if any(k in combined for k in ['football', 'soccer', 'super eagles', 'afcon',
+                                        'world cup', 'bundesliga', 'la liga', 'serie a',
+                                        'fifa', 'premier league']):
+            return 'Football'
+        if any(k in combined for k in ['basketball', 'nba']):
+            return 'Basketball'
+        if 'boxing' in combined:
+            return 'Boxing'
+        if 'tennis' in combined:
+            return 'Tennis'
+        if any(k in combined for k in ['athletics', 'track', 'field']):
+            return 'Athletics'
+        if meta_cat and meta_cat.lower() not in ('uncategorized', ''):
+            return meta_cat.title()
+        return 'Sports'
+
+    # ── RSS reader ────────────────────────────────────────────
+
+    def _items_from_rss(self, session, feed_url, max_items=50):
+        """Return list of {title, url, pub, cat} from an RSS feed."""
         try:
-            r = session.get(url, timeout=20)
-            if r.status_code == 404:
-                return None     # no more pages
+            r = session.get(feed_url, timeout=20)
             r.raise_for_status()
         except Exception as e:
-            self.stdout.write(f'      ❌ Listing error ({url}): {e}')
+            self.stdout.write(f'      ⚠️  RSS fetch failed ({feed_url}): {e}')
             return []
 
-        soup  = BeautifulSoup(r.text, 'html.parser')
-        links = set()
+        try:
+            soup = BeautifulSoup(r.text, 'lxml-xml')
+        except Exception:
+            soup = BeautifulSoup(r.text, 'xml')
 
-        # Strategy 1: <h2>/<h3> with title-like class containing a link
-        for tag in soup.find_all(['h2', 'h3'], class_=re.compile(r'(entry|post)-title', re.I)):
-            a = tag.find('a', href=True)
-            if a:
-                links.add(urljoin(BASE_URL, a['href']))
+        items = []
+        for item in soup.find_all('item')[:max_items]:
+            title = (item.find('title') or {}).get_text(strip=True)
+            url   = (item.find('link')  or {}).get_text(strip=True)
+            pub   = (item.find('pubDate') or {}).get_text(strip=True)
+            cat   = (item.find('category') or {}).get_text(strip=True)
+            if title and url and 'thesun.ng' in url:
+                items.append({'title': title, 'url': url, 'pub': pub, 'cat': cat})
 
-        # Strategy 2: links inside <article> tags
-        if not links:
-            for art in soup.find_all('article'):
-                a = art.find('a', href=True)
-                if a and 'thesun.ng' in urljoin(BASE_URL, a['href']):
-                    links.add(urljoin(BASE_URL, a['href']))
-
-        # Strategy 3: any thesun.ng link that looks like an article slug
-        if not links:
-            for a in soup.find_all('a', href=True):
-                href = urljoin(BASE_URL, a['href'])
-                # article slugs: thesun.ng/<slug>/ or thesun.ng/<cat>/<slug>/
-                if re.match(r'https://thesun\.ng/[^/]+/[^/]+/$', href):
-                    links.add(href)
-
-        self.stdout.write(f'      📋 Page {page}: {len(links)} links')
-        return list(links)
+        self.stdout.write(f'      📡 {len(items)} items from {feed_url}')
+        return items
 
     # ── article parser ────────────────────────────────────────
 
-    def _parse_article(self, session, url):
+    def _parse_article(self, session, url, fallback_cat='Sports'):
         try:
             r = session.get(url, timeout=20)
             r.raise_for_status()
@@ -150,17 +170,12 @@ class Command(BaseCommand):
             return None
 
         # Category from meta
-        cat_name = 'Sports'
+        meta_cat = fallback_cat
         sec = soup.find('meta', property='article:section')
         if sec:
-            cat_name = sec.get('content', 'Sports').strip()
-        else:
-            # try breadcrumb
-            bc = soup.find(class_=re.compile(r'breadcrumb', re.I))
-            if bc:
-                links = bc.find_all('a')
-                if len(links) > 1:
-                    cat_name = links[-1].get_text(strip=True) or cat_name
+            meta_cat = sec.get('content', fallback_cat).strip()
+
+        cat_name = self._detect_sports_category(title, url, meta_cat)
 
         # Content
         content_div = (
@@ -173,7 +188,6 @@ class Command(BaseCommand):
         paras   = [p.get_text(strip=True) for p in content_div.find_all('p') if p.get_text(strip=True)]
         content = '\n\n'.join(paras)
         content = re.sub(r'\s+', ' ', content).strip()
-        # Remove "sunsports reports" filler
         content = re.sub(r'sunsports\s+reports[.,]?\s*', '', content, flags=re.I)
         if len(content) < 80:
             return None
@@ -183,7 +197,7 @@ class Command(BaseCommand):
         og_img = soup.find('meta', property='og:image')
         if og_img:
             image_url = og_img.get('content', '')
-        if not image_url:
+        if not image_url and content_div:
             img = content_div.find('img')
             if img:
                 image_url = img.get('src') or img.get('data-src', '')
@@ -194,8 +208,10 @@ class Command(BaseCommand):
                     ('span', {'class': 'by-author'})]:
             el = soup.find(sel[0], sel[1])
             if el:
-                author = re.sub(r'^by\s+', '', el.get_text(strip=True), flags=re.I).strip() or author
-                break
+                text = re.sub(r'^by\s+', '', el.get_text(strip=True), flags=re.I).strip()
+                if text:
+                    author = text
+                    break
 
         # Date
         pub_date = timezone.now()
@@ -224,8 +240,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         max_pages   = options['max_pages']
-        start_page  = options['start_page']
         default_cat = options['default_category']
+
+        # max_pages * 10 = max items per feed (5 pages × 10 = 50)
+        max_items = max_pages * 10
 
         scraper_user, _ = User.objects.get_or_create(
             username='sportingsun_scraper',
@@ -236,65 +254,78 @@ class Command(BaseCommand):
         session          = self._session()
 
         self.stdout.write(self.style.SUCCESS(
-            f'🚀 Sporting Sun scraper | pages {start_page}–{start_page + max_pages - 1} per category'
+            f'🚀 Sporting Sun scraper | RSS mode | up to {max_items} items per feed'
         ))
 
         total_scraped = total_skipped = 0
         seen_urls     = set()
 
-        for cat_label, cat_path in CATEGORY_PAGES:
+        for feed_label, feed_url in RSS_FEEDS:
             self.stdout.write(f'\n\n{"═"*55}')
-            self.stdout.write(f'📂  Category: {cat_label}  ({BASE_URL + cat_path})')
+            self.stdout.write(f'📡  Feed: {feed_label}  ({feed_url})')
             self.stdout.write(f'{"═"*55}')
 
-            for page in range(start_page, start_page + max_pages):
-                links = self._article_links_from_listing(session, cat_path, page)
-                if links is None:
-                    self.stdout.write(f'   ✅ No more pages for {cat_label}.')
-                    break
-                if not links:
-                    break
+            rss_items = self._items_from_rss(session, feed_url, max_items)
+            if not rss_items:
+                self.stdout.write(f'   ⚠️  No items — skipping feed.')
+                continue
 
-                for url in links:
-                    if url in seen_urls:
-                        continue
-                    seen_urls.add(url)
+            for item in rss_items:
+                url = item['url'].strip()
+                if url in seen_urls:
+                    continue
+                seen_urls.add(url)
 
-                    self.stdout.write(f'\n   🔗 {url[:80]}')
-                    time.sleep(1)
+                self.stdout.write(f'\n   🔗 {url[:80]}')
 
-                    data = self._parse_article(session, url)
-                    if not data:
-                        self.stdout.write('      ⚠️  Could not parse — skipping')
-                        continue
+                if News.objects.filter(title=item['title']).exists():
+                    self.stdout.write('      ⏭️  Already exists — skipping')
+                    total_skipped += 1
+                    continue
 
-                    if News.objects.filter(title=data['title']).exists():
-                        self.stdout.write('      ⏭️  Already exists — skipping')
-                        total_skipped += 1
-                        continue
+                time.sleep(1)
 
-                    category    = self._get_or_create_category(data['cat_name'])
-                    is_featured = category.name in FEATURED_CATS
+                # Parse pub date from RSS
+                rss_pub = None
+                try:
+                    rss_pub = dateparser.parse(item['pub'])
+                except Exception:
+                    pass
 
-                    News.objects.create(
-                        title             = data['title'][:200],
-                        slug              = self._make_slug(data['title']),
-                        content           = data['content'],
-                        excerpt           = data['excerpt'],
-                        category          = category,
-                        author            = data['author'],
-                        published_by      = scraper_user,
-                        published_date    = data['pub_date'],
-                        is_published      = True,
-                        is_featured       = is_featured,
-                        featured_image_url= data['image_url'] or None,
-                    )
-                    total_scraped += 1
-                    self.stdout.write(self.style.SUCCESS(
-                        f"      ✅ Saved | {category.name} | {'⭐' if is_featured else ''} {data['title'][:60]}"
-                    ))
+                data = self._parse_article(session, url, fallback_cat=item.get('cat', 'Sports'))
+                if not data:
+                    self.stdout.write('      ⚠️  Could not parse — skipping')
+                    continue
 
-                time.sleep(2)
+                # Use RSS pub date if article page parse failed
+                if rss_pub and data['pub_date'] == timezone.now():
+                    data['pub_date'] = rss_pub
+
+                if News.objects.filter(title=data['title']).exists():
+                    self.stdout.write('      ⏭️  Already exists — skipping')
+                    total_skipped += 1
+                    continue
+
+                category    = self._get_or_create_category(data['cat_name'])
+                is_featured = category.name in FEATURED_CATS
+
+                News.objects.create(
+                    title             = data['title'][:200],
+                    slug              = self._make_slug(data['title']),
+                    content           = data['content'],
+                    excerpt           = data['excerpt'],
+                    category          = category,
+                    author            = data['author'],
+                    published_by      = scraper_user,
+                    published_date    = data['pub_date'],
+                    is_published      = True,
+                    is_featured       = is_featured,
+                    featured_image_url= data['image_url'] or None,
+                )
+                total_scraped += 1
+                self.stdout.write(self.style.SUCCESS(
+                    f"      ✅ Saved | {category.name} | {'⭐' if is_featured else ''} {data['title'][:60]}"
+                ))
 
         self.stdout.write(self.style.SUCCESS(
             f'\n🎉 Done — scraped: {total_scraped} | skipped: {total_skipped}'
