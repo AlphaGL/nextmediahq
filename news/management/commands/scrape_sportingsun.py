@@ -1,13 +1,9 @@
 """
-Scrapes thesun.ng (Sporting Sun) via RSS feed + article pages.
-
-thesun.ng blocks GitHub Actions IPs on their HTML listing pages AND
-their WP REST API with 403. Their RSS feed however is publicly
-accessible from any IP.
+Scrapes sportingsun.ng (Sporting Sun) via RSS feed + article pages.
 
 Strategy:
-  1. Fetch RSS feed  https://thesun.ng/feed/  (main feed, ~20 items)
-  2. Also fetch sports-specific RSS  https://thesun.ng/sports/feed/
+  1. Fetch RSS feed  https://sportingsun.ng/feed/  (main feed, ~10 items)
+  2. Also fetch category RSS feeds  https://sportingsun.ng/category/<slug>/feed/
   3. For each item: fetch the article page for full content + category
   4. Save to DB, skip duplicates by title
 
@@ -20,6 +16,7 @@ from news.models import News, Category
 from bs4 import BeautifulSoup
 import requests
 import re
+import sys
 import time
 from urllib.parse import urljoin
 from dateutil import parser as dateparser
@@ -36,16 +33,17 @@ HEADERS = {
     'Referer': 'https://www.google.com/',
 }
 
-BASE_URL = 'https://thesun.ng'
+BASE_URL = 'https://sportingsun.ng'
 
-# Multiple RSS feeds — pulls from sports sections + main feed
+# Multiple RSS feeds — WordPress category feeds + main feed
 RSS_FEEDS = [
-    ('Sports',        'https://thesun.ng/sports/feed/'),
-    ('Football',      'https://thesun.ng/sports/football/feed/'),
-    ('Basketball',    'https://thesun.ng/sports/basketball/feed/'),
-    ('Boxing',        'https://thesun.ng/sports/boxing/feed/'),
-    ('Athletics',     'https://thesun.ng/sports/athletics/feed/'),
-    ('General',       'https://thesun.ng/feed/'),
+    ('Football',      'https://sportingsun.ng/category/football/feed/'),
+    ('EPL',           'https://sportingsun.ng/category/epl/feed/'),
+    ('Transfer News', 'https://sportingsun.ng/category/transfer-news/feed/'),
+    ('Basketball',    'https://sportingsun.ng/category/basketball/feed/'),
+    ('Boxing',        'https://sportingsun.ng/category/boxing/feed/'),
+    ('Tennis',        'https://sportingsun.ng/category/tennis/feed/'),
+    ('General',       'https://sportingsun.ng/feed/'),
 ]
 
 FEATURED_CATS = {'Football', 'EPL', 'Transfer News', 'Champions League', 'Sports', 'Boxing'}
@@ -74,7 +72,10 @@ class Command(BaseCommand):
         return s
 
     def _get_or_create_category(self, name):
-        name = (name or 'Sports').strip().title()
+        name = (name or 'Sports').strip()
+        # .title() would turn acronyms like EPL into "Epl"
+        if name.islower():
+            name = name.title()
         slug = re.sub(r'[^\w\s-]', '', name.lower())
         slug = re.sub(r'[-\s]+', '-', slug)
         cat  = (Category.objects.filter(slug=slug).first() or
@@ -135,13 +136,16 @@ class Command(BaseCommand):
         except Exception:
             soup = BeautifulSoup(r.text, 'xml')
 
+        def _text(node):
+            return node.get_text(strip=True) if node else ''
+
         items = []
         for item in soup.find_all('item')[:max_items]:
-            title = (item.find('title') or {}).get_text(strip=True)
-            url   = (item.find('link')  or {}).get_text(strip=True)
-            pub   = (item.find('pubDate') or {}).get_text(strip=True)
-            cat   = (item.find('category') or {}).get_text(strip=True)
-            if title and url and 'thesun.ng' in url:
+            title = _text(item.find('title'))
+            url   = _text(item.find('link'))
+            pub   = _text(item.find('pubDate'))
+            cat   = _text(item.find('category'))
+            if title and url and ('sportingsun.ng' in url or 'thesun.ng' in url):
                 items.append({'title': title, 'url': url, 'pub': pub, 'cat': cat})
 
         self.stdout.write(f'      📡 {len(items)} items from {feed_url}')
@@ -166,7 +170,7 @@ class Command(BaseCommand):
             h1    = soup.find('h1')
             title = h1.get_text(strip=True) if h1 else ''
         title = re.sub(r'\s*[|\-–]\s*(Sun|Sporting Sun|TheSun).*$', '', title, flags=re.I).strip()
-        if not title:
+        if not title or title.startswith('http'):
             return None
 
         # Category from meta
@@ -213,8 +217,8 @@ class Command(BaseCommand):
                     author = text
                     break
 
-        # Date
-        pub_date = timezone.now()
+        # Date (None if not found — caller falls back to RSS pubDate)
+        pub_date = None
         for sel in [('time', {'class': 'entry-date'}), ('time', {}),
                     ('meta', {'property': 'article:published_time'})]:
             el = soup.find(sel[0], sel[1])
@@ -239,6 +243,12 @@ class Command(BaseCommand):
     # ── main ─────────────────────────────────────────────────
 
     def handle(self, *args, **options):
+        # Windows consoles default to cp1252, which crashes on the emoji below
+        try:
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        except (AttributeError, ValueError):
+            pass
+
         max_pages   = options['max_pages']
         default_cat = options['default_category']
 
@@ -297,9 +307,8 @@ class Command(BaseCommand):
                     self.stdout.write('      ⚠️  Could not parse — skipping')
                     continue
 
-                # Use RSS pub date if article page parse failed
-                if rss_pub and data['pub_date'] == timezone.now():
-                    data['pub_date'] = rss_pub
+                # Use RSS pub date if article page had none
+                data['pub_date'] = data['pub_date'] or rss_pub or timezone.now()
 
                 if News.objects.filter(title=data['title']).exists():
                     self.stdout.write('      ⏭️  Already exists — skipping')

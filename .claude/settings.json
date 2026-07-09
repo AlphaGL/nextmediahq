@@ -5,7 +5,16 @@
       "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" -m pip install --upgrade groq)",
       "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" -m pip show groq)",
       "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" -c \"from groq import Groq; Groq\\(api_key='test'\\); print\\('Groq client initializes OK'\\)\")",
-      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" manage.py check)"
+      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" manage.py check)",
+      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" manage.py scrape_sportingsun --max-pages 1)",
+      "Bash(PYTHONIOENCODING=utf-8 \"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" manage.py scrape_sportingsun --max-pages 1)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{url_effective} -> %{redirect_url}\\\\n\" \"https://sportingsun.ng/feed/\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/124.0.0.0 Safari/537.36\" \"https://thesun.ng/feed/\")",
+      "Bash(curl -s \"https://sportingsun.ng/feed/\")",
+      "Bash(/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe manage.py shell -c ' *)",
+      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" manage.py runserver 8765 --noreload)",
+      "Bash(curl -s \"http://127.0.0.1:8765/\" -o /tmp/page.html -w \"HTTP %{http_code}\\\\n\")",
+      "Read(//tmp/**)"
     ]
   }
 }

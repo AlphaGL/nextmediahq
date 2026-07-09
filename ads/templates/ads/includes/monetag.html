@@ -1,13 +1,15 @@
 <!-- Monetag Vignette Ad (zone 9894118) -->
 <script>(function(s){s.dataset.zone='9894118',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
-<!-- Monetag Direct Link tab-under: on first click, the visitor's intended page
-     opens in a NEW focused tab (so they stay on the site) while this tab is
-     sent to the ad in the background. Capped to once per hour per visitor. -->
+<!-- Monetag Direct Link tab-under: ANY click (links, posts, search bar,
+     navigation, plain page) opens the visitor's intended page in a NEW
+     focused tab while this tab is sent to the ad in the background. -->
 <script>
 (function () {
     var AD_URL = 'https://omg10.com/4/11262581';
-    var FREQUENCY_MS = 60 * 60 * 1000; // once per hour; lower to show more often
+    // Cooldown between pops per visitor. 10 min default.
+    // Lower to show more often; 0 = every single click (not recommended).
+    var FREQUENCY_MS = 10 * 60 * 1000;
     var STORAGE_KEY = 'mt_pop_last';
 
     function alreadyShown() {
@@ -22,26 +24,15 @@
     document.addEventListener('click', function (e) {
         if (alreadyShown()) return;
 
-        // Never hijack form fields, buttons or anything inside a form
-        // (logins, payments, exam answers must keep working normally)
-        if (e.target.closest('form, input, textarea, select, button, label')) return;
+        var target = (e.target && e.target.closest) ? e.target : null;
+        var link = target ? target.closest('a') : null;
+        var destination = window.location.href;
 
-        var link = e.target.closest('a');
-        var destination;
-
-        if (link) {
-            var href = link.getAttribute('href') || '';
-            if (!href || href.charAt(0) === '#' ||
-                href.indexOf('javascript:') === 0 ||
-                href.indexOf('mailto:') === 0 ||
-                href.indexOf('tel:') === 0 ||
-                link.hasAttribute('download')) {
-                return;
-            }
+        // Real links keep their destination; everything else
+        // (search bar, buttons, nav toggles, plain content)
+        // reopens the current page in the new tab.
+        if (link && /^https?:/i.test(link.href || '')) {
             destination = link.href;
-        } else {
-            // Click on plain page content: reopen the current page in the new tab
-            destination = window.location.href;
         }
 
         // New tab = the visitor's own page on this site (gets focus)
