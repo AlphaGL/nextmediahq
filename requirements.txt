@@ -19,7 +19,7 @@ paystackapi==2.1.3
 
 # Chatbot (AI integration)
 google-generativeai==0.8.0  # For Gemini API (lightweight)
-groq==0.4.2                 # For Groq/OpenAI-style chat API support
+groq==1.5.0                 # For Groq/OpenAI-style chat API support (0.4.2 breaks with httpx>=0.28)
 
 # Real-time data for chatbot
 feedparser==6.0.11          # For RSS feeds (no API key needed, unlimited)

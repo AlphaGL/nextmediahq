@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" -m pip show groq httpx)",
+      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" -m pip install --upgrade groq)",
+      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" -m pip show groq)",
+      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" -c \"from groq import Groq; Groq\\(api_key='test'\\); print\\('Groq client initializes OK'\\)\")",
+      "Bash(\"/c/Users/Ibeawuchi/AppData/Local/Programs/Python/Python310/python.exe\" manage.py check)"
+    ]
+  }
+}
