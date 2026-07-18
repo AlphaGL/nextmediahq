@@ -1,51 +1,142 @@
 <!-- Monetag Vignette Ad (zone 9894118) -->
 <script>(function(s){s.dataset.zone='9894118',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
-<!-- Monetag Direct Link tab-under: ANY click (links, posts, search bar,
-     navigation, plain page) opens the visitor's intended page in a NEW
-     focused tab while this tab is sent to the ad in the background. -->
+<!-- ===== NextMedia Ads: popunder direct link + notice banner + catchy CTA ===== -->
+<style>
+  /* Bottom notice banner: tells users about the popunder format */
+  #nm-ad-notice{
+    position:fixed;left:0;right:0;bottom:0;z-index:2147483000;
+    background:#0f172a;color:#f1f5f9;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    box-shadow:0 -4px 20px rgba(0,0,0,.35);
+    transform:translateY(110%);transition:transform .4s ease;
+  }
+  #nm-ad-notice.nm-show{transform:translateY(0);}
+  #nm-ad-notice .nm-inner{
+    max-width:1100px;margin:0 auto;padding:12px 16px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  #nm-ad-notice .nm-txt{flex:1;min-width:220px;font-size:14px;line-height:1.4;}
+  #nm-ad-notice .nm-txt b{color:#facc15;}
+  #nm-ad-notice .nm-ok{
+    background:#22c55e;color:#052e16;border:0;border-radius:8px;
+    padding:9px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;
+  }
+  #nm-ad-notice .nm-ok:hover{background:#16a34a;color:#fff;}
+
+  /* Catchy floating CTA button (fires the direct link on demand) */
+  #nm-cta{
+    position:fixed;right:16px;bottom:84px;z-index:2147482900;
+    display:flex;align-items:center;gap:8px;
+    background:linear-gradient(135deg,#f43f5e,#f59e0b);
+    color:#fff;border:0;border-radius:50px;
+    padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    box-shadow:0 6px 18px rgba(244,63,94,.45);
+    animation:nm-pulse 1.8s infinite;
+  }
+  #nm-cta:hover{filter:brightness(1.05);}
+  #nm-cta .nm-emoji{font-size:18px;}
+  @keyframes nm-pulse{
+    0%{box-shadow:0 6px 18px rgba(244,63,94,.45);}
+    50%{box-shadow:0 6px 26px rgba(245,158,11,.7);}
+    100%{box-shadow:0 6px 18px rgba(244,63,94,.45);}
+  }
+  @media (max-width:520px){
+    #nm-cta{right:10px;bottom:76px;padding:10px 14px;font-size:13px;}
+  }
+</style>
+
+<div id="nm-ad-notice" role="dialog" aria-live="polite">
+  <div class="nm-inner">
+    <div class="nm-txt">
+      📢 <b>Heads up:</b> NextMedia is supported by ads. When you click, a new
+      tab may open with an advert — just <b>close that tab</b> and continue
+      reading. This keeps NextMedia free for everyone. Thank you! ❤️
+    </div>
+    <button type="button" class="nm-ok" id="nm-ad-ok">Got it</button>
+  </div>
+</div>
+
+<button type="button" id="nm-cta">
+  <span class="nm-emoji">🎁</span><span id="nm-cta-text">Claim Free Data</span>
+</button>
+
 <script>
 (function () {
     var AD_URL = 'https://omg10.com/4/11262581';
-    // Cooldown between pops per visitor. 10 min default.
-    // Lower to show more often; 0 = every single click (not recommended).
-    var FREQUENCY_MS = 10 * 60 * 1000;
-    var STORAGE_KEY = 'mt_pop_last';
 
-    function alreadyShown() {
+    /* ================================================================
+       1. DIRECT LINK — fires on ANY click on the page.
+          The AD opens in a NEW tab ON TOP (visible). The page/link the
+          visitor clicked keeps loading normally in the tab underneath,
+          so when they close the ad they're already on the content.
+       ================================================================ */
+    var FREQUENCY_MS = 0;   // 0 = fire on EVERY click; raise (e.g. 5*60*1000) to throttle
+    var STORAGE_KEY  = 'mt_pop_last';
+
+    function popShown() {
         try {
             var last = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
             return (Date.now() - last) < FREQUENCY_MS;
-        } catch (e) {
-            return false;
-        }
+        } catch (e) { return false; }
     }
 
     document.addEventListener('click', function (e) {
-        if (alreadyShown()) return;
+        if (popShown()) return;
 
-        var target = (e.target && e.target.closest) ? e.target : null;
-        var link = target ? target.closest('a') : null;
-        var destination = window.location.href;
+        var t = (e.target && e.target.closest) ? e.target : null;
+        // Our own ad UI handles itself — don't double-fire.
+        if (t && t.closest('#nm-cta, #nm-ad-notice')) return;
 
-        // Real links keep their destination; everything else
-        // (search bar, buttons, nav toggles, plain content)
-        // reopens the current page in the new tab.
-        if (link && /^https?:/i.test(link.href || '')) {
-            destination = link.href;
-        }
-
-        // New tab = the visitor's own page on this site (gets focus)
-        var siteTab = window.open(destination, '_blank');
-        if (!siteTab) return; // popup blocked -> let the click behave normally
-
-        e.preventDefault();
-        e.stopPropagation();
-
+        // Ad opens in front. We do NOT preventDefault, so the clicked
+        // link still navigates this tab normally underneath the ad.
+        var adTab = window.open(AD_URL, '_blank');
+        if (!adTab) return;                       // popup blocked -> click behaves normally
+        try { adTab.focus(); } catch (err) {}
         try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch (err) {}
-
-        // This tab (now in the background) goes to the ad
-        window.location.href = AD_URL;
     }, true);
+
+    /* ================================================================
+       2. NOTICE BANNER — shown once per browser.
+       ================================================================ */
+    var notice = document.getElementById('nm-ad-notice');
+    var okBtn  = document.getElementById('nm-ad-ok');
+    var NOTICE_KEY = 'nm_ad_notice_seen';
+    try {
+        if (!localStorage.getItem(NOTICE_KEY)) {
+            setTimeout(function () { notice.classList.add('nm-show'); }, 1200);
+        }
+    } catch (e) {
+        setTimeout(function () { notice.classList.add('nm-show'); }, 1200);
+    }
+    okBtn.addEventListener('click', function () {
+        notice.classList.remove('nm-show');
+        try { localStorage.setItem(NOTICE_KEY, '1'); } catch (e) {}
+    });
+
+    /* ================================================================
+       3. CATCHY CTA BUTTON — extra earner, opens the ad in a front tab.
+          Bypasses the cooldown so it always works when tapped.
+       ================================================================ */
+    var LABELS = [
+        '🎁 Claim Free Data',
+        '🔥 Get the Juicy Gist',
+        '💸 Win Airtime Now',
+        '👀 See Who Viewed You',
+        '⚡ Unlock Free MB',
+        '🎉 Claim Your Reward'
+    ];
+    var cta     = document.getElementById('nm-cta');
+    var ctaText = document.getElementById('nm-cta-text');
+    var pick    = LABELS[Math.floor(Math.random() * LABELS.length)];
+    ctaText.textContent = pick.replace(/^\S+\s/, '');
+    cta.querySelector('.nm-emoji').textContent = pick.split(' ')[0];
+
+    cta.addEventListener('click', function () {
+        var w = window.open(AD_URL, '_blank');    // ad in front tab
+        if (w) { try { w.focus(); } catch (e) {} }
+        try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch (e) {}
+    });
 })();
 </script>
