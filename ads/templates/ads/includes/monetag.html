@@ -1,7 +1,12 @@
-<!-- Monetag Vignette Ad (zone 9894118) -->
-<script>(function(s){s.dataset.zone='9894118',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<!-- ===== Monetag official ad zones (site: nextmediahq.net) ===== -->
 
-<!-- ===== NextMedia Ads: popunder direct link + notice banner + catchy CTA ===== -->
+<!-- Push Notifications (zone 11368996) -->
+<script src="https://5gvci.com/act/files/tag.min.js?z=11368996" data-cfasync="false" async></script>
+
+<!-- OnClick / Popunder (zone 11368997) — fires the popunder automatically on user clicks -->
+<script>(function(s){s.dataset.zone='11368997',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+<!-- ===== Extra income: notice banner + catchy Direct Link CTA ===== -->
 <style>
   /* Bottom notice banner: tells users about the popunder format */
   #nm-ad-notice{
@@ -64,42 +69,9 @@
 
 <script>
 (function () {
-    var AD_URL = 'https://omg10.com/4/11262581';
+    var AD_URL = 'https://omg10.com/4/11369000';   // Direct Link
 
-    /* ================================================================
-       1. DIRECT LINK — fires on ANY click on the page.
-          The AD opens in a NEW tab ON TOP (visible). The page/link the
-          visitor clicked keeps loading normally in the tab underneath,
-          so when they close the ad they're already on the content.
-       ================================================================ */
-    var FREQUENCY_MS = 0;   // 0 = fire on EVERY click; raise (e.g. 5*60*1000) to throttle
-    var STORAGE_KEY  = 'mt_pop_last';
-
-    function popShown() {
-        try {
-            var last = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
-            return (Date.now() - last) < FREQUENCY_MS;
-        } catch (e) { return false; }
-    }
-
-    document.addEventListener('click', function (e) {
-        if (popShown()) return;
-
-        var t = (e.target && e.target.closest) ? e.target : null;
-        // Our own ad UI handles itself — don't double-fire.
-        if (t && t.closest('#nm-cta, #nm-ad-notice')) return;
-
-        // Ad opens in front. We do NOT preventDefault, so the clicked
-        // link still navigates this tab normally underneath the ad.
-        var adTab = window.open(AD_URL, '_blank');
-        if (!adTab) return;                       // popup blocked -> click behaves normally
-        try { adTab.focus(); } catch (err) {}
-        try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch (err) {}
-    }, true);
-
-    /* ================================================================
-       2. NOTICE BANNER — shown once per browser.
-       ================================================================ */
+    /* ---- Notice banner (show once per browser) ---- */
     var notice = document.getElementById('nm-ad-notice');
     var okBtn  = document.getElementById('nm-ad-ok');
     var NOTICE_KEY = 'nm_ad_notice_seen';
@@ -115,10 +87,7 @@
         try { localStorage.setItem(NOTICE_KEY, '1'); } catch (e) {}
     });
 
-    /* ================================================================
-       3. CATCHY CTA BUTTON — extra earner, opens the ad in a front tab.
-          Bypasses the cooldown so it always works when tapped.
-       ================================================================ */
+    /* ---- Catchy CTA button -> opens the Direct Link in a new tab ---- */
     var LABELS = [
         '🎁 Claim Free Data',
         '🔥 Get the Juicy Gist',
@@ -134,9 +103,8 @@
     cta.querySelector('.nm-emoji').textContent = pick.split(' ')[0];
 
     cta.addEventListener('click', function () {
-        var w = window.open(AD_URL, '_blank');    // ad in front tab
+        var w = window.open(AD_URL, '_blank');
         if (w) { try { w.focus(); } catch (e) {} }
-        try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch (e) {}
     });
 })();
 </script>
